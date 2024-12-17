@@ -1,0 +1,43 @@
+Negotiation
+-Title
+-Location
+-Status
+-Description
+-Start Time
+-End Time
+--user_id
+--subject_id (Negotiation has one subject)
+--tenant_id (Negotiation belongs to a tenant)
+
+Room
+-subject_id (Belongs To a room)
+-negotiation_id (Room belongs to a negotiation)
+
+Subject
+-Name
+-Phone
+-email
+-race
+-gender
+-address
+-city
+-state
+-zip
+-dob
+-age
+-children
+-veteran
+-highest_education
+-substance_abuse
+-mental_health_history
+-physical_description
+-notes
+-facebook_url
+-x_url
+-instagram_url
+-youtube_url
+-snapchat_url
+--room_id
+--family_members_id
+--triggers_id
+--hooks_id

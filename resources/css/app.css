@@ -1,0 +1,14 @@
+@import "../../vendor/wire-elements/pro/resources/css/tailwind/overlay-component.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.wep-modal-content,
+.wep-slide-over-container-inner-wrap {
+    @apply motion-reduce:transition-none;
+}
+
+[x-cloak] {
+    display: none !important;
+}
