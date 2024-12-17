@@ -16,6 +16,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/documents/{user}/{filename}', [DocumentController::class, 'show']);
     Route::view('/create-negotiation', 'pages.create-negotiation')->name('create.negotiation');
     Route::get('/negotiation/room/{room}', [PagesController::class, 'negotiationRoom'])->name('negotiation.room');
+    Route::get('/command', [PagesController::class, 'command'])->name('command');
 });
 
 Route::view('dashboard', 'pages.dashboard')

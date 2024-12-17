@@ -45,6 +45,12 @@ class Subject extends Model
         return $this->hasMany(CallLog::class);
     }
 
+    public function demands(): HasMany
+    {
+        return $this->hasMany(Demand::class);
+
+    }
+
     public function phone(): array|string|null
     {
         return preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '($1) $2-$3', $this->phone);

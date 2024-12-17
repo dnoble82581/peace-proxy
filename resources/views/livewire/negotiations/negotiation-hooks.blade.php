@@ -124,10 +124,10 @@ new class extends Component {
 
 ?>
 
-<div class="mt-3">
-	<!-- Button to leave the current room -->
-	<a href="{{ route('dashboard') }}">Leave Room</a>
-
+<div
+		class="mt-3"
+		x-data="{showList:true}">
+	
 	<!-- Section header for hooks with a button for adding a new hook -->
 	<x-board-elements.category-header
 			class="border-gray-300 dark:bg-blue-500 bg-blue-400"
@@ -135,14 +135,19 @@ new class extends Component {
 			click-action="addHook"
 			value="Hooks">
 		<x-slot:actions>
-			<button>
+			<button @click="showList = !showList">
 				<x-heroicons::mini.solid.chevron-up-down class="w-5 h-5 text-slate-700 dark:text-slate-300" />
 			</button>
+			<span
+					x-show="!showList"
+					class="text-sm text-slate-700 dark:text-slate-300">{{ $room->subject->hooks->count() }} items hidden</span>
 		</x-slot:actions>
 	</x-board-elements.category-header>
 
 	<!-- Render all hooks in the current room -->
-	<div class="mt-3 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
+	<div
+			x-show="showList"
+			class="mt-3 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
 		@foreach($this->room->subject->hooks as $hook)
 			<div
 					x-data="{open:true}"

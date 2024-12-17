@@ -20,7 +20,7 @@ class NegotiationFactory extends Factory
             'state' => $this->faker->word(),
             'zip' => $this->faker->postcode(),
             'status' => $this->faker->word(),
-            'initial_complanant' => $this->faker->word(),
+            'initial_complainant' => $this->faker->word(),
             'initial_complaint' => $this->faker->word(),
             'start_time' => Carbon::now(),
             'end_time' => Carbon::now(),
@@ -28,6 +28,7 @@ class NegotiationFactory extends Factory
             'updated_at' => Carbon::now(),
 
             'user_id' => User::factory(),
+            'tenant_id' => 1,
         ];
     }
 }

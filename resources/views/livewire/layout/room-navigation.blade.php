@@ -2,6 +2,8 @@
 
 use App\Livewire\Actions\Logout;
 use Livewire\Volt\Component;
+use Illuminate\Support\Facades\Redis;
+
 
 new class extends Component {
     /**
@@ -34,16 +36,22 @@ new class extends Component {
 				<!-- Navigation Links -->
 				<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
 					<x-navigation.nav-link
-							:href="route('dashboard')"
-							:active="request()->routeIs('dashboard')"
+							:href="route('negotiation.room', Redis::get('room_id'))"
+							:active="request()->routeIs('negotiation.room')"
 							wire:navigate>
-						{{ __('Dashboard') }}
+						{{ __('Room') }}
 					</x-navigation.nav-link>
 					<x-navigation.nav-link
-							:href="route('team')"
+							href="#"
 							:active="request()->routeIs('team')"
 							wire:navigate>
 						{{ __('My Team') }}
+					</x-navigation.nav-link>
+					<x-navigation.nav-link
+							:href="route('command')"
+							:active="request()->routeIs('command')"
+							wire:navigate>
+						{{ __('Command') }}
 					</x-navigation.nav-link>
 				</div>
 			</div>

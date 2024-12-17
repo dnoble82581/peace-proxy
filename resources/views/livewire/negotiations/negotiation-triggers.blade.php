@@ -56,17 +56,24 @@ new class extends Component {
 
 ?>
 
-<div>
+<div x-data="{showList: true}">
 	<x-board-elements.category-header
 			class="bg-rose-400 dark:bg-rose-500 dark:text-slate-300"
 			value="Triggers"
 			click-action="createTrigger()">
 		<x-slot:actions>
-			<x-heroicons::mini.solid.chevron-up-down class="w-5 h-5 text-slate-700 dark:text-slate-300" />
+			<button @click="showList = !showList">
+				<x-heroicons::mini.solid.chevron-up-down class="w-5 h-5 text-slate-700 dark:text-slate-300" />
+			</button>
+			<span
+					class="text-sm text-slate-700 dark:text-slate-300"
+					x-show="!showList">{{ $room->subject->triggers->count() }} items hidden</span>
 		</x-slot:actions>
 	</x-board-elements.category-header>
 
-	<div class="mt-3 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
+	<div
+			x-show="showList"
+			class="mt-3 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
 		@foreach($this->room->subject->triggers as $trigger)
 			<div
 					x-data="{open:true}"

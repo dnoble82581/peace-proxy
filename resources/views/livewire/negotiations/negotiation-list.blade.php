@@ -157,23 +157,13 @@ new class extends Component {
 										</div>
 									</div>
 									<div class="flex flex-none items-center gap-x-4">
-										@if($negotiation->status === 'pending' & $this->user->id === $negotiation->user->id)
-											<button
-													wire:click="beginAndEnterNegotiation({{ $negotiation->id }})"
-													class="hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:block">
-												Begin This
-												Negotiation<span class="sr-only">, Enter Negotiation</span></button>
-											<span class="sr-only">, Enter Negotiation</span>
-										@elseif($negotiation->status === 'started')
-											<button
-													wire:click="beginAndEnterNegotiation({{ $negotiation->id }})"
-													class="hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:block">
-												Enter This
-												Negotiation<span class="sr-only">, Enter Negotiation</span></button>
-											<span class="sr-only">, Enter Negotiation</span>
-										@else
-											<p>This Negotiation will begin soon...</p>
-										@endif
+
+										<button
+												wire:click="beginAndEnterNegotiation({{ $negotiation->id }})"
+												class="hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:block">
+											Begin This
+											Negotiation<span class="sr-only">, Enter Negotiation</span></button>
+										<span class="sr-only">, Enter Negotiation</span>
 									</div>
 								</li>
 							</ul>
