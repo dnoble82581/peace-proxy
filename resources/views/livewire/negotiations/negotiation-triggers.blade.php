@@ -58,7 +58,7 @@ new class extends Component {
 
 <div x-data="{showList: true}">
 	<x-board-elements.category-header
-			class="bg-rose-400 dark:bg-rose-500 dark:text-slate-300"
+			class="bg-rose-400 dark:bg-rose-500 dark:text-slate-300 sticky top-0 z-10"
 			value="Triggers"
 			click-action="createTrigger()">
 		<x-slot:actions>

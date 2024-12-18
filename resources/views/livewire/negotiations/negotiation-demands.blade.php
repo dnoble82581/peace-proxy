@@ -15,7 +15,7 @@ new class extends Component {
 
     public function addDemand()
     {
-        $this->dispatch('modal.open', component: 'modals.create-demand-form');
+        $this->dispatch('modal.open', component: 'modals.create-demand-form', arguments: ['roomId' => $this->room->id]);
     }
 
     public function sendRequest($demandId):void
@@ -33,12 +33,11 @@ new class extends Component {
 
 ?>
 
-{{--ToDo:finish demands--}}
 <div
 		x-data="{showList: true}"
 		class="mt-5">
 	<x-board-elements.category-header
-			class="bg-teal-400 dark:bg-teal-600"
+			class="bg-teal-400 dark:bg-teal-600 sticky top-0 z-10"
 			value="Demands"
 			click-action="addDemand()">
 		<x-slot:actions>
@@ -52,6 +51,7 @@ new class extends Component {
 					x-show="!showList"> {{ $room->subject->demands->count() }} items hidden</span>
 		</x-slot:actions>
 	</x-board-elements.category-header>
+
 	<ul
 			x-show="showList"
 			role="list"

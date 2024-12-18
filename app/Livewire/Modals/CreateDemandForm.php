@@ -2,10 +2,32 @@
 
 namespace App\Livewire\Modals;
 
+use App\Models\Room;
+use Livewire\Attributes\Validate;
 use WireElements\Pro\Components\Modal\Modal;
 
 class CreateDemandForm extends Modal
 {
+    #[Validate('string|required|min:3|max:255')]
+    public string $title;
+
+    #[Validate('string|required|min:3|max:755')]
+    public string $status;
+
+    #[Validate('string|required|min:3|max:755')]
+    public string $type;
+
+    #[Validate('string|nullable|min:3|max:755')]
+    public string $notes;
+
+    #[Validate('required|date|after:today')]
+    public string $deadline;
+
+    #[Validate('string|nullable|min:3|max:755')]
+    public string $description;
+
+    public Room $room;
+
     public static function behavior(): array
     {
         return [
@@ -27,6 +49,34 @@ class CreateDemandForm extends Modal
             // xs, sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl, 6xl, 7xl, fullscreen
             'size' => '2xl',
         ];
+    }
+
+    public function mount($roomId)
+    {
+        $this->room = $this->getRoom($roomId);
+    }
+
+    private function getRoom($roomId)
+    {
+        return Room::query()->findOrFail($roomId);
+    }
+
+    public function createDemand()
+    {
+        $this->validate();
+        $this->room->subject->demands()->create([
+            'title' => $this->title,
+            'status' => $this->status,
+            'type' => $this->type,
+            'notes' => $this->notes,
+            'deadline' => $this->deadline,
+            'description' => $this->description,
+            'negotiation_id' => $this->room->negotiation_id,
+            'room_id' => $this->room->id,
+            'tenant_id' => $this->room->tenant_id,
+            'user_id' => auth()->user()->id,
+        ]);
+        $this->close();
     }
 
     public function render()

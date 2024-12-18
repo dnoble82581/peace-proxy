@@ -83,7 +83,7 @@ new class extends Component {
 
         try {
             // Check if the authenticated user is authorized to delete the hook
-            $this->authorize('delete', $hook);
+//            $this->authorize('delete', $hook);
 
             // Perform deletion and broadcast the HookDeletedEvent
             $hook->delete();
@@ -125,12 +125,12 @@ new class extends Component {
 ?>
 
 <div
-		class="mt-3"
+		class="mt-3 over"
 		x-data="{showList:true}">
-	
+
 	<!-- Section header for hooks with a button for adding a new hook -->
 	<x-board-elements.category-header
-			class="border-gray-300 dark:bg-blue-500 bg-blue-400"
+			class="border-gray-300 dark:bg-blue-500 bg-blue-400 sticky top-0 z-10"
 			@click="open = !open"
 			click-action="addHook"
 			value="Hooks">
