@@ -1,8 +1,8 @@
 @props(['demand'])
 <li
 		x-data="{ details: true }"
-		class="dark:bg-gray-700 px-2 rounded shadow">
-	<div class="flex items-center justify-between gap-x-6 py-2">
+		class="dark:bg-gray-700 rounded shadow">
+	<div class="flex items-center justify-between gap-x-6 p-4">
 		<div class="min-w-0">
 			<div class="flex items-start gap-x-3">
 				<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300 capitalize">{{ $demand->title }}</p>
@@ -39,7 +39,8 @@
 					<span class="sr-only">Toggle Details</span>
 					<x-heroicons::mini.solid.chevron-up-down />
 				</button>
-				<x-dropdown.dropdown>
+				<x-dropdown.dropdown
+						width="40">
 					<x-slot:trigger>
 						<button
 								type="button"
@@ -58,19 +59,24 @@
 							</svg>
 						</button>
 					</x-slot:trigger>
-					<x-slot:content>
-						<button
-								wire:click="sendRequest({{ $demand->id }})"
-								class="block px-3 py-1 text-sm/6 text-gray-900"
-								role="menuitem"
-								tabindex="-1"
-								id="options-menu-0-item-0">Request<span class="sr-only">, GraphQL API</span></button>
-						<a
-								href="#"
-								class="block px-3 py-1 text-sm/6 text-gray-900"
-								role="menuitem"
-								tabindex="-1"
-								id="options-menu-0-item-1">Delete<span class="sr-only">, GraphQL API</span></a>
+					<x-slot:content class="overflow-x-visible">
+						<x-dropdown.dropdown-link>
+							<button
+									wire:click="sendRequest({{ $demand->id }})"
+									class="block px-3 py-1 text-sm/6 text-gray-900 w-full"
+									role="menuitem"
+									tabindex="-1"
+									id="options-menu-0-item-0">Request<span class="sr-only">, GraphQL API</span>
+							</button>
+						</x-dropdown.dropdown-link>
+						<x-dropdown.dropdown-link>
+							<button
+									wire:click="deleteDemand({{ $demand->id }})"
+									class="block px-3 py-1 text-sm/6 text-gray-900 w-full h-full"
+									role="menuitem"
+									tabindex="-1"
+									id="options-menu-0-item-1">Delete<span class="sr-only">, GraphQL API</span></button>
+						</x-dropdown.dropdown-link>
 					</x-slot:content>
 				</x-dropdown.dropdown>
 			</div>

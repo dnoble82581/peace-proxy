@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\CallLog;
 use App\Models\Demand;
 use App\Models\Hook;
 use App\Models\MoodLog;
@@ -44,8 +45,10 @@ class DatabaseSeeder extends Seeder
             'subject_id' => 1, 'tenant_id' => 5,
         ]);
         MoodLog::factory(20)->create(['subject_id' => 1, 'tenant_id' => 5, 'room_id' => 1, 'negotiation_id' => 1]);
+        CallLog::factory(20)->create(['subject_id' => 1, 'tenant_id' => 5, 'room_id' => 1, 'negotiation_id' => 1]);
         Demand::factory(10)->create([
             'subject_id' => 1, 'tenant_id' => 5, 'room_id' => 1, 'negotiation_id' => 1, 'user_id' => 28,
         ]);
+
     }
 }

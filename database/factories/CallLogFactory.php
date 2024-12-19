@@ -17,9 +17,9 @@ class CallLogFactory extends Factory
     public function definition(): array
     {
         return [
-            'started_at' => Carbon::now(),
+            'started_at' => $this->faker->dateTimeBetween('2024-12-16', '2024-12-17'),
             'ended_at' => Carbon::now(),
-            'duration' => $this->faker->randomNumber(),
+            'duration' => $this->faker->numberBetween(1, 60),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
 

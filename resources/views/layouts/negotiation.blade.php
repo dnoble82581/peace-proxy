@@ -25,7 +25,7 @@
 	@vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body
-		class="font-sans antialiased overflow-hidden"
+		class="font-sans antialiased"
 		x-data="{darkMode: false}"
 		:class="{'dark': darkMode === true }">
 

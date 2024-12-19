@@ -129,23 +129,39 @@ new class extends Component {
 		x-data="{showList:true}">
 
 	<!-- Section header for hooks with a button for adding a new hook -->
-	<x-board-elements.category-header
-			class="border-gray-300 dark:bg-blue-500 bg-blue-400 sticky top-0 z-10"
-			@click="open = !open"
-			click-action="addHook"
-			value="Hooks">
-		<x-slot:actions>
-			<button @click="showList = !showList">
-				<x-heroicons::mini.solid.chevron-up-down class="w-5 h-5 text-slate-700 dark:text-slate-300" />
-			</button>
-			<span
-					x-show="!showList"
-					class="text-sm text-slate-700 dark:text-slate-300">{{ $room->subject->hooks->count() }} items hidden</span>
-		</x-slot:actions>
-	</x-board-elements.category-header>
+	<div class="">
+		<x-board-elements.category-header
+				id="HookHeader"
+				class="border-gray-300 dark:bg-blue-500 bg-blue-400"
+				@click="open = !open"
+				click-action="addHook"
+				value="Hooks">
+			<x-slot:actions>
+				<button @click="showList = !showList">
+					<x-heroicons::mini.solid.chevron-up-down class="w-5 h-5 text-slate-700 dark:text-slate-300" />
+				</button>
+				<span
+						x-transition:enter="transition ease-out duration-200"
+						x-transition:enter-start="opacity-0 scale-95"
+						x-transition:enter-end="opacity-100 scale-100"
+						x-transition:leave="transition ease-in duration-75"
+						x-transition:leave-start="opacity-100 scale-100"
+						x-transition:leave-end="opacity-0 scale-95"
+						x-show="!showList"
+						class="text-sm text-slate-700 dark:text-slate-300">{{ $room->subject->hooks->count() }} items hidden</span>
+			</x-slot:actions>
+		</x-board-elements.category-header>
+	</div>
+
 
 	<!-- Render all hooks in the current room -->
 	<div
+			x-transition:enter="transition ease-out duration-200"
+			x-transition:enter-start="opacity-0 scale-95"
+			x-transition:enter-end="opacity-100 scale-100"
+			x-transition:leave="transition ease-in duration-75"
+			x-transition:leave-start="opacity-100 scale-100"
+			x-transition:leave-end="opacity-0 scale-95"
 			x-show="showList"
 			class="mt-3 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
 		@foreach($this->room->subject->hooks as $hook)

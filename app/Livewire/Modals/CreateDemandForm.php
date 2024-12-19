@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Modals;
 
+use App\Events\DemandCreatedEvent;
 use App\Models\Room;
 use Livewire\Attributes\Validate;
 use WireElements\Pro\Components\Modal\Modal;
@@ -64,7 +65,7 @@ class CreateDemandForm extends Modal
     public function createDemand()
     {
         $this->validate();
-        $this->room->subject->demands()->create([
+        $newDemand = $this->room->subject->demands()->create([
             'title' => $this->title,
             'status' => $this->status,
             'type' => $this->type,
@@ -76,6 +77,7 @@ class CreateDemandForm extends Modal
             'tenant_id' => $this->room->tenant_id,
             'user_id' => auth()->user()->id,
         ]);
+        event(new DemandCreatedEvent($newDemand->id, $this->room->id));
         $this->close();
     }
 

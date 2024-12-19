@@ -58,7 +58,7 @@ new class extends Component {
 
 <div x-data="{showList: true}">
 	<x-board-elements.category-header
-			class="bg-rose-400 dark:bg-rose-500 dark:text-slate-300 sticky top-0 z-10"
+			class="bg-rose-400 dark:bg-rose-500 dark:text-slate-300"
 			value="Triggers"
 			click-action="createTrigger()">
 		<x-slot:actions>
@@ -66,12 +66,24 @@ new class extends Component {
 				<x-heroicons::mini.solid.chevron-up-down class="w-5 h-5 text-slate-700 dark:text-slate-300" />
 			</button>
 			<span
+					x-transition:enter="transition ease-out duration-200"
+					x-transition:enter-start="opacity-0 scale-95"
+					x-transition:enter-end="opacity-100 scale-100"
+					x-transition:leave="transition ease-in duration-75"
+					x-transition:leave-start="opacity-100 scale-100"
+					x-transition:leave-end="opacity-0 scale-95"
 					class="text-sm text-slate-700 dark:text-slate-300"
 					x-show="!showList">{{ $room->subject->triggers->count() }} items hidden</span>
 		</x-slot:actions>
 	</x-board-elements.category-header>
 
 	<div
+			x-transition:enter="transition ease-out duration-200"
+			x-transition:enter-start="opacity-0 scale-95"
+			x-transition:enter-end="opacity-100 scale-100"
+			x-transition:leave="transition ease-in duration-75"
+			x-transition:leave-start="opacity-100 scale-100"
+			x-transition:leave-end="opacity-0 scale-95"
 			x-show="showList"
 			class="mt-3 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
 		@foreach($this->room->subject->triggers as $trigger)

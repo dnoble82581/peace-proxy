@@ -18,7 +18,9 @@ class MoodLogFactory extends Factory
         return [
             'time' => Carbon::now(),
             'mood' => $this->faker->numberBetween(-5, 5),
-            'name' => $this->faker->name(),
+            'name' => $this->faker->randomElement([
+                'Saddest', 'Sad', 'Down', 'Anxious', 'Base', 'Happy', 'Nervous', 'Upset', 'Mad',
+            ]),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
 
