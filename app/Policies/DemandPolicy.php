@@ -17,7 +17,10 @@ class DemandPolicy
         return $user->tenant_id === $demand->tenant_id;
     }
 
-    public function create(User $user): bool {}
+    public function create(User $user): bool
+    {
+        return true;
+    }
 
     public function update(User $user, Demand $demand): bool
     {

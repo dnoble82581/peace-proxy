@@ -18,7 +18,6 @@
 								</div>
 							</x-slot:content>
 						</x-dropdown.dropdown>
-
 					</div>
 					<div>
 								<span class="inline-block size-14 rounded bg-gray-100">

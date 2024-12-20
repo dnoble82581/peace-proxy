@@ -4,21 +4,39 @@ use App\Events\DemandDeletedEvent;
 use App\Events\DemandUpdatedEvent;
 use App\Models\Demand;
 use App\Models\Room;
+use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Livewire\Volt\Component;
 
 new class extends Component {
     public Room $room;
     public Demand $demand;
+    public User $user;
 
     public function mount($room):void
     {
         $this->room = $room;
+        $this->user = auth()->user();
+    }
+
+    public function getListeners():array
+    {
+        return [
+            "echo-presence:demand.{$this->room->id},DemandDeletedEvent" => 'refresh',
+            "echo-presence:demand.{$this->room->id},DemandCreatedEvent" => 'refresh',
+            "echo-presence:demand.{$this->room->id},DemandUpdatedEvent" => 'refresh',
+        ];
     }
 
     public function addDemand():void
     {
-        $this->dispatch('modal.open', component: 'modals.create-demand-form', arguments: ['roomId' => $this->room->id]);
+        if ($this->user->can('create', Demand::class)) {
+            $this->dispatch('modal.open', component: 'modals.create-demand-form',
+                arguments: ['roomId' => $this->room->id]);
+        } else {
+            dd('denied');
+        }
+
     }
 
     public function deleteDemand($demandId):void
@@ -32,20 +50,26 @@ new class extends Component {
                 Session()->flash('error', 'You ar not authorized to delete this demand.');
             }
         }
-
     }
 
-    public function updateDemand($demandId)
+    public function editDemand($demandId):void
     {
-//	     Set the form and add update functionality
+        $this->dispatch('modal.open', component: 'modals.edit-demand-form', arguments: [
+            'roomId' => $this->room->id, 'demandId' => $demandId
+        ]);
     }
 
     public function sendRequest($demandId):void
     {
-//		ToDO: Add Try Catch and policy
         $demand = $this->getDemand($demandId);
-        $demand->update(['status' => 'requested']);
-        event(new DemandUpdatedEvent($this->room->id, $demand->id));
+        if (auth()->user()->can('update', $demand)) {
+            try {
+                $demand->update(['status' => 'requested']);
+                event(new DemandUpdatedEvent($this->room->id, $demand->id));
+            } catch (AuthorizationException $exception) {
+                Session()->flash('error', 'You are not authorized to edit this demand');
+            }
+        }
     }
 
     private function getDemand($demandId):Demand
@@ -53,14 +77,6 @@ new class extends Component {
         return Demand::findorFail($demandId);
     }
 
-    public function getListeners():array
-    {
-        return [
-            "echo-presence:demand.{$this->room->id},DemandDeletedEvent" => 'refresh',
-            "echo-presence:demand.{$this->room->id},DemandCreatedEvent" => 'refresh',
-            "echo-presence:demand.{$this->room->id},DemandUpdatedEvent" => 'refresh',
-        ];
-    }
 }
 
 ?>

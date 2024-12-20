@@ -13,11 +13,11 @@ class DemandFactory extends Factory
     public function definition(): array
     {
         return [
-            'type' => $this->faker->word(),
+            'type' => $this->faker->randomelement(['Substantive', 'Expressive', 'Secondary']),
             'deadline' => Carbon::now(),
             'description' => $this->faker->text(),
             'title' => $this->faker->word(),
-            'status' => $this->faker->word(),
+            'status' => $this->faker->randomelement(['Closed', 'Pending', 'Approved', 'Rejected']),
             'notes' => $this->faker->word(),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),

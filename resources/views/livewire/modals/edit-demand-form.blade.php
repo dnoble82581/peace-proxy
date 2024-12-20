@@ -6,7 +6,7 @@
 		                                                          consectetur.</p>
 	</div>
 	<x-errors />
-	<form wire:submit.prevent="createDemand">
+	<form wire:submit.prevent="updateDemand">
 		<div class="p-4 space-y-4 dark:bg-gray-800">
 			<x-input
 					label="Title"
@@ -44,7 +44,7 @@
 					wire:model="notes" />
 		</div>
 		<div class="flex justify-end p-4 space-x-4 border-t border-gray-200 bg-gray-50 dark:bg-gray-800 dark:text-slate-300">
-			<x-buttons.primary-button :value="__('Create Demand')" />
+			<x-buttons.primary-button :value="__('Update Demand')" />
 			<x-buttons.secondary-button
 					:value="__('Cancel')"
 					wire:click="$dispatch('modal.close')" />
