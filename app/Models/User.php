@@ -110,11 +110,6 @@ class User extends Authenticatable
         return false;
     }
 
-    public function demands(): HasMany
-    {
-        return $this->hasMany(Demand::class);
-    }
-
     /**
      * Get the attributes that should be cast.
      *

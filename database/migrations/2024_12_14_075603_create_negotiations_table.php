@@ -26,7 +26,6 @@ return new class extends Migration
             $table->dateTime('start_time')->nullable();
             $table->dateTime('end_time')->nullable();
             $table->foreignId('user_id');
-            $table->foreignId('subject_id')->nullable();
             $table->foreignId('tenant_id');
             $table->timestamps();
         });

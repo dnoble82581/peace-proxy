@@ -11,10 +11,7 @@ return new class extends Migration
         Schema::create('demands', function (Blueprint $table) {
             $table->id();
             $table->foreignId('subject_id');
-            $table->foreignId('negotiation_id');
-            $table->foreignId('room_id');
             $table->foreignId('tenant_id');
-            $table->foreignId('user_id');
             $table->string('type');
             $table->dateTime('deadline');
             $table->string('description')->nullable();

@@ -23,10 +23,7 @@ class DemandFactory extends Factory
             'updated_at' => Carbon::now(),
 
             'subject_id' => 1,
-            'negotiation_id' => 1,
-            'room_id' => 1,
             'tenant_id' => 5,
-            'user_id' => 1,
         ];
     }
 }

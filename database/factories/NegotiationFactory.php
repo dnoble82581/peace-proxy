@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Negotiation;
-use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
@@ -29,7 +28,6 @@ class NegotiationFactory extends Factory
             'updated_at' => Carbon::now(),
 
             'user_id' => User::factory(),
-            'subject_id' => Subject::factory(),
             'tenant_id' => 1,
         ];
     }

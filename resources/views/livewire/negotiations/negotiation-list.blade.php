@@ -28,7 +28,7 @@ new class extends Component {
                     $query->select('id', 'negotiation_id', 'tenant_id', 'subject_id')
                         ->with('subject');
                 },
-                'user:id,name', 'subjects'
+                'user:id,name'
             ])
             ->get();
     }
@@ -46,13 +46,13 @@ new class extends Component {
 <div>
 	<ul
 			role="list"
-			class="divide-y divide-gray-100">
+			class="divide-y divide-gray-100 space-y-5">
 		@if($this->negotiations)
 			@foreach($this->negotiations as $negotiation)
 				<li class="flex items-center justify-between gap-x-6 py-5">
 					<div class="min-w-0">
 						<div class="flex items-start gap-x-3">
-							<p class="text-sm/6 font-semibold text-gray-900">{{ $negotiation->title }}</p>
+							<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300">{{ $negotiation->title }}</p>
 							<p class="mt-0.5 whitespace-nowrap rounded-md bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
 								{{ $negotiation->status }}</p>
 						</div>
@@ -68,12 +68,12 @@ new class extends Component {
 										cy="1"
 										r="1" />
 							</svg>
-							<p class="truncate">{{ $negotiation->user->name }}</p>
+							<p class="truncate">{{ $negotiation->user->name ?? 'User' }}</p>
 						</div>
 					</div>
 					<div class="min-w-0 max-w-xl">
 						<div class="flex items-start gap-x-3">
-							<p class="text-sm/6 font-semibold text-gray-900">Initial Complaint</p>
+							<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300">Initial Complaint</p>
 						</div>
 						<div class="mt-1 text-xs/5 text-gray-500">
 							<p class="truncate">
@@ -83,7 +83,7 @@ new class extends Component {
 					</div>
 					<div class="min-w-0">
 						<div class="flex items-start gap-x-3">
-							<p class="text-sm/6 font-semibold text-gray-900">Initial Complainant</p>
+							<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300">Initial Complainant</p>
 						</div>
 						<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
 							<p class="whitespace-nowrap">
@@ -125,23 +125,24 @@ new class extends Component {
 				</li>
 				@foreach($negotiation->rooms as $room)
 					<div class="px-8 pt-2">
-						<div class="bg-gray-100 px-4 rounded-lg">
+						<div class="bg-gray-100 dark:bg-gray-700 px-4 rounded-lg mt-3">
 							<ul
 									role="list"
 									class="divide-y divide-gray-100">
 								<li class="flex items-center justify-between gap-x-6 py-5">
 									<div class="min-w-0">
 										<div class="flex items-start gap-x-3">
-											<p class="text-sm/6 font-semibold text-gray-900">Room {{ $room->id }}</p>
+											<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300">
+												Room {{ $room->id }}</p>
 										</div>
 									</div>
 									<div class="min-w-0">
 										<div class="flex items-start gap-x-3">
-											<p class="text-sm/6 font-semibold text-gray-900">{{ $negotiation->subject_name }}</p>
+											<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300">{{ $room->subject->name ??  '' }}</p>
 											<p class="mt-0.5 whitespace-nowrap rounded-md bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
 												{{ $room->subject->phone()  }}</p>
 										</div>
-										<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
+										<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500 dark:text-slate-300">
 											<p class="whitespace-nowrap">
 												{{ $negotiation->address }}
 											</p>

@@ -17,7 +17,7 @@
 				class="bg-white dark:bg-gray-800 rounded-lg shadow-lg col-span-6">
 			<h3 class="mb-2 text-gray-400 text-xl px-2 py-4">Information Board</h3>
 			<hr>
-			<div class="space-y-4 max-h-[680px] overflow-y-auto sticky top-0 overflow-x-hidden">
+			<div class="space-y-4 max-h-[610px] overflow-y-auto sticky top-0 overflow-x-hidden">
 				<livewire:negotiations.negotiation-hooks :room="$room" />
 				<livewire:negotiations.negotiation-triggers :room="$room" />
 				<livewire:negotiations.negotiation-demands :room="$room" />

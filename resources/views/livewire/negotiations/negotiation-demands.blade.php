@@ -24,12 +24,15 @@ new class extends Component {
     public function deleteDemand($demandId):void
     {
         $demandToDelete = $this->getDemand($demandId);
-        try {
-            $demandToDelete->delete();
-            event(new DemandDeletedEvent($demandId, $this->room->id));
-        } catch (AuthorizationException $exception) {
-            Session()->flash('error', 'You ar not authorized to delete this demand.');
+        if (auth()->user()->can('delete', $demandToDelete)) {
+            try {
+                $demandToDelete->delete();
+                event(new DemandDeletedEvent($demandId, $this->room->id));
+            } catch (AuthorizationException $exception) {
+                Session()->flash('error', 'You ar not authorized to delete this demand.');
+            }
         }
+
     }
 
     public function updateDemand($demandId)

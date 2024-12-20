@@ -1,4 +1,4 @@
-<div class="px-5 mt-5">
+<div class="px-5 mt-5 ">
 	{{-- Grid container for filtering and search controls --}}
 	<div class="grid grid-cols-6 gap-4">
 		{{-- Dropdown for selecting number of items displayed per page --}}
@@ -62,7 +62,7 @@
 	</div>
 
 	{{-- Table displaying list of users --}}
-	<table class="min-w-full mt-6">
+	<table class="min-w-full mt-6 ">
 		{{-- Table header containing sortable columns --}}
 		<thead>
 		<tr>
@@ -123,7 +123,7 @@
 		</thead>
 
 		{{-- Table body with user data --}}
-		<tbody class="bg-white">
+		<tbody class="bg-white dark:bg-gray-800">
 		@foreach($users as $user)
 			<tr wire:key="{{$user->id}}">
 				{{-- User Avatar, Name, and Email --}}
@@ -140,7 +140,7 @@
 						<div class="ml-4">
 							<div>
                                 <span
-		                                class="text-sm leading-5 font-medium text-gray-900">
+		                                class="text-sm leading-5 font-medium text-gray-900 dark:text-slate-300">
                                     {{$user->name}}
                                 </span>
 								{{-- Impersonation functionality --}}
@@ -161,8 +161,8 @@
 
 				{{-- Title and Department --}}
 				<td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-					<div class="text-sm leading-5 text-gray-900">{{$user->title}}</div>
-					<div class="text-sm leading-5 text-gray-500">{{$user->department}}</div>
+					<div class="text-sm leading-5 text-gray-900 dark:text-slate-300">{{$user->title}}</div>
+					{{--					<div class="text-sm leading-5 text-gray-500">{{$user->department}}</div>--}}
 				</td>
 
 				{{-- Status Badge --}}
@@ -177,7 +177,7 @@
 				</td>
 
 				{{-- User Role --}}
-				<td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
+				<td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500 dark:text-slate-300">
 					{{$user->role}}
 				</td>
 

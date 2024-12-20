@@ -14,11 +14,6 @@ class Subject extends Model
 
     protected $guarded = ['id'];
 
-    public function negotiation(): BelongsTo
-    {
-        return $this->belongsTo(Negotiation::class);
-    }
-
     public function hooks(): HasMany
     {
         return $this->hasMany(Hook::class);
@@ -27,7 +22,6 @@ class Subject extends Model
     public function triggers(): HasMany
     {
         return $this->hasMany(Trigger::class);
-
     }
 
     public function room(): BelongsTo

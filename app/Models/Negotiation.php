@@ -19,11 +19,6 @@ class Negotiation extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function subjects(): HasMany
-    {
-        return $this->hasMany(Subject::class);
-    }
-
     public function rooms(): HasMany
     {
         return $this->hasMany(Room::class);

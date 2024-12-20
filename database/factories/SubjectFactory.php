@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\Negotiation;
 use App\Models\Room;
 use App\Models\Subject;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -40,8 +39,8 @@ class SubjectFactory extends Factory
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
 
-            'negotiation_id' => Negotiation::factory(),
             'room_id' => Room::factory(),
+            'tenant_id' => 1,
         ];
     }
 }
