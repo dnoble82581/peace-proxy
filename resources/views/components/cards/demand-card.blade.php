@@ -99,7 +99,7 @@
 				x-transition:leave="transition ease-in duration-75"
 				x-transition:leave-start="opacity-100 scale-100"
 				x-transition:leave-end="opacity-0 scale-95"
-				class="border-t border-gray-200 dark:border-slate-700 py-2 px-6">
+				class="border-t border-gray-200 dark:border-slate-300 py-2 px-6">
 			<p
 					role="region"
 					class="text-sm/6 text-gray-500 dark:text-slate-300">

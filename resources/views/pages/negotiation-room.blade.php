@@ -1,6 +1,6 @@
 <x-negotiation-layout>
 	<div class="max-w-full w-full mx-auto sm:grid sm:grid-cols-12 sm:gap-3 pt-4 overflow-hidden pb-8 px-4">
-		<x-cards.subject-card />
+		<livewire:negotiations.negotiation-subject :room="$room" />
 
 		<!-- Left sidebar & main wrapper -->
 		<div class="sm:col-span-3">

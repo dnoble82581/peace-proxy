@@ -52,7 +52,7 @@ new class extends Component {
 				<li class="flex items-center justify-between gap-x-6 py-5">
 					<div class="min-w-0">
 						<div class="flex items-start gap-x-3">
-							<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300">{{ $negotiation->title }}</p>
+							<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300 capitalize">{{ $negotiation->title }}</p>
 							<p class="mt-0.5 whitespace-nowrap rounded-md bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
 								{{ $negotiation->status }}</p>
 						</div>

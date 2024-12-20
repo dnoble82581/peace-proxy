@@ -10,6 +10,7 @@ use App\Models\Subject;
 use App\Models\Tenant;
 use App\Models\Trigger;
 use App\Models\User;
+use App\Models\Warrant;
 use Exception;
 use Illuminate\Database\Seeder;
 
@@ -71,6 +72,11 @@ class DatabaseSeeder extends Seeder
 
             // Create demands
             Demand::factory(4)->create([
+                'subject_id' => $subject->id,
+                'tenant_id' => $room->tenant_id,
+            ]);
+
+            Warrant::factory(4)->create([
                 'subject_id' => $subject->id,
                 'tenant_id' => $room->tenant_id,
             ]);

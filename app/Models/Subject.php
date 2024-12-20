@@ -42,7 +42,11 @@ class Subject extends Model
     public function demands(): HasMany
     {
         return $this->hasMany(Demand::class);
+    }
 
+    public function warrants(): HasMany
+    {
+        return $this->hasMany(Warrant::class);
     }
 
     public function phone(): array|string|null
