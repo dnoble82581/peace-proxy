@@ -7,6 +7,12 @@
     "laravel",
     "framework"
   ],
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://wire-elements-pro.composer.sh"
+    }
+  ],
   "license": "MIT",
   "require": {
     "php": "^8.2",
