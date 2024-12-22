@@ -27,6 +27,7 @@
     "livewire/livewire": "^3.4",
     "livewire/volt": "^1.0",
     "predis/predis": "^2.0",
+    "spatie/laravel-permission": "^6.10",
     "wire-elements/pro": "^4.0",
     "wireui/wireui": "^2.2"
   },

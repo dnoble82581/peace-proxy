@@ -41,3 +41,13 @@ Subject
 --family_members_id
 --triggers_id
 --hooks_id
+
+RoomUsers
+--tenant_id
+--room_id
+--user_id
+--role_id
+
+Role
+--name
+--description

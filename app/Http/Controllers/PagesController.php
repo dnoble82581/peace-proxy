@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Room;
+use App\Models\RoomUser;
 use App\Models\User;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\View\View;
@@ -37,6 +38,13 @@ class PagesController extends Controller
         if (auth()->user()->cannot('view', $room)) {
             abort(403, 'Sorry, You are not authorized to view this room.');
         }
+
+        RoomUser::updateOrCreate([
+            'room_id' => $room->id,
+            'tenant_id' => auth()->user()->tenant_id,
+            'user_id' => auth()->user()->id,
+            'role' => 'Primary Negotiator',
+        ]);
 
         Redis::set('room_id', $room->id);
 

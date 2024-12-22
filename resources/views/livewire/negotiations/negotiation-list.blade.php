@@ -4,6 +4,7 @@ use App\Models\Negotiation;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Volt\Component;
+use Spatie\Permission\Models\Role;
 
 new class extends Component {
     public Collection $negotiations;
@@ -17,20 +18,7 @@ new class extends Component {
 
     private function getNegotiations():Collection
     {
-
-        return Negotiation::query()
-            ->select('id', 'title', 'status', 'created_at', 'initial_complainant', 'initial_complaint', 'user_id',
-                'city',
-                'subject_name',
-                'address')
-            ->with([
-                'rooms' => function ($query) {
-                    $query->select('id', 'negotiation_id', 'tenant_id', 'subject_id')
-                        ->with('subject');
-                },
-                'user:id,name'
-            ])
-            ->get();
+        return Negotiation::all();
     }
 
     public function beginAndEnterNegotiation($negotiationId):void
@@ -46,132 +34,96 @@ new class extends Component {
 <div>
 	<ul
 			role="list"
-			class="divide-y divide-gray-100 space-y-5">
-		@if($this->negotiations)
-			@foreach($this->negotiations as $negotiation)
-				<li class="flex items-center justify-between gap-x-6 py-5">
-					<div class="min-w-0">
-						<div class="flex items-start gap-x-3">
-							<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300 capitalize">{{ $negotiation->title }}</p>
-							<p class="mt-0.5 whitespace-nowrap rounded-md bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-								{{ $negotiation->status }}</p>
-						</div>
-						<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
-							<p class="whitespace-nowrap">Created:
-								<time datetime="2023-03-17T00:00Z">{{ $negotiation->created_at->diffForHumans() }}</time>
+			class="divide-y divide-gray-200">
+
+		@foreach($negotiations as $negotiation)
+			<div x-data="{ open: false }">
+				<li class="relative flex justify-between gap-x-6 px-4 py-5 sm:px-6 lg:px-8">
+					<div class="flex-1 min-w-0 gap-x-4">
+						<div class="min-w-0 flex-auto">
+							<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300">
+								<a
+										class="capitalize"
+										href="#">
+									{{ $negotiation->title }}
+									<span class="text-xs text-gray-500">({{ $negotiation->rooms()->count() }})</span>
+								</a>
 							</p>
+							<p class="mt-1 flex text-xs/5 text-gray-500">
+								<span
+										class="relative truncate hover:underline">{{ $negotiation->address }}</span>
+							</p>
+						</div>
+					</div>
+					<div class="flex-1">
+						<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300">Initial
+						                                                                     complaint</p>
+						<p class="mt-1 flex text-xs/5 text-gray-500">{{ $negotiation->initial_complaint }}</p>
+					</div>
+					<div class="flex shrink-0 items-center gap-x-4">
+						<div class="hidden sm:flex sm:flex-col sm:items-end">
+							<p class="text-sm/6 text-gray-900 dark:text-slate-300">{{ $negotiation->subject_name }}</p>
+							<p class="mt-1 text-xs/5 text-gray-500">Last seen
+								<time datetime="2023-01-23T13:23Z">3h ago</time>
+							</p>
+						</div>
+						<button @click="open = !open">
 							<svg
-									viewBox="0 0 2 2"
-									class="size-0.5 fill-current">
-								<circle
-										cx="1"
-										cy="1"
-										r="1" />
+									class="size-5 flex-none text-gray-400"
+									:class="open ? 'rotate-90 transition-transform duration-300' : 'transition-transform duration-300'"
+									viewBox="0 0 20 20"
+									fill="currentColor"
+									aria-hidden="true"
+									data-slot="icon">
+								<path
+										fill-rule="evenodd"
+										d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z"
+										clip-rule="evenodd" />
 							</svg>
-							<p class="truncate">{{ $negotiation->user->name ?? 'User' }}</p>
-						</div>
-					</div>
-					<div class="min-w-0 max-w-xl">
-						<div class="flex items-start gap-x-3">
-							<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300">Initial Complaint</p>
-						</div>
-						<div class="mt-1 text-xs/5 text-gray-500">
-							<p class="truncate">
-								{{ $negotiation->initial_complaint }}
-							</p>
-						</div>
-					</div>
-					<div class="min-w-0">
-						<div class="flex items-start gap-x-3">
-							<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300">Initial Complainant</p>
-						</div>
-						<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
-							<p class="whitespace-nowrap">
-								{{ $negotiation->initial_complainant }}
-							</p>
-						</div>
-					</div>
-
-					<div class="flex flex-none items-center gap-x-4">
-
-						<div class="relative flex-none">
-							<x-dropdown.dropdown
-									align="right"
-									width="48">
-								<x-slot:trigger>
-									<button
-											type="button"
-											class="-m-2.5 block p-2.5 text-gray-500 hover:text-gray-900"
-											id="options-menu-0-button"
-											aria-expanded="false"
-											aria-haspopup="true">
-										<span class="sr-only">Open options</span>
-										<svg
-												class="size-5"
-												viewBox="0 0 20 20"
-												fill="currentColor"
-												aria-hidden="true"
-												data-slot="icon">
-											<path d="M10 3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 8.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM11.5 15.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z" />
-										</svg>
-									</button>
-								</x-slot:trigger>
-								<x-slot:content>
-									<x-dropdown.dropdown-link>Test</x-dropdown.dropdown-link>
-								</x-slot:content>
-							</x-dropdown.dropdown>
-						</div>
+						</button>
 					</div>
 				</li>
-				@foreach($negotiation->rooms as $room)
-					<div class="px-8 pt-2">
-						<div class="bg-gray-100 dark:bg-gray-700 px-4 rounded-lg mt-3">
-							<ul
-									role="list"
-									class="divide-y divide-gray-100">
-								<li class="flex items-center justify-between gap-x-6 py-5">
-									<div class="min-w-0">
-										<div class="flex items-start gap-x-3">
-											<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300">
-												Room {{ $room->id }}</p>
-										</div>
+				<div class="px-12">
+					<ul class="my-2 space-y-2">
+						@foreach($negotiation->rooms as $room)
+							<li
+									x-transition:enter="transition ease-out duration-200"
+									x-transition:enter-start="opacity-0 scale-95"
+									x-transition:enter-end="opacity-100 scale-100"
+									x-transition:leave="transition ease-in duration-75"
+									x-transition:leave-start="opacity-100 scale-100"
+									x-transition:leave-end="opacity-0 scale-95"
+									x-show="open"
+									class="relative flex justify-between gap-x-6 px-4 py-5 sm:px-6 lg:px-8 bg-gray-100 dark:bg-gray-600 rounded shadow">
+								<div class="flex min-w-0 gap-x-4">
+									<div class="min-w-0 flex-auto">
+										<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300">
+											<a href="#">
+												Room {{ $room->id }}
+											</a>
+										</p>
+										<p class="mt-1 flex text-xs/5 text-gray-500">
+											<a
+													href="mailto:leslie.alexander@example.com"
+													class="relative truncate hover:underline dark:text-slate-300">leslie.alexander@example.com</a>
+										</p>
 									</div>
-									<div class="min-w-0">
-										<div class="flex items-start gap-x-3">
-											<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300">{{ $room->subject->name ??  '' }}</p>
-											<p class="mt-0.5 whitespace-nowrap rounded-md bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-												{{ $room->subject->phone()  }}</p>
-										</div>
-										<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500 dark:text-slate-300">
-											<p class="whitespace-nowrap">
-												{{ $negotiation->address }}
-											</p>
-											<svg
-													viewBox="0 0 2 2"
-													class="size-0.5 fill-current">
-												<circle
-														cx="1"
-														cy="1"
-														r="1" />
-											</svg>
-											<p class="truncate">{{ $negotiation->city }}</p>
-										</div>
+								</div>
+								<div class="flex shrink-0 items-center gap-x-4">
+									<div class="hidden sm:flex sm:flex-col sm:items-end">
+										<p class="text-sm/6 text-gray-900 dark:text-slate-300">Co-Founder / CEO</p>
+										<p class="mt-1 text-xs/5 text-gray-500 dark:text-slate-300">Last seen
+											<time datetime="2023-01-23T13:23Z">3h ago</time>
+										</p>
 									</div>
-									<div class="flex flex-none items-center gap-x-4">
-
-										<button
-												wire:click="beginAndEnterNegotiation({{ $negotiation->id }})"
-												class="hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:block">
-											Begin This
-											Negotiation<span class="sr-only">, Enter Negotiation</span></button>
-										<span class="sr-only">, Enter Negotiation</span>
-									</div>
-								</li>
-							</ul>
-						</div>
-					</div>
-				@endforeach
-			@endforeach
-		@endif
+								</div>
+							</li>
+						@endforeach
+					</ul>
+				</div>
+			</div>
+			<!-- More items... -->
+		@endforeach
 	</ul>
+
 </div>

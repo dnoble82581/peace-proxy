@@ -14,6 +14,9 @@
 			</x-links.primary-solid-link>
 			<div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
 				<div class="p-6 text-gray-900 dark:text-gray-100">
+					<div class="border-b border-gray-200 pb-5">
+						<h3 class="text-base font-semibold text-gray-900 dark:text-slate-300">Active Negotiations</h3>
+					</div>
 					<livewire:negotiations.negotiation-list />
 				</div>
 			</div>

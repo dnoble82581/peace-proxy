@@ -13,6 +13,9 @@ use App\Models\User;
 use App\Models\Warrant;
 use Exception;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
@@ -94,5 +97,53 @@ class DatabaseSeeder extends Seeder
             'title' => 'Web Master',
             'tenant_id' => null,
         ]);
+
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+
+        Permission::create([
+            'name' => 'chat',
+        ]);
+        Permission::create([
+            'name' => 'post',
+        ]);
+        Permission::create([
+            'name' => 'request',
+        ]);
+
+        $role = Role::create([
+            'name' => 'admin',
+        ])->givePermissionTo(Permission::all());
+
+        $role = Role::create([
+            'name' => 'team-coordinator',
+        ])->givePermissionTo(Permission::all());
+
+        $role = Role::create([
+            'name' => 'team-leader',
+        ])->givePermissionTo(Permission::all());
+
+        $role = Role::create([
+            'name' => 'primary-negotiator',
+        ])->givePermissionTo(['chat']);
+
+        $role = Role::create([
+            'name' => 'secondary-negotiator',
+        ])->givePermissionTo(['chat']);
+
+        $role = Role::create([
+            'name' => 'recorder',
+        ])->givePermissionTo(['post']);
+
+        $role = Role::create([
+            'name' => 'intelligence-coordinator',
+        ])->givePermissionTo(['request', 'post']);
+
+        $role = Role::create([
+            'name' => 'mental-health-coordinator',
+        ]);
+
+        $role = Role::create([
+            'name' => 'tactical-lead',
+        ])->givePermissionTo(['chat', 'post']);
     }
 }

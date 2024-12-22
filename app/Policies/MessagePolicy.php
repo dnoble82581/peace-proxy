@@ -14,7 +14,10 @@ class MessagePolicy
 
     public function view(User $user, Message $message): bool {}
 
-    public function create(User $user): bool {}
+    public function create(User $user): bool
+    {
+        return $user->hasPermissionTo('chat');
+    }
 
     public function update(User $user, Message $message): bool {}
 
