@@ -62,8 +62,8 @@ new class extends Component {
 					</div>
 					<div class="flex shrink-0 items-center gap-x-4">
 						<div class="hidden sm:flex sm:flex-col sm:items-end">
-							<p class="text-sm/6 text-gray-900 dark:text-slate-300">{{ $negotiation->subject_name }}</p>
-							<p class="mt-1 text-xs/5 text-gray-500">Last seen
+							<p class="text-sm/6 text-gray-900 dark:text-slate-300 block">{{ $negotiation->subject_name }}</p>
+							<p class="mt-1 text-xs/5 text-gray-500 block">Last seen
 								<time datetime="2023-01-23T13:23Z">3h ago</time>
 							</p>
 						</div>
@@ -111,8 +111,9 @@ new class extends Component {
 								</div>
 								<div class="flex shrink-0 items-center gap-x-4">
 									<div class="hidden sm:flex sm:flex-col sm:items-end">
-										<p class="text-sm/6 text-gray-900 dark:text-slate-300">Co-Founder / CEO</p>
-										<p class="mt-1 text-xs/5 text-gray-500 dark:text-slate-300">Last seen
+										<p class="text-sm/6 text-gray-900 dark:text-slate-300 block">Co-Founder /
+										                                                             CEO</p>
+										<p class="mt-1 text-xs/5 text-gray-500 dark:text-slate-300 block">Last seen
 											<time datetime="2023-01-23T13:23Z">3h ago</time>
 										</p>
 									</div>
