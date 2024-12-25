@@ -16,8 +16,8 @@ class MoodLogFactory extends Factory
     public function definition(): array
     {
         return [
-            'time' => Carbon::now(),
-            'mood' => $this->faker->numberBetween(-5, 5),
+            'time' => \Carbon\Carbon::instance(fake()->dateTimeBetween('-1 months', '+1 months')),
+            'mood' => $this->faker->numberBetween(-4, 4),
             'name' => $this->faker->randomElement([
                 'Saddest', 'Sad', 'Down', 'Anxious', 'Base', 'Happy', 'Nervous', 'Upset', 'Mad',
             ]),

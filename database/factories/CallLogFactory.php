@@ -3,10 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\CallLog;
-use App\Models\Negotiation;
-use App\Models\Room;
-use App\Models\Subject;
-use App\Models\Tenant;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
@@ -22,11 +18,6 @@ class CallLogFactory extends Factory
             'duration' => $this->faker->numberBetween(1, 60),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
-
-            'subject_id' => Subject::factory(),
-            'negotiation_id' => Negotiation::factory(),
-            'tenant_id' => Tenant::factory(),
-            'room_id' => Room::factory(),
         ];
     }
 }

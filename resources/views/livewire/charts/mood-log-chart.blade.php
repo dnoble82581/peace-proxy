@@ -56,7 +56,7 @@ new class extends Component {
     /**
      * Prepares the data for the mood chart by fetching the latest mood logs.
      */
-    public function prepareChart()
+    public function prepareChart():void
     {
         // Fetch up to 6 of the most recent mood logs, sorted by time descending
         foreach ($this->room->subject->moodLogs->sortByDesc('created_at')->take(6) as $mood) {

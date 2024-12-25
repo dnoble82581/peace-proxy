@@ -48,14 +48,13 @@ new class extends Component {
 						{{ __('My Team') }}
 					</x-navigation.nav-link>
 					<x-navigation.nav-link
-							:href="route('command')"
-							:active="request()->routeIs('command')"
+							:href="route('tactical.room', Redis::get('room_id'))"
+							:active="request()->routeIs('tactical.room')"
 							wire:navigate>
-						{{ __('Command') }}
+						{{ __('Tactical') }}
 					</x-navigation.nav-link>
 				</div>
 			</div>
-
 
 			<!-- Settings Dropdown -->
 			<div class="hidden sm:flex sm:items-center sm:ms-6">

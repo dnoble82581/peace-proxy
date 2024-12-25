@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Traits\BelongsToTenant;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -88,6 +89,13 @@ class User extends Authenticatable
     public function documents(): HasMany
     {
         return $this->hasMany(Document::class);
+    }
+
+    public function rooms(): BelongsToMany
+    {
+        return $this->belongsToMany(Room::class)
+            ->withPivot('role_id', 'room_id', 'created_at', 'updated_at')
+            ->using(RoomUser::class);
     }
 
     public function negotiations(): HasMany

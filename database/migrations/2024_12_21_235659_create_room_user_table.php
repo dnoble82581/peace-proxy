@@ -8,12 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('room_users', function (Blueprint $table) {
+        Schema::create('room_user', function (Blueprint $table) {
             $table->id();
             $table->foreignId('room_id');
             $table->foreignId('user_id');
-            $table->foreignId('tenant_id');
-            $table->string('role');
+            $table->unsignedBigInteger('role_id');
             $table->timestamps();
         });
     }

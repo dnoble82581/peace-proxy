@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\Pivot;
+use Spatie\Permission\Models\Role;
 
-class RoomUser extends Model
+class RoomUser extends Pivot
 {
     protected $guarded = ['id'];
 
@@ -19,8 +20,8 @@ class RoomUser extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function tenant(): BelongsTo
+    public function role(): BelongsTo
     {
-        return $this->belongsTo(Tenant::class);
+        return $this->belongsTo(Role::class, 'role_id');
     }
 }

@@ -1,7 +1,7 @@
 <x-negotiation-layout>
 	<div class="max-w-full w-full mx-auto sm:grid sm:grid-cols-12 sm:gap-3 pt-4 overflow-hidden pb-8 px-4">
 		<livewire:negotiations.negotiation-subject :room="$room" />
-		<x-cards.negotiation-information />
+		<x-cards.negotiation-information :negotiation="$room->negotiation" />
 
 		<!-- Left sidebar & main wrapper -->
 		<div class="sm:col-span-3">
@@ -35,4 +35,5 @@
 			</div>
 		</div>
 	</div>
+
 </x-negotiation-layout>

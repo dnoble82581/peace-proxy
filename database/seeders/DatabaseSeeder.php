@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\CallLog;
 use App\Models\Demand;
 use App\Models\Hook;
+use App\Models\MoodLog;
 use App\Models\Negotiation;
 use App\Models\Room;
 use App\Models\Subject;
@@ -40,6 +42,9 @@ class DatabaseSeeder extends Seeder
         $negotiations = Negotiation::factory(100)->make()->each(function ($negotiation) use ($tenants, $allUsers) {
             $negotiation->tenant_id = $tenants->random()->id; // Randomly assign tenant
             $negotiation->user_id = $allUsers->random()->id; // Randomly assign user
+            $negotiation->subject_motivation = fake()->paragraph();
+            $negotiation->initial_complaint = fake()->paragraph();
+            $negotiation->initial_complainant = fake()->name();
             $negotiation->save();
         });
 
@@ -54,8 +59,23 @@ class DatabaseSeeder extends Seeder
 
             // Create a subject
             $subject = Subject::factory()->create([
+                'name' => fake()->name(),
                 'room_id' => $room->id,
                 'tenant_id' => $room->tenant_id,
+            ]);
+
+            MoodLog::factory(30)->create([
+                'subject_id' => $subject->id,
+                'tenant_id' => $room->tenant_id,
+                'room_id' => $room->id,
+                'negotiation_id' => $negotiation->id,
+            ]);
+
+            CallLog::factory(30)->create([
+                'subject_id' => $subject->id,
+                'tenant_id' => $room->tenant_id,
+                'room_id' => $room->id,
+                'negotiation_id' => $negotiation->id,
             ]);
 
             // Link the subject to the room
@@ -83,6 +103,7 @@ class DatabaseSeeder extends Seeder
                 'subject_id' => $subject->id,
                 'tenant_id' => $room->tenant_id,
             ]);
+
         });
 
         // Create a predefined super admin user

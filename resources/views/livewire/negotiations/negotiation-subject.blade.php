@@ -8,7 +8,7 @@ new class extends Component {
     public Room $room;
     public Subject $subject;
 
-    public function mount(Room $room)
+    public function mount(Room $room):void
     {
         $this->room = $room;
         $this->subject = $this->getSubject();
@@ -22,6 +22,13 @@ new class extends Component {
     private function getSubject():Subject
     {
         return $this->room->subject;
+    }
+
+    public function getListeners()
+    {
+        return [
+            "echo-presence:chart.{$this->room->id},ChartUpdatedEvent" => 'refresh',
+        ];
     }
 }
 
@@ -62,10 +69,12 @@ new class extends Component {
 					<span class="block">{{ $subject->demands->first()->deadline->diffForHumans() ?? 'none' }}</span>
 				</div>
 
-				<div class="text-sm text-gray-600 dark:text-slate-300">
+				<div
+						wire:poll
+						class="text-sm text-gray-600 dark:text-slate-300">
 					<strong class="block">Mood</strong>
-					<span class="block">{{ $subject->moodLogs->first()->mood ?? 'No recent log' }}</span>
-					<span class="block">Unknown</span>
+					<span class="block">{{ $subject->moodLogs()->latest('created_at')->first()->name ?? 'No recent log' }}</span>
+					<span class="block">{{ $subject->moodLogs()->latest('created_at')->first()->created_at->diffForHumans() }}</span>
 				</div>
 			</div>
 			<div class="grid grid-cols-8 gap-5 items-center">
