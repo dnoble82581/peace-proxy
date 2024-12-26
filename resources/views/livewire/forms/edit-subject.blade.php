@@ -144,10 +144,10 @@ new class extends Component {
 					wire:model="form.snapchat_url" />
 		</div>
 		<div>
-			<div class="h-28 flex gap-2">
+			<div class="h-20 flex gap-2">
 				@if ($this->form->images)
 					@foreach ($this->form->images as $image)
-						<div class="h-28 w-28">
+						<div class="h-20 w-20">
 							<img
 									alt="Image"
 									src="{{ $image->temporaryUrl() }}"
