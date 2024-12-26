@@ -9,6 +9,12 @@
     @apply motion-reduce:transition-none;
 }
 
+@layer utilities {
+    .dark-light-text {
+        @apply text-gray-600 dark:text-slate-300;
+    }
+}
+
 [x-cloak] {
     display: none !important;
 }

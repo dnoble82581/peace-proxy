@@ -98,7 +98,7 @@ new class extends Component {
 
 <div>
 	<!-- Form to update a team member -->
-	<x-form-layouts.user-form submit="submit">
+	<x-form-layouts.form-layout submit="submit">
 		<x-slot:header>
 			Update Team Member
 		</x-slot:header>
@@ -250,14 +250,14 @@ new class extends Component {
 						wire:target="submit">
 					<x-svg-images.loading class="mr-4" />
 				</div>
-				<span class="inline-flex rounded-md shadow-sm gap-4">
-                    {{-- Cancel action --}}
-                    <x-buttons.secondary-button wire:click="cancel">Cancel</x-buttons.secondary-button>
+				<x-slot name="actions">
+					{{-- Cancel action --}}
+					<x-buttons.secondary-button wire:click="cancel">Cancel</x-buttons.secondary-button>
 
-                    {{-- Submit button --}}
-                    <x-buttons.primary-button>Update Team Member</x-buttons.primary-button>
-                </span>
+					{{-- Submit button --}}
+					<x-buttons.primary-button>Update Team Member</x-buttons.primary-button>
+				</x-slot>
 			</div>
 		</div>
-	</x-form-layouts.user-form>
+	</x-form-layouts.form-layout>
 </div>

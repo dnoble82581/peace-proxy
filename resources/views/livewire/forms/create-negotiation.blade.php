@@ -15,7 +15,7 @@ new class extends Component {
 
 ?>
 
-<x-form-layouts.negotiation-form submit="create">
+<x-form-layouts.form-layout submit="create">
 	<x-slot:header>Create a New Negotiation</x-slot:header>
 	<x-slot:description>Create a new negotiation</x-slot:description>
 
@@ -111,4 +111,4 @@ new class extends Component {
 		<x-buttons.primary-button>Save</x-buttons.primary-button>
 		<x-buttons.secondary-button>Cancel</x-buttons.secondary-button>
 	</div>
-</x-form-layouts.negotiation-form>
+</x-form-layouts.form-layout>

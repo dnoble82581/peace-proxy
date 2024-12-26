@@ -14,7 +14,7 @@ new class extends Component {
         $this->subject = $this->getSubject();
     }
 
-    public function showWarrant():void
+    public function showWarrants():void
     {
         $this->dispatch('modal.open', component: 'modals.show-warrant', arguments: ['subjectId' => $this->subject->id]);
     }
@@ -24,7 +24,14 @@ new class extends Component {
         return $this->room->subject;
     }
 
-    public function getListeners()
+    public function editSubject()
+    {
+        return redirect(route('edit.subject',
+            ['room' => $this->room, 'subject' => $this->subject]
+        ));
+    }
+
+    public function getListeners():array
     {
         return [
             "echo-presence:chart.{$this->room->id},ChartUpdatedEvent" => 'refresh',
@@ -47,9 +54,11 @@ new class extends Component {
 						</x-slot:trigger>
 						<x-slot:content>
 							<div>
-								<x-dropdown.dropdown-link>Add Warrant</x-dropdown.dropdown-link>
-								<x-dropdown.dropdown-link>Edit</x-dropdown.dropdown-link>
-								<x-dropdown.dropdown-link>View</x-dropdown.dropdown-link>
+								<x-dropdown.dropdown-button>Add Warrant</x-dropdown.dropdown-button>
+								<x-dropdown.dropdown-button wire:click="editSubject">
+									Edit
+								</x-dropdown.dropdown-button>
+								<x-dropdown.dropdown-button>View</x-dropdown.dropdown-button>
 							</div>
 						</x-slot:content>
 					</x-dropdown.dropdown>
@@ -58,12 +67,12 @@ new class extends Component {
 					<x-svg-images.image-placeholder
 							class="w-20 h-20 rounded shadow" />
 				</div>
-				<div class="text-sm text-gray-600 dark:text-slate-300">
+				<div class="text-sm dark-light-text">
 					<strong class="block">{{ $subject->name }}</strong>
 					<span class="block">{{ $subject->address ?? 'No Address' }}</span>
 					<span class="block">{{ $subject->phone() }}</span>
 				</div>
-				<div class="text-sm text-gray-600 dark:text-slate-300">
+				<div class="text-sm dark-light-text">
 					<strong class="block">Deadlines</strong>
 					<span class="block">{{ $subject->demands->first()->title ?? 'none' }}</span>
 					<span class="block">{{ $subject->demands->first()->deadline->diffForHumans() ?? 'none' }}</span>
@@ -71,7 +80,7 @@ new class extends Component {
 
 				<div
 						wire:poll
-						class="text-sm text-gray-600 dark:text-slate-300">
+						class="text-sm dark-light-text">
 					<strong class="block">Mood</strong>
 					<span class="block">{{ $subject->moodLogs()->latest('created_at')->first()->name ?? 'No recent log' }}</span>
 					<span class="block">{{ $subject->moodLogs()->latest('created_at')->first()->created_at->diffForHumans() }}</span>
@@ -108,7 +117,7 @@ new class extends Component {
 				<div class="col-span-5">
 					<div class="flex items-center gap-2">
 						<button
-								wire:click="showWarrant"
+								wire:click="showWarrants"
 								type="button"
 								class="rounded bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
 							Warrants({{ $subject->warrants->count() }})

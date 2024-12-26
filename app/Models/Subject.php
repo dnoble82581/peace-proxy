@@ -52,7 +52,11 @@ class Subject extends Model
     public function phone(): array|string|null
     {
         return preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '($1) $2-$3', $this->phone);
+    }
 
+    public function images(): HasMany
+    {
+        return $this->hasMany(SubjectImages::class);
     }
 
     protected function casts(): array
