@@ -147,10 +147,12 @@ new class extends Component {
 			<div class="h-28 flex gap-2">
 				@if ($this->form->images)
 					@foreach ($this->form->images as $image)
-						<img
-								alt="Image"
-								src="{{ $image->temporaryUrl() }}"
-								class="h-28 w-28 col-span-1 object-cover">
+						<div class="h-28 w-28">
+							<img
+									alt="Image"
+									src="{{ $image->temporaryUrl() }}"
+									class="object-cover">
+						</div>
 					@endforeach
 				@endif
 			</div>
