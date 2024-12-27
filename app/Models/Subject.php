@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Subject extends Model
 {
@@ -52,6 +53,12 @@ class Subject extends Model
     public function phone(): array|string|null
     {
         return preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '($1) $2-$3', $this->phone);
+    }
+
+    public function imageUrl($image)
+    {
+        return Storage::disk('s3-public')->url($image);
+
     }
 
     public function images(): HasMany

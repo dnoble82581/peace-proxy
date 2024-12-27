@@ -64,8 +64,17 @@ new class extends Component {
 					</x-dropdown.dropdown>
 				</div>
 				<div>
-					<x-svg-images.image-placeholder
-							class="w-20 h-20 rounded shadow" />
+					@if($subject->images()->count())
+						@php
+							$image = $subject->images()->first()->image;
+						@endphp
+						<img
+								src="{{ $subject->imageUrl($image) }}"
+								class="w-24 h-24 rounded"
+								alt="">
+					@endif
+					{{--					<x-svg-images.image-placeholder--}}
+					{{--							class="w-20 h-20 rounded shadow" />--}}
 				</div>
 				<div class="text-sm dark-light-text">
 					<strong class="block">{{ $subject->name }}</strong>

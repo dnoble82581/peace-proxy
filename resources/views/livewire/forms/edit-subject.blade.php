@@ -1,17 +1,44 @@
 <?php
 
 use App\Livewire\Forms\SubjectForm;
+use App\Models\Room;
+use App\Models\Subject;
 use Livewire\Volt\Component;
 use Livewire\WithFileUploads;
 
 new class extends Component {
-    public SubjectForm $form;
     use WithFileUploads;
+
+    public SubjectForm $form;
+    public Room $room;
+    public Subject $subject;
+
+
+    public function mount($roomId)
+    {
+        $this->room = $this->getRoom($roomId);
+        $this->subject = $this->room->subject;
+        $this->form->setForm($this->subject);
+
+    }
+
+    private function getRoom($roomId)
+    {
+        return Room::findOrFail($roomId);
+    }
+
+    public function update()
+    {
+        $this->form->update();
+        return redirect(route('negotiation.room', $this->room->id));
+    }
 }
 
 ?>
 <div>
-	<x-form-layouts.form-layout>
+	<x-form-layouts.form-layout
+			class="bg-white"
+			submit="update">
 		<x-slot:header>
 			Edit Subject
 		</x-slot:header>
@@ -27,9 +54,10 @@ new class extends Component {
 				Cancel
 			</x-buttons.secondary-button>
 		</x-slot:actions>
+		<x-dividers.form-divider class="font-bold">Basic Information</x-dividers.form-divider>
 		<div class="flex flex-col sm:flex-row items-center gap-4">
 			<x-input
-					wiremodel="form.name"
+					wire:model="form.name"
 					label=" Subject Name"
 					placeholder="Subject name" />
 			<x-input
@@ -50,7 +78,7 @@ new class extends Component {
 					placeholder="Subject Address" />
 		</div>
 
-
+		<x-dividers.form-divider class="font-bold">Details</x-dividers.form-divider>
 		<div class="flex flex-col sm:flex-row items-center gap-4">
 			<x-input
 					wire:model="form.city"
@@ -125,6 +153,7 @@ new class extends Component {
 					placeholder="Highest Education"
 					:options="['Grade School', 'High School', 'College', 'Graduate', 'Unknown']" />
 		</div>
+		<x-dividers.form-divider class="py-4 font-bold">Social</x-dividers.form-divider>
 		<div class="flex flex-col sm:flex-row items-center gap-4">
 			<x-input
 					label="Facebook Url"
@@ -143,6 +172,18 @@ new class extends Component {
 					placeholder="Snapchat Url"
 					wire:model="form.snapchat_url" />
 		</div>
+		<x-dividers.form-divider class="font-bold">Notes</x-dividers.form-divider>
+		<div class="flex items-center gap-4">
+			<x-textarea
+					label="Physical Description"
+					placeholder="Physical Description"
+					wire:model="form.physical_description" />
+			<x-textarea
+					label="Notes"
+					placeholder="Notes"
+					wire:model="form.notes" />
+		</div>
+		<x-dividers.form-divider class="font-bold">Images</x-dividers.form-divider>
 		<div>
 			<div class="h-20 flex gap-2">
 				@if ($this->form->images)
@@ -151,12 +192,27 @@ new class extends Component {
 							<img
 									alt="Image"
 									src="{{ $image->temporaryUrl() }}"
-									class="object-cover">
+									class="object-fill">
+						</div>
+					@endforeach
+				@endif
+				@if($this->subject->images)
+					@foreach($this->subject->images as $image)
+						<div class="relative">
+							<img
+									src="{{ $this->subject->imageUrl($image->image) }}"
+									class="w-20 h-20 rounded"
+									alt="Image">
+							<button
+									class="absolute bottom-1 right-1 text-white hover:text-rose-400"
+									wire:click="removeImage({{ $image->id }})">
+								<x-heroicons::outline.trash
+										class="w-4 h-4 " />
+							</button>
 						</div>
 					@endforeach
 				@endif
 			</div>
-
 			<div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
 				<div class="text-center">
 					<svg
@@ -191,31 +247,3 @@ new class extends Component {
 		</div>
 	</x-form-layouts.form-layout>
 </div>
-
-
-{{--
-name *
-phone *
-email *
-race *
-gender *
-address *
-city *
-state *
-zip *
-data-of-birth *
-age *
-children *
-veteran *
-hightest_education *
-substance_abuse *
-mental_health_history *
-physical_description
-notes
-images
-
-facebook_url
-instagram_url
-x_url
-snapchat_url
---}}

@@ -18,9 +18,10 @@ class PagesController extends Controller
         return view('pages.update-user')->with('user', $user);
     }
 
-    public function editSubject($subjectId, $roomId)
+    public function editSubject($roomId)
     {
-        return view('pages.edit-subject');
+
+        return view('pages.edit-subject')->with('roomId', $roomId);
     }
 
     public function command()

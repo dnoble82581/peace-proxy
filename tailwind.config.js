@@ -9,6 +9,9 @@ export default {
   content: [
     './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
     './storage/framework/views/*.php',
+    './resources/**/*.blade.php',
+    './resources/**/*.js',
+    './resources/**/*.css',
     './resources/views/**/*.blade.php',
     './vendor/wireui/wireui/src/*.php',
     './vendor/wireui/wireui/ts/**/*.ts',
