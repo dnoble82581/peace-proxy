@@ -3,6 +3,7 @@ import forms from '@tailwindcss/forms'
 
 /** @type {import('tailwindcss').Config} */
 export default {
+  mode: 'jit',
   presets: [
     require('./vendor/wireui/wireui/tailwind.config.js')
   ],
