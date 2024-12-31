@@ -1,10 +1,15 @@
 <?php
 
 use App\Livewire\Forms\SubjectForm;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Room;
 use App\Models\Subject;
+use App\Models\SubjectImages;
+use LaravelIdea\Helper\App\Models\_IH_Room_C;
 use Livewire\Volt\Component;
 use Livewire\WithFileUploads;
+use Livewire\Attributes\On;
 
 new class extends Component {
     use WithFileUploads;
@@ -14,23 +19,39 @@ new class extends Component {
     public Subject $subject;
 
 
-    public function mount($roomId)
+    public function mount($roomId):void
     {
         $this->room = $this->getRoom($roomId);
         $this->subject = $this->room->subject;
         $this->form->setForm($this->subject);
-
     }
 
-    private function getRoom($roomId)
+    public function update():void
+    {
+        $this->form->update();
+        $this->dispatch('subject-updated');
+    }
+
+    #[On('subject-updated')]
+    public function redirectToRoom()
+    {
+        return $this->redirect(route('negotiation.room', $this->room->id), navigate: true);
+    }
+
+    private function getRoom($roomId):Room
     {
         return Room::findOrFail($roomId);
     }
 
-    public function update()
+    public function removeImage($imageId):void
     {
-        $this->form->update();
-        return redirect(route('negotiation.room', $this->room->id));
+        $image = SubjectImages::find($imageId);
+
+        if (!$image) {
+            $this->dispatch('error', 'Image not found');
+            return;
+        }
+        $this->form->deleteImage($imageId);
     }
 }
 
@@ -50,7 +71,7 @@ new class extends Component {
 			<x-buttons.primary-button>
 				Save
 			</x-buttons.primary-button>
-			<x-buttons.secondary-button>
+			<x-buttons.secondary-button wire:click="redirectToRoom">
 				Cancel
 			</x-buttons.secondary-button>
 		</x-slot:actions>
@@ -184,11 +205,19 @@ new class extends Component {
 					wire:model="form.notes" />
 		</div>
 		<x-dividers.form-divider class="font-bold">Images</x-dividers.form-divider>
-		<div>
-			<div class="h-20 flex gap-2">
+
+		<div
+				x-data="{ uploading: false, progress: 0 }"
+				x-on:livewire-upload-start="uploading = true"
+				x-on:livewire-upload-finish="uploading = false; progress = 0;"
+				x-on:livewire-upload-progress="progress = $event.detail.progress">
+			<div
+					class="h-20 flex gap-2">
 				@if ($this->form->images)
 					@foreach ($this->form->images as $image)
-						<div class="h-20 w-20">
+						<div
+								class="h-20 w-20"
+								wire:key="{{ $loop->index }}">
 							<img
 									alt="Image"
 									src="{{ $image->temporaryUrl() }}"
@@ -198,12 +227,15 @@ new class extends Component {
 				@endif
 				@if($this->subject->images)
 					@foreach($this->subject->images as $image)
-						<div class="relative">
+						<div
+								class="relative"
+								wire:key="{{ $image->image }}">
 							<img
 									src="{{ $this->subject->imageUrl($image->image) }}"
 									class="w-20 h-20 rounded"
 									alt="Image">
 							<button
+									type="button"
 									class="absolute bottom-1 right-1 text-white hover:text-rose-400"
 									wire:click="removeImage({{ $image->id }})">
 								<x-heroicons::outline.trash
@@ -213,36 +245,25 @@ new class extends Component {
 					@endforeach
 				@endif
 			</div>
-			<div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-				<div class="text-center">
-					<svg
-							class="mx-auto size-12 text-gray-300"
-							viewBox="0 0 24 24"
-							fill="currentColor"
-							aria-hidden="true"
-							data-slot="icon">
-						<path
-								fill-rule="evenodd"
-								d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
-								clip-rule="evenodd" />
-					</svg>
-					<div class="mt-4 flex text-sm/6 text-gray-600">
-						<label
-								for="file-upload"
-								class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
-							<span>Upload Images</span>
-							<input
-									id="file-upload"
-									wire:model="form.images"
-									name="file-upload"
-									type="file"
-									multiple
-									class="sr-only">
-						</label>
-						<p class="pl-1">or drag and drop</p>
+			<div class="grid grid-cols-6 mt-4">
+				<div class="col-span-6 sm:col-span-2">
+					<x-form-elements.file-input
+							multiple
+							wire:model="form.images"
+							class="" />
+					<div x-show="uploading">
+						<div class="w-full h-4 bg-slate-100 rounded-lg shadow-inner mt-3">
+							<div
+									class="bg-green-500 h-4 rounded-lg"
+									:style="{ width: `${progress}%` }"></div>
+						</div>
+						<div
+								wire:loading
+								wire:target="form.images">Uploading...
+						</div>
 					</div>
-					<p class="text-xs/5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
 				</div>
+
 			</div>
 		</div>
 	</x-form-layouts.form-layout>

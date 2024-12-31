@@ -1,11 +1,11 @@
 @props(['header' => 'User Form', 'description' => 'Form Description', 'submit' => 'save', 'actions' => ''])
 <form
 		wire:submit.prevent="{{ $submit }}"
-		{{ $attributes->merge(['class' => 'space-y-8 mt-4 max-w-7xl mx-auto']) }}>
-	<div class="p-4 border-b border-gray-200 bg-gray-50">
-		<h3 class="text-base font-semibold text-gray-900">
+		{{ $attributes->merge(['class' => 'space-y-8 max-w-7xl mx-auto dark:bg-gray-800']) }}>
+	<div class="p-4 border-b border-gray-200 bg-gray-50 dark-light-text dark:bg-gray-800">
+		<h3 class="text-base font-semibold text-gray-800 dark-light-text">
 			{{ $header }}
-			<p class="mt-2 text-sm text-gray-500">{{ $description }}</p>
+			<p class="mt-2 text-sm text-gray-500 dark-light-text">{{ $description }}</p>
 		</h3>
 	</div>
 	<div class="p-4 space-y-4">

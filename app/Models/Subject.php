@@ -55,7 +55,21 @@ class Subject extends Model
         return preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '($1) $2-$3', $this->phone);
     }
 
-    public function imageUrl($image)
+    public function getAge()
+    {
+        $birthDate = explode('-', $this->date_of_birth);
+
+        $birth_date = $this->date_of_birth;
+        $current_date = date('Y-m-d');
+        $birth_timestamp = strtotime($birth_date);
+        $current_timestamp = strtotime($current_date);
+        $diff_seconds = $current_timestamp - $birth_timestamp;
+        $age_years = $diff_seconds / (60 * 60 * 24 * 365.25);
+
+        return round($age_years);
+    }
+
+    public function imageUrl($image): string
     {
         return Storage::disk('s3-public')->url($image);
 

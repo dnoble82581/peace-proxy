@@ -3,6 +3,7 @@
 namespace App\Livewire\Forms;
 
 use App\Models\Subject;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
 
@@ -106,7 +107,7 @@ class SubjectForm extends Form
         $this->snapchat_url = $this->subject->snapchat_url;
     }
 
-    public function update()
+    public function update(): void
     {
         if ($this->images) {
             $this->processImages();
@@ -126,6 +127,15 @@ class SubjectForm extends Form
 
     private function saveImage($image)
     {
-        return $image->store('subjects', 's3-public');
+        return $image->store('subjects/'.$this->subject->id, 's3-public');
+    }
+
+    public function deleteImage($imageId): void
+    {
+        $imageToDelete = $this->subject->images->findOrFail($imageId);
+        if (Storage::disk('s3-public')->exists($imageToDelete->image)) {
+            Storage::disk('s3-public')->delete($imageToDelete->image);
+        }
+        $imageToDelete->delete();
     }
 }

@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Warrant extends Model
 {
+    public $guarded = ['id'];
+
     use BelongsToTenant, HasFactory;
 
     public function subject(): BelongsTo

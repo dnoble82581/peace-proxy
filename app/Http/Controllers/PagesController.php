@@ -20,8 +20,7 @@ class PagesController extends Controller
 
     public function editSubject($roomId)
     {
-
-        return view('pages.edit-subject')->with('roomId', $roomId);
+        return view('pages.subject.edit-subject')->with('roomId', $roomId);
     }
 
     public function command()

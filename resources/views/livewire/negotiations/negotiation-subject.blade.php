@@ -2,6 +2,9 @@
 
 use App\Models\Room;
 use App\Models\Subject;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
 use Livewire\Volt\Component;
 
 new class extends Component {
@@ -24,11 +27,17 @@ new class extends Component {
         return $this->room->subject;
     }
 
-    public function editSubject()
+    public function editSubject():Application|Redirector|RedirectResponse
     {
         return redirect(route('edit.subject',
             ['room' => $this->room, 'subject' => $this->subject]
         ));
+    }
+
+    public function addWarrant()
+    {
+        $this->dispatch('modal.open', component: 'modals.add-warrant-form',
+            arguments: ['subjectId' => $this->subject->id]);
     }
 
     public function getListeners():array
@@ -54,11 +63,14 @@ new class extends Component {
 						</x-slot:trigger>
 						<x-slot:content>
 							<div>
-								<x-dropdown.dropdown-button>Add Warrant</x-dropdown.dropdown-button>
+								<x-dropdown.dropdown-button wire:click="addWarrant">Add Warrant
+								</x-dropdown.dropdown-button>
 								<x-dropdown.dropdown-button wire:click="editSubject">
 									Edit
 								</x-dropdown.dropdown-button>
-								<x-dropdown.dropdown-button>View</x-dropdown.dropdown-button>
+								<x-dropdown.dropdown-link href="{{ route('show.subject', ['room' => $this->room, 'subject' => $this->subject]) }}">
+									View
+								</x-dropdown.dropdown-link>
 							</div>
 						</x-slot:content>
 					</x-dropdown.dropdown>
@@ -72,9 +84,11 @@ new class extends Component {
 								src="{{ $subject->imageUrl($image) }}"
 								class="w-24 h-24 rounded"
 								alt="">
+					@else
+						<x-svg-images.image-placeholder
+								class="w-24 h-24 rounded shadow" />
 					@endif
-					{{--					<x-svg-images.image-placeholder--}}
-					{{--							class="w-20 h-20 rounded shadow" />--}}
+
 				</div>
 				<div class="text-sm dark-light-text">
 					<strong class="block">{{ $subject->name }}</strong>

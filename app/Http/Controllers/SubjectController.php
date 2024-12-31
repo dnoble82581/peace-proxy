@@ -18,50 +18,19 @@ class SubjectController extends Controller
         return Subject::all();
     }
 
-    public function store(Request $request)
+    public function store(Request $request) {}
+
+    public function show($roomId)
     {
-        $this->authorize('create', Subject::class);
+        $room = Room::findOrFail($roomId);
+        $subject = $room->subject;
 
-        $data = $request->validate([
-            'name' => ['required'],
-            'phone' => ['required'],
-            'email' => ['required', 'email', 'max:254'],
-            'race' => ['required'],
-            'gender' => ['required'],
-            'address' => ['required'],
-            'city' => ['required'],
-            'state' => ['required'],
-            'zip' => ['required'],
-            'date_of_birth' => ['required', 'date'],
-            'age' => ['required', 'integer'],
-            'children' => ['required', 'integer'],
-            'veteran' => ['required'],
-            'highest_education' => ['required'],
-            'substance_abuse' => ['required'],
-            'mental_health_history' => ['required'],
-            'physical_description' => ['required'],
-            'notes' => ['required'],
-            'facebook_url' => ['required'],
-            'x_url' => ['required'],
-            'instagram_url' => ['required'],
-            'snapchat_url' => ['required'],
-            'negotiation_id' => ['required', 'exists:negotiations'],
-            'room_id' => ['required', 'exists:rooms'],
-        ]);
-
-        return Subject::create($data);
+        return view('pages.subject.show-subject')->with('subject', $subject);
     }
 
-    public function show(Subject $subject)
+    public function update(int $roomId)
     {
-        $this->authorize('view', $subject);
-
-        return $subject;
-    }
-
-    public function update(Room $room, Subject $subject)
-    {
-        return view('subject.edit');
+        return view('pages.subject.edit-subject')->with('roomId', $roomId);
     }
 
     public function destroy(Subject $subject)
