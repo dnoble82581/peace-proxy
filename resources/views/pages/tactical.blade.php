@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-tactical-layout>
 	<div class="p-10">
 		<div>
 			<livewire:alerts.tactical-alerts :room="$room" />
@@ -28,4 +28,4 @@
 			</div>
 		</div>
 	</div>
-</x-app-layout>
+</x-tactical-layout>
