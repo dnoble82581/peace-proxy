@@ -33,7 +33,7 @@
 	<!-- Scripts -->
 	<wireui:scripts />
 	@livewireStyles
-	@vite(['resources/css/app.css', 'resources/js/tactical.js'])
+	@vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body
 		class="font-sans antialiased"
