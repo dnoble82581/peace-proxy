@@ -10,6 +10,7 @@
 			content="{{ csrf_token() }}">
 
 	<title>{{ config('app.name', 'PeaceProxy') }}</title>
+
 	<script>(g => {
         var h, a, k, p = 'The Google Maps JavaScript API', c = 'google', l = 'importLibrary', q = '__ib__',
           m = document, b = window
@@ -48,6 +49,6 @@
 </div>
 @livewire('modal-pro')
 @livewireScripts
-{{--<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>--}}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </body>
 </html>

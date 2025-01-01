@@ -11,7 +11,6 @@
 
 	<title>{{ config('app.name', 'Laravel') }}</title>
 
-	<!-- Fonts -->
 	<script>(g => {
         var h, a, k, p = 'The Google Maps JavaScript API', c = 'google', l = 'importLibrary', q = '__ib__',
           m = document, b = window
@@ -31,6 +30,7 @@
         d[l] ? console.warn(p + ' only loads once. Ignoring:', g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n))
       })
       ({ key: 'AIzaSyCjE4zIlaH_y0omX1UbSv0-ZgPC__Besbw', v: 'weekly' })</script>
+
 
 	<!-- Scripts -->
 	<wireui:scripts />
@@ -58,6 +58,7 @@
 		{{ $slot }}
 	</main>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 @livewireScripts
 </body>
 </html>
