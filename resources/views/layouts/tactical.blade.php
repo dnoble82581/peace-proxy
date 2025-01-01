@@ -13,6 +13,7 @@
 
 	<x-scripts.maps-head />
 
+
 	<!-- Scripts -->
 	<wireui:scripts />
 	@livewireStyles
@@ -39,6 +40,7 @@
 		{{ $slot }}
 	</main>
 </div>
+@livewire('modal-pro')
 @livewireScripts
 <x-scripts.maps />
 </body>

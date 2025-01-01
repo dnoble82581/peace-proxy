@@ -1,4 +1,4 @@
-@props(['message', 'isOwnMessage', 'isEmergent'])
+@props(['message', 'isOwnMessage', 'isEmergent', 'hasResponse'])
 
 <!--
 Render an individual chat message.
@@ -61,7 +61,18 @@ Render an individual chat message.
 			</p>
 		</div>
 
-		<span class="text-xs font-normal text-gray-500 dark:text-gray-400">Delivered</span>
+		<div class="flex items-center justify-between">
+			<span class="text-xs font-normal text-gray-500 dark:text-gray-400">Delivered</span>
+			@if($message->responses()->count())
+				<button
+						wire:click="showResponses({{ $message->id }})"
+						type="button"
+						class="text-xs font-normal text-indigo-700 dark:text-gray-400"> {{ $message->responses()->count()  }}
+					responses
+				</button>
+			@endif
+		</div>
+
 		<!-- Footer text typically for delivery status (static in this example). -->
 	</div>
 </div>

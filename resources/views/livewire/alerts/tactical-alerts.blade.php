@@ -1,11 +1,16 @@
 <?php
 
+use App\Events\NewMessageEvent;
+use App\Models\Message;
+use App\Models\MessageResponse;
 use App\Models\Room;
 use Livewire\Volt\Component;
+use Symfony\Component\Mailer\Event\MessageEvent;
 
 new class extends Component {
     public Room $room;
     public $messages;
+    public Message $EmergencyMessage;
 
     public function mount($room)
     {
@@ -16,6 +21,41 @@ new class extends Component {
     protected function getMessages()
     {
         return $this->room->messages->where('type', 'emergency');
+    }
+
+    public function dismiss(int $messageId):void
+    {
+        $this->EmergencyMessage = $this->getMessage($messageId);
+        $this->updateMessage();
+        broadcast(new NewMessageEvent($this->EmergencyMessage));
+    }
+
+    private function getMessage($messageId):Message
+    {
+        return Message::findOrFail($messageId);
+    }
+
+    public function respond($messageId)
+    {
+        $this->message = $this->getMessage($messageId);
+
+        MessageResponse::create([
+            'user_id' => auth()->user()->id,
+            'message_id' => $messageId,
+            'response' => 'This is a test',
+            'acknowledged' => false,
+            'status' => null,
+            'tenant_id' => $this->room->tenant_id
+        ]);
+        broadcast(new NewMessageEvent($this->message));
+    }
+
+    private function updateMessage()
+    {
+        $this->message->update([
+            'type' => 'normal',
+            'updated_at' => now(),
+        ]);
     }
 
     public function getListeners():array
@@ -32,7 +72,6 @@ new class extends Component {
 }
 
 ?>
-
 <div>
 	@if($this->messages->count())
 		<div class="rounded-md bg-red-50 p-4">
@@ -69,12 +108,22 @@ new class extends Component {
 						<ul
 								x-show="open"
 								role="list"
-								class="list-disc space-y-1 pl-5">
+								class="list-disc space-y-3 pl-5">
 							@foreach($this->messages as $message)
 								<li>{{ $message->message }}
 									<span
 											wire:poll
 											class="text-xs ml-10">Submitted {{ $message->updated_at->diffForHumans() }} By: {{ $message->user->name }} </span>
+									<div class="mt-1 space-x-2">
+										<x-buttons.small-primary
+												class="bg-rose-400 hover:bg-rose-500"
+												wire:click="respond({{ $message->id }})">Reply
+										</x-buttons.small-primary>
+										<x-buttons.small-primary
+												wire:click="dismiss({{ $message->id }})"
+												class="bg-gray-400 hover:bg-gray-500">Dismiss
+										</x-buttons.small-primary>
+									</div>
 								</li>
 							@endforeach
 						</ul>
