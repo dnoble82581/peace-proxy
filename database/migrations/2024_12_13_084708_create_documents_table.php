@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('type');
             $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('subject_id')->nullable();
             $table->string('filename');
             $table->string('extension');
             $table->integer('size');

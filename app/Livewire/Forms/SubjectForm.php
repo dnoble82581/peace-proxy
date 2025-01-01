@@ -11,6 +11,9 @@ class SubjectForm extends Form
 {
     public ?Subject $subject;
 
+    #[Validate(['file', 'max:10000', 'mimes:pdf', 'nullable'])]
+    public $documentsToUpload = [];
+
     #[Validate(['images.*' => 'image|max:1024'])]
     public $images = [];
 
@@ -112,6 +115,9 @@ class SubjectForm extends Form
         if ($this->images) {
             $this->processImages();
         }
+        if ($this->documentsToUpload) {
+            $this->processDocuments();
+        }
         $this->subject->update($this->all());
     }
 
@@ -128,6 +134,24 @@ class SubjectForm extends Form
     private function saveImage($image)
     {
         return $image->store('subjects/'.$this->subject->id, 's3-public');
+    }
+
+    private function processDocuments()
+    {
+        foreach ($this->documentsToUpload as $document) {
+            $filename = pathinfo($document->getClientOriginalName(), PATHINFO_FILENAME)
+                .'_'.now()->timestamp.'.'.$document->getClientOriginalExtension();
+
+            $document->storeAs('/documents/'.$this->subject->id.'/', $filename, 's3');
+
+            $this->subject->documents()->create([
+                'type' => 'form',
+                'user_id' => auth()->user()->id,
+                'filename' => $filename,
+                'extension' => $document->getClientOriginalExtension(),
+                'size' => $document->getSize(),
+            ]);
+        }
     }
 
     public function deleteImage($imageId): void

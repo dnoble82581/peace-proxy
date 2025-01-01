@@ -13,6 +13,7 @@ return new class extends Migration
             $table->foreignId('user_id');
             $table->foreignId('tenant_id');
             $table->foreignId('room_id');
+            $table->string('type')->default('normal');
             $table->longText('message');
             $table->timestamps();
         });

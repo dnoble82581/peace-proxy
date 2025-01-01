@@ -30,7 +30,12 @@ class PagesController extends Controller
 
     public function tacticalRoom()
     {
-        return view('pages.tactical');
+        $roomId = Redis::get('room_id');
+        $room = Room::query()
+            ->with('subject')
+            ->findOrFail($roomId);
+
+        return view('pages.tactical')->with('room', $room);
     }
 
     public function negotiationRoom($roomId): View

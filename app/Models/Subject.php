@@ -45,6 +45,11 @@ class Subject extends Model
         return $this->hasMany(Demand::class);
     }
 
+    public function documents(): HasMany
+    {
+        return $this->hasMany(Document::class);
+    }
+
     public function warrants(): HasMany
     {
         return $this->hasMany(Warrant::class);

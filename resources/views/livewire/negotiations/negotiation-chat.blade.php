@@ -32,6 +32,8 @@ new class extends Component {
      */
     public Room $room;
 
+    public bool $alert = false;
+
     /**
      * The authenticated user.
      *
@@ -73,6 +75,7 @@ new class extends Component {
         $this->broadcastMessage($message);
 
         $this->reset('newMessage');
+        $this->reset('alert');
     }
 
     /**
@@ -88,6 +91,7 @@ new class extends Component {
         return Message::create([
             'user_id' => $this->user->id,
             'tenant_id' => $this->user->tenant_id,
+            'type' => $this->alert? 'emergency' : 'normal',
             'room_id' => $this->room->id,
             'message' => $this->newMessage,
         ]);
@@ -168,65 +172,49 @@ new class extends Component {
 				@foreach($this->room->messages as $message)
 					@php
 						$isOwnMessage = auth()->id() === $message->user_id;
+						$isEmergent = $message->type === 'emergency';
 					@endphp
 					<x-chat-elements.chat-message
 							:message="$message"
-							:isOwnMessage="$isOwnMessage" />
+							:isOwnMessage="$isOwnMessage"
+							:isEmergent="$isEmergent" />
 				@endforeach
 			</div>
 		</div>
 	</div>
 	<hr>
-	<form wire:submit.prevent="sendMessage">
+
+	<form
+			wire:submit.prevent="sendMessage">
 		<label
 				for="chat"
 				class="sr-only">Your message</label>
-		<div class="bg-gray-50 dark:bg-gray-700">
+		<div
+				x-data="{alert: @entangle('alert')}"
+				class="bg-gray-50 dark:bg-gray-700 pl-2">
 			<button
+
+					x-on:click="alert = !alert"
 					type="button"
 					class="inline-flex justify-center p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+
 				<svg
-						class="w-5 h-5"
-						aria-hidden="true"
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"
-						viewBox="0 0 20 18">
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+						class="size-5"
+						:class="alert ? 'text-red-400' : ''">
 					<path
-							fill="currentColor"
-							d="M13 5.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0ZM7.565 7.423 4.5 14h11.518l-2.516-3.71L11 13 7.565 7.423Z" />
-					<path
-							stroke="currentColor"
 							stroke-linecap="round"
 							stroke-linejoin="round"
-							stroke-width="2"
-							d="M18 1H2a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z" />
-					<path
-							stroke="currentColor"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M13 5.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0ZM7.565 7.423 4.5 14h11.518l-2.516-3.71L11 13 7.565 7.423Z" />
+							d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5" />
 				</svg>
+
 				<span class="sr-only">Upload image</span>
 			</button>
-			<button
-					type="button"
-					class="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
-				<svg
-						class="w-5 h-5"
-						aria-hidden="true"
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 20 20">
-					<path
-							stroke="currentColor"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M13.408 7.5h.01m-6.876 0h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM4.6 11a5.5 5.5 0 0 0 10.81 0H4.6Z" />
-				</svg>
-				<span class="sr-only">Add emoji</span>
-			</button>
+
 		</div>
 		@can('chat')
 			<div class="flex items-center px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700">

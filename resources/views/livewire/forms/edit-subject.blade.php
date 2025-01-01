@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Forms\SubjectForm;
+use App\Models\Document;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Room;
@@ -41,6 +42,14 @@ new class extends Component {
     private function getRoom($roomId):Room
     {
         return Room::findOrFail($roomId);
+    }
+
+    public function deleteDocument($documentId)
+    {
+
+        $documentToDelete = Document::findOrFail($documentId);
+        Storage::disk('s3')->delete('/documents/'.$this->subject->id.'/'.$documentToDelete->filename);
+        $documentToDelete->delete();
     }
 
     public function removeImage($imageId):void
@@ -206,64 +215,76 @@ new class extends Component {
 		</div>
 		<x-dividers.form-divider class="font-bold">Images</x-dividers.form-divider>
 
-		<div
-				x-data="{ uploading: false, progress: 0 }"
-				x-on:livewire-upload-start="uploading = true"
-				x-on:livewire-upload-finish="uploading = false; progress = 0;"
-				x-on:livewire-upload-progress="progress = $event.detail.progress">
-			<div
-					class="h-20 flex gap-2">
-				@if ($this->form->images)
-					@foreach ($this->form->images as $image)
-						<div
-								class="h-20 w-20"
-								wire:key="{{ $loop->index }}">
-							<img
-									alt="Image"
-									src="{{ $image->temporaryUrl() }}"
-									class="object-fill">
-						</div>
-					@endforeach
-				@endif
-				@if($this->subject->images)
-					@foreach($this->subject->images as $image)
-						<div
-								class="relative"
-								wire:key="{{ $image->image }}">
-							<img
-									src="{{ $this->subject->imageUrl($image->image) }}"
-									class="w-20 h-20 rounded"
-									alt="Image">
-							<button
-									type="button"
-									class="absolute bottom-1 right-1 text-white hover:text-rose-400"
-									wire:click="removeImage({{ $image->id }})">
-								<x-heroicons::outline.trash
-										class="w-4 h-4 " />
-							</button>
-						</div>
-					@endforeach
-				@endif
-			</div>
-			<div class="grid grid-cols-6 mt-4">
-				<div class="col-span-6 sm:col-span-2">
+		<div class="flex flex-col sm:flex-row items-center gap-4 justify-between">
+			<div class="flex-1">
+				<div class="h-20 grid grid-cols-6 gap-4">
+					@if ($this->form->images)
+						@foreach ($this->form->images as $image)
+							<div
+									class="h-20 w-20 col-span-1"
+									wire:key="{{ $loop->index }}">
+								<img
+										alt="Image"
+										src="{{ $image->temporaryUrl() }}"
+										class="object-fill">
+							</div>
+						@endforeach
+					@endif
+					@if($this->subject->images)
+						@foreach($this->subject->images as $image)
+							<div
+									class="relative col-span-1"
+									wire:key="{{ $image->image }}">
+								<img
+										src="{{ $this->subject->imageUrl($image->image) }}"
+										class="w-20 h-20 rounded"
+										alt="Image">
+								<button
+										type="button"
+										class="absolute bottom-1 right-3 text-white hover:text-rose-400"
+										wire:click="removeImage({{ $image->id }})">
+									<x-heroicons::outline.trash
+											class="w-4 h-4 " />
+								</button>
+							</div>
+						@endforeach
+					@endif
+				</div>
+				<div class="">
 					<x-form-elements.file-input
 							multiple
 							wire:model="form.images"
-							class="" />
-					<div x-show="uploading">
-						<div class="w-full h-4 bg-slate-100 rounded-lg shadow-inner mt-3">
-							<div
-									class="bg-green-500 h-4 rounded-lg"
-									:style="{ width: `${progress}%` }"></div>
-						</div>
-						<div
-								wire:loading
-								wire:target="form.images">Uploading...
-						</div>
-					</div>
+							class=" mt-4" />
+					<p
+							class="mt-0.5 text-xs text-gray-500"
+							id="image-description">PNG, JPG, GIF up to 10MB</p>
 				</div>
-
+			</div>
+			<div class="flex-1">
+				<div class="h-20 grid grid-cols-6 gap-4">
+					@foreach($this->subject->documents as $document)
+						<div>
+							<x-svg-images.paper-clip class="w-12 h-12" />
+							<p class="truncate text-gray-600 text-sm">{{ $document->filename }}</p>
+							<button
+									type="button"
+									wire:click="deleteDocument({{ $document->id }})">
+								<x-heroicons::outline.trash class="w-4 h-4 text-rose-500" />
+							</button>
+						</div>
+					@endforeach
+				</div>
+				<div class="">
+					<x-form-elements.file-input
+							wire-to="form.documentsToUpload"
+							type="file"
+							multiple
+							accept="application/pdf"
+							class="mt-4" />
+					<p
+							class="mt-0.5 text-xs text-gray-500"
+							id="image-description">.DOC, .PDF, CSV up to 10MB</p>
+				</div>
 			</div>
 		</div>
 	</x-form-layouts.form-layout>

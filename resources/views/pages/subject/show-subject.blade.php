@@ -128,9 +128,9 @@
 					<dt class="text-sm/6 font-medium text-gray-900 dark-light-text">Attachments</dt>
 					<dd class="mt-2 text-sm text-gray-900 dark-light-text">
 						<x-list-elements.attachment-container>
-							<x-list-elements.attachment-item />
-							<x-list-elements.attachment-item />
-							<x-list-elements.attachment-item />
+							@foreach($subject->documents as $document)
+								<x-list-elements.attachment-item :document="$document" />
+							@endforeach
 						</x-list-elements.attachment-container>
 					</dd>
 				</div>

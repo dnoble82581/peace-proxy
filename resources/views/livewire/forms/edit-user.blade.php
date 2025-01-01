@@ -239,8 +239,7 @@ new class extends Component {
 				@enderror
 			</div>
 		</div>
-
-
+		
 		{{-- Submit and Cancel Buttons --}}
 		<div class="mt-8 border-t border-gray-200 pt-5">
 			<div class="flex justify-end">

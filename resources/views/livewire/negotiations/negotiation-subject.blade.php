@@ -19,7 +19,8 @@ new class extends Component {
 
     public function showWarrants():void
     {
-        $this->dispatch('modal.open', component: 'modals.show-warrant', arguments: ['subjectId' => $this->subject->id]);
+        $this->dispatch('modal.open', component: 'modals.show-warrants',
+            arguments: ['subjectId' => $this->subject->id]);
     }
 
     private function getSubject():Subject

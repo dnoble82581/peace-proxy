@@ -1,4 +1,4 @@
-@props(['message', 'isOwnMessage'])
+@props(['message', 'isOwnMessage', 'isEmergent'])
 
 <!--
 Render an individual chat message.
@@ -43,16 +43,17 @@ Render an individual chat message.
 		</div>
 
 		<div
+				@php
+					if ($isEmergent){
+						$messageClasses = 'bg-rose-200 border border-rose-500';
+					}elseif($isOwnMessage){
+						$messageClasses = 'bg-slate-100 dark:bg-slate-200';
+					}else{
+						$messageClasses = 'bg-sky-100 dark:bg-blue-200';
+					}
+				@endphp
 				class="flex flex-col leading-1.5 p-4 border-gray-200
-            {{ $isOwnMessage ? 'bg-slate-100 dark:bg-slate-200' : 'bg-sky-100 dark:bg-blue-200' }}
-            rounded-e-xl rounded-es-xl">
-			<!--
-			Main message container:
-			- $isOwnMessage determines the background color:
-				- If sent by the user, use 'bg-slate-100/dark:bg-slate-200'.
-				- If sent by others, use 'bg-sky-100/dark:bg-blue-200'.
-			- The message has padding, border styling, and rounded corners.
-			-->
+            rounded-e-xl rounded-es-xl {{ $messageClasses }}">
 
 			<p class="text-sm font-normal text-gray-900">
 				{{ $message->message }}

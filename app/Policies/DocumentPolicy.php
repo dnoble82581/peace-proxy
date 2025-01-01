@@ -20,7 +20,10 @@ class DocumentPolicy
 
     public function delete(User $user, Document $document): bool {}
 
-    public function restore(User $user, Document $document): bool {}
+    public function restore(User $user, Document $document): bool
+    {
+        return $user->role === 'admin';
+    }
 
     public function forceDelete(User $user, Document $document): bool {}
 }

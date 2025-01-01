@@ -10,9 +10,12 @@ use Spatie\Permission\Models\Role;
 
 new class extends Component {
     public Collection $roles;
+
     #[Validate('required')]
     public int $chosenRole;
+
     public Room $room;
+	
     public User $user;
 
     public function mount($room):void

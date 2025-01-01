@@ -14,11 +14,14 @@ Route::middleware(['auth'])->group(function () {
     Route::view('team', 'pages.team')->name('team');
     Route::view('create-user', 'pages.create-user')->name('create.user');
     Route::get('edit-user/{id}', [PagesController::class, 'editUser'])->name('edit.user');
+
     Route::get('/documents/{user}/{filename}', [DocumentController::class, 'show']);
+
     Route::view('/create-negotiation', 'pages.create-negotiation')->name('create.negotiation');
     Route::get('/negotiation/room/{room}', [PagesController::class, 'negotiationRoom'])->name('negotiation.room');
     Route::get('/command', [PagesController::class, 'command'])->name('command');
-    Route::get('/negotiation/room/tactical/{room}', [PagesController::class, 'tacticalRoom'])->name('tactical.room');
+    Route::get('/negotiation/tactical/{room}',
+        [PagesController::class, 'tacticalRoom'])->name('tactical.room');
 
     Route::get('/negotiation/room/{room}/edit-subject/{subject:name}',
         [SubjectController::class, 'update'])->name('edit.subject');

@@ -2,13 +2,13 @@
 
 namespace App\Livewire\Modals;
 
-use App\Models\Warrant;
+use App\Models\Subject;
 use Illuminate\View\View;
 use WireElements\Pro\Components\Modal\Modal;
 
-class ShowWarrant extends Modal
+class ShowWarrants extends Modal
 {
-    public $warrant;
+    public Subject $subject;
 
     public static function behavior(): array
     {
@@ -33,18 +33,20 @@ class ShowWarrant extends Modal
         ];
     }
 
-    public function mount($warrantId): void
+    public function mount($subjectId): void
     {
-        $this->warrant = $this->findWarrant($warrantId);
-    }
-
-    public function findWarrant($warrantId): Warrant
-    {
-        return Warrant::findOrFail($warrantId);
+        $this->subject = Subject::find($subjectId);
     }
 
     public function render(): View
     {
-        return view('livewire.modals.show-warrant');
+        return view('livewire.modals.show-warrants');
+    }
+
+    private function getSubject($subjectId)
+    {
+        return Subject::query()
+            ->with('warrants')
+            ->findOrFail($subjectId);
     }
 }
