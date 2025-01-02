@@ -10,9 +10,9 @@ use Symfony\Component\Mailer\Event\MessageEvent;
 new class extends Component {
     public Room $room;
     public $messages;
-    public Message $EmergencyMessage;
+    public Message $emergencyMessage;
 
-    public function mount($room)
+    public function mount($room):void
     {
         $this->room = $room;
         $this->messages = $this->getMessages();
@@ -25,9 +25,9 @@ new class extends Component {
 
     public function dismiss(int $messageId):void
     {
-        $this->EmergencyMessage = $this->getMessage($messageId);
+        $this->emergencyMessage = $this->getMessage($messageId);
         $this->updateMessage();
-        broadcast(new NewMessageEvent($this->EmergencyMessage));
+        broadcast(new NewMessageEvent($this->emergencyMessage));
     }
 
     private function getMessage($messageId):Message
@@ -35,24 +35,16 @@ new class extends Component {
         return Message::findOrFail($messageId);
     }
 
-    public function respond($messageId)
+    public function respond($messageId):void
     {
-        $this->message = $this->getMessage($messageId);
 
-        MessageResponse::create([
-            'user_id' => auth()->user()->id,
-            'message_id' => $messageId,
-            'response' => 'This is a test',
-            'acknowledged' => false,
-            'status' => null,
-            'tenant_id' => $this->room->tenant_id
-        ]);
-        broadcast(new NewMessageEvent($this->message));
+        $this->dispatch('modal.open', component: 'modals.tactical-alert-response',
+            arguments: ['messageId' => $messageId, 'roomId' => $this->room->id]);
     }
 
-    private function updateMessage()
+    private function updateMessage():void
     {
-        $this->message->update([
+        $this->emergencyMessage->update([
             'type' => 'normal',
             'updated_at' => now(),
         ]);
@@ -65,7 +57,7 @@ new class extends Component {
         ];
     }
 
-    public function refresh()
+    public function refresh():void
     {
         $this->messages = $this->getMessages();
     }
