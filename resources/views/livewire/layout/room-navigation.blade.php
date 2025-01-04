@@ -1,21 +1,21 @@
 <?php
 
-use App\Livewire\Actions\Logout;
-use Livewire\Volt\Component;
-use Illuminate\Support\Facades\Redis;
+	use App\Livewire\Actions\Logout;
+	use Livewire\Volt\Component;
+	use Illuminate\Support\Facades\Redis;
 
 
-new class extends Component {
-    /**
-     * Log the current user out of the application.
-     */
-    public function logout(Logout $logout):void
-    {
-        $logout();
+	new class extends Component {
+		/**
+		 * Log the current user out of the application.
+		 */
+		public function logout(Logout $logout):void
+		{
+			$logout();
 
-        $this->redirect('/', navigate: true);
-    }
-}; ?>
+			$this->redirect('/', navigate: true);
+		}
+	}; ?>
 
 <nav
 		x-data="{ open: false }"
@@ -34,25 +34,8 @@ new class extends Component {
 				</div>
 
 				<!-- Navigation Links -->
-				<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-					<x-navigation.nav-link
-							:href="route('negotiation.room', Redis::get('room_id'))"
-							:active="request()->routeIs('negotiation.room')"
-							wire:navigate>
-						{{ __('Room') }}
-					</x-navigation.nav-link>
-					<x-navigation.nav-link
-							href="#"
-							:active="request()->routeIs('team')"
-							wire:navigate>
-						{{ __('My Team') }}
-					</x-navigation.nav-link>
-					<x-navigation.nav-link
-							:href="route('tactical.room', Redis::get('room_id'))"
-							:active="request()->routeIs('tactical.room')"
-							wire:navigate>
-						{{ __('Tactical') }}
-					</x-navigation.nav-link>
+				<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex sm:items-center">
+					<span class="text-sm text-gray-600">{{ auth()->user()->name }}: {{ auth()->user()->getRoleNames() }}</span>
 				</div>
 			</div>
 

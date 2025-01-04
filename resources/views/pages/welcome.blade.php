@@ -166,7 +166,7 @@
 					</div>
 				</div>
 				<img
-						src="https://tailwindui.com/plus/img/component-images/dark-project-app-screenshot.png"
+						src="https://peace-proxy-public.s3.us-east-1.amazonaws.com/Assets/Screenshot+2025-01-04+at+5.15.46%E2%80%AFAM.png"
 						alt="App screenshot"
 						width="2432"
 						height="1442"
@@ -256,7 +256,7 @@
 				</div>
 			</div>
 			<img
-					src="https://tailwindui.com/plus/img/component-images/dark-project-app-screenshot.png"
+					src="https://peace-proxy-public.s3.us-east-1.amazonaws.com/Assets/Screenshot+2025-01-04+at+5.23.15%E2%80%AFAM.png"
 					alt="Product screenshot"
 					class="w-[48rem] max-w-none rounded-xl shadow-xl ring-1 ring-white/10 sm:w-[57rem] md:-ml-4 lg:-ml-0"
 					width="2432"
@@ -307,7 +307,7 @@
 			<div class="relative mt-16 h-80 lg:mt-8">
 				<img
 						class="absolute left-0 top-0 w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10"
-						src="https://tailwindui.com/plus/img/component-images/dark-project-app-screenshot.png"
+						src="https://peace-proxy-public.s3.us-east-1.amazonaws.com/Assets/Screenshot+2025-01-04+at+5.26.12%E2%80%AFAM.png"
 						alt="App screenshot"
 						width="1824"
 						height="1080">

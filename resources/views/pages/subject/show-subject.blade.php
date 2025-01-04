@@ -58,7 +58,7 @@
 				</x-list-elements.data-tag>
 				<x-list-elements.data-tag
 						:label="__('Date of Birth')"
-						:value="$subject->date_of_birth->format('M-d-Y')"
+						:value="$subject->date_of_birth ? $subject->date_of_birth->format('M-d-Y') : 'N/A'"
 						class="col-span-4 sm:col-span-1" />
 				<x-list-elements.data-tag
 						:label="__('Age')"

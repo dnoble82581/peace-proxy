@@ -85,9 +85,7 @@
 		 */
 		private function createMessage():Message
 		{
-			if ($this->user->cannot('create', Message::class)) {
-				abort(403, 'Unauthorized to send messages in this room');
-			}
+			
 			return Message::create([
 				'user_id' => $this->user->id,
 				'tenant_id' => $this->user->tenant_id,

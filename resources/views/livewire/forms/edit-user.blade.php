@@ -1,99 +1,99 @@
 <?php
 
-use App\Livewire\Forms\UserForm;
-use App\Models\User;
-use LaravelIdea\Helper\App\Models\_IH_User_C;
-use Livewire\Features\SupportRedirects\Redirector;
-use Livewire\Volt\Component;
-use Livewire\WithFileUploads;
+	use App\Livewire\Forms\UserForm;
+	use App\Models\User;
+	use LaravelIdea\Helper\App\Models\_IH_User_C;
+	use Livewire\Features\SupportRedirects\Redirector;
+	use Livewire\Volt\Component;
+	use Livewire\WithFileUploads;
 
-/**
- * This class manages the update form for a Team Member.
- * It includes file upload capabilities and binds the form data to the UserForm model.
- */
-new class extends Component {
-    use WithFileUploads;
+	/**
+	 * This class manages the update form for a Team Member.
+	 * It includes file upload capabilities and binds the form data to the UserForm model.
+	 */
+	new class extends Component {
+		use WithFileUploads;
 
-    /**
-     * @var UserForm Bound form object containing user data to be updated.
-     */
-    public UserForm $form;
+		/**
+		 * @var UserForm Bound form object containing user data to be updated.
+		 */
+		public UserForm $form;
 
-    /**
-     * @var User The team member being updated.
-     */
-    public User $user;
+		/**
+		 * @var User The team member being updated.
+		 */
+		public User $user;
 
-    /**
-     * @var array List of available roles with labels and values.
-     */
-    public array $roles = [
-        ['name' => 'Admin', 'value' => 'admin'],
-        ['name' => 'User', 'value' => 'user'],
-    ];
+		/**
+		 * @var array List of available roles with labels and values.
+		 */
+		public array $roles = [
+			['name' => 'Admin', 'value' => 'admin'],
+			['name' => 'User', 'value' => 'user'],
+		];
 
-    /**
-     * @var array List of available statuses with labels and values.
-     */
-    public array $statuses = [
-        ['name' => 'Active', 'value' => 1],
-        ['name' => 'Inactive', 'value' => 0],
-    ];
+		/**
+		 * @var array List of available statuses with labels and values.
+		 */
+		public array $statuses = [
+			['name' => 'Active', 'value' => 1],
+			['name' => 'Inactive', 'value' => 0],
+		];
 
-    /**
-     * Mount method initializes the user data and pre-populates the form
-     * when editing an existing user.
-     *
-     * @param  User  $user  The specific user being edited.
-     *
-     * @return void
-     */
-    public function mount($user):void
-    {
-        if ($user) {
-            $this->user = $user;
-            $this->form->setForm($this->user); // Initializes the form with user data.
-        }
-    }
+		/**
+		 * Mount method initializes the user data and pre-populates the form
+		 * when editing an existing user.
+		 *
+		 * @param  User  $user  The specific user being edited.
+		 *
+		 * @return void
+		 */
+		public function mount($user):void
+		{
+			if ($user) {
+				$this->user = $user;
+				$this->form->setForm($this->user); // Initializes the form with user data.
+			}
+		}
 
-    /**
-     * Handles the form submission, updates the team member,
-     * and redirects to the team management page.
-     *
-     * @return Redirector Redirects to the '/team' route upon successful action.
-     */
-    public function submit():Redirector
-    {
-        $this->form->update(); // Updates the user data.
-        return redirect('/team'); // Redirects back to the team list.
-    }
+		/**
+		 * Handles the form submission, updates the team member,
+		 * and redirects to the team management page.
+		 *
+		 * @return Redirector Redirects to the '/team' route upon successful action.
+		 */
+		public function submit():Redirector
+		{
+			$this->form->update(); // Updates the user data.
+			return redirect('/team'); // Redirects back to the team list.
+		}
 
-    /**
-     * Handles the cancel action and redirects the user
-     * back to the team management page.
-     *
-     * @return Redirector Redirects to the '/team' route.
-     */
-    public function cancel():Redirector
-    {
-        return redirect('/team');
-    }
+		/**
+		 * Handles the cancel action and redirects the user
+		 * back to the team management page.
+		 *
+		 * @return Redirector Redirects to the '/team' route.
+		 */
+		public function cancel():Redirector
+		{
+			return redirect('/team');
+		}
 
-    /**
-     * Generates and returns the URL for user avatar.
-     * Prefers the photo from the form if any, otherwise falls back to the user's default avatar.
-     *
-     * @return string URL of the avatar placeholder or uploaded image.
-     */
-    public function getPhotoPlaceholder():string
-    {
-        if ($this->form->photo) {
-            return $this->form->photo->temporaryUrl();
-        }
+		/**
+		 * Generates and returns the URL for user avatar.
+		 * Prefers the photo from the form if any, otherwise falls back to the user's default avatar.
+		 *
+		 * @return string URL of the avatar placeholder or uploaded image.
+		 */
+		public function getPhotoPlaceholder():string
+		{
+			if ($this->form->photo) {
+				return $this->form->photo->temporaryUrl();
+			}
 
-        return $this->user->avatar?: $this->user->avatarUrl();
-    }
-}
+			return $this->user->avatar?: $this->user->avatarUrl();
+		}
+	}
 ?>
 
 <div>
@@ -175,10 +175,14 @@ new class extends Component {
 				<div class="flex items-center">
 					<div class="flex-shrink-0 h-10 w-10 mr-4">
 						{{-- Display either the uploaded avatar, user's current avatar, or a placeholder --}}
+						{{--						<img--}}
+						{{--								class="h-10 w-10 rounded-full"--}}
+						{{--								src="{{$this->getPhotoPlaceholder()}}"--}}
+						{{--								alt="User Photo">--}}
 						<img
 								class="h-10 w-10 rounded-full"
-								src="{{$this->getPhotoPlaceholder()}}"
-								alt="User Photo">
+								src="{{$user->avatarUrl()}}"
+								alt="">
 					</div>
 					<div class="flex items-center gap-3">
 						{{-- File input for photo upload --}}
@@ -239,7 +243,7 @@ new class extends Component {
 				@enderror
 			</div>
 		</div>
-		
+
 		{{-- Submit and Cancel Buttons --}}
 		<div class="mt-8 border-t border-gray-200 pt-5">
 			<div class="flex justify-end">

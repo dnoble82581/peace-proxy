@@ -39,7 +39,6 @@
 				redirect(route('tactical.room', $this->room->id));
 			} else {
 				redirect(route('negotiation.room', $this->room->id));
-
 			}
 		}
 

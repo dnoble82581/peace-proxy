@@ -60,14 +60,14 @@
 							</svg>
 						</button>
 					</x-slot:trigger>
-					<x-slot:content class="overflow-x-visible">
+					<x-slot:content class="overflow-x-visible overflow-y-visible">
 						<x-dropdown.dropdown-link>
 							<button
 									wire:click="sendRequest({{ $demand->id }})"
 									class="block px-3 py-1 text-sm/6 text-gray-900 w-full"
 									role="menuitem"
 									tabindex="-1"
-									id="options-menu-0-item-0">Request<span class="sr-only">, Demand</span>
+									id="options-menu-0-item-0">Request<span class="sr-only">, Request Demand</span>
 							</button>
 						</x-dropdown.dropdown-link>
 						<x-dropdown.dropdown-link>
@@ -76,7 +76,7 @@
 									class="block px-3 py-1 text-sm/6 text-gray-900 w-full h-full"
 									role="menuitem"
 									tabindex="-1"
-									id="options-menu-0-item-1">Edit<span class="sr-only">, GraphQL API</span></button>
+									id="options-menu-0-item-1">Edit<span class="sr-only">, Edit Demand</span></button>
 						</x-dropdown.dropdown-link>
 						<x-dropdown.dropdown-link>
 							<button
@@ -84,7 +84,8 @@
 									class="block px-3 py-1 text-sm/6 text-gray-900 w-full h-full"
 									role="menuitem"
 									tabindex="-1"
-									id="options-menu-0-item-1">Delete<span class="sr-only">, GraphQL API</span></button>
+									id="options-menu-0-item-1">Delete<span class="sr-only">, Delete Demand</span>
+							</button>
 						</x-dropdown.dropdown-link>
 					</x-slot:content>
 				</x-dropdown.dropdown>
