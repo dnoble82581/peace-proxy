@@ -98,8 +98,8 @@
 				</div>
 				<div class="text-sm dark-light-text">
 					<strong class="block">Deadlines</strong>
-					<span class="block">{{ $subject->demands->first()->title ?? 'none' }}</span>
-					<span class="block">{{ $subject->demands ? $subject->demands->first()->deadline->diffForHumans() : 'none' }}</span>
+					<span class="block">{{ $subject->demands->count() ? $subject->demands->first()->title : 'none' }}</span>
+					<span class="block">{{ $subject->demands->count() ? $subject->demands->first()->deadline->diffForHumans() : 'none' }}</span>
 				</div>
 
 				<div
