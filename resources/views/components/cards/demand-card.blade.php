@@ -1,3 +1,4 @@
+@php use Carbon\Carbon; @endphp
 @props(['demand'])
 <li
 		x-data="{ details: true }"
@@ -5,12 +6,12 @@
 	<div class="flex items-center justify-between gap-x-6 p-4">
 		<div class="min-w-0">
 			<div class="flex items-start gap-x-3">
-				<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300 capitalize">{{ $demand->title }}</p>
+				<p class="text-sm/6 font-semibold dark-light-text capitalize">{{ $demand->title }}</p>
 				<span class="inline-flex items-center rounded-md bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 capitalize">{{ $demand->status }}</span>
 			</div>
 			<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500 dark:text-slate-300">
 				<p class="whitespace-nowrap text-red-700 dark:text-slate-300">Due on
-					<time datetime="2023-03-17T00:00Z">March 17, 2023</time>
+					<time datetime="2023-03-17T00:00Z">{{ $demand->deadline }}</time>
 				</p>
 			</div>
 		</div>
@@ -66,7 +67,7 @@
 									class="block px-3 py-1 text-sm/6 text-gray-900 w-full"
 									role="menuitem"
 									tabindex="-1"
-									id="options-menu-0-item-0">Request<span class="sr-only">, GraphQL API</span>
+									id="options-menu-0-item-0">Request<span class="sr-only">, Demand</span>
 							</button>
 						</x-dropdown.dropdown-link>
 						<x-dropdown.dropdown-link>
@@ -99,7 +100,7 @@
 				x-transition:leave="transition ease-in duration-75"
 				x-transition:leave-start="opacity-100 scale-100"
 				x-transition:leave-end="opacity-0 scale-95"
-				class="border-t border-gray-200 dark:border-slate-300 py-2 px-6">
+				class="border-t border-b border-gray-200 dark:border-slate-300 py-2 px-6">
 			<p
 					role="region"
 					class="text-sm/6 text-gray-500 dark:text-slate-300">

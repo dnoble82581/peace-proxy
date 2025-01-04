@@ -16,7 +16,7 @@ class MessagePolicy
 
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('chat');
+        return true;
     }
 
     public function update(User $user, Message $message): bool {}

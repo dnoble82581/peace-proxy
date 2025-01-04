@@ -106,8 +106,8 @@
 						wire:poll
 						class="text-sm dark-light-text">
 					<strong class="block">Mood</strong>
-					<span class="block">{{ $subject->moodLogs()->count() ? $subject->moodLogs->latest('created_at')->first()->name : 'No recent log' }}</span>
-					<span class="block">{{ $subject->moodLogs()->count() ? $subject->moodlogs->latest('created_at')->first()->created_at->diffForHumans() : '' }}</span>
+					<span class="block">{{ $subject->moodLogs()->count() ? $subject->moodLogs()->latest('created_at')->first()->name : 'No recent log' }}</span>
+					<span class="block">{{ $subject->moodLogs()->count() ? $subject->moodlogs()->latest('created_at')->first()->created_at->diffForHumans() : '' }}</span>
 				</div>
 			</div>
 			<div class="grid grid-cols-8 gap-5 items-center">
