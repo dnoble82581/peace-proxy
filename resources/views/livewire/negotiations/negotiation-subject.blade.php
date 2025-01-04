@@ -1,53 +1,53 @@
 <?php
 
-use App\Models\Room;
-use App\Models\Subject;
-use Illuminate\Foundation\Application;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Routing\Redirector;
-use Livewire\Volt\Component;
+	use App\Models\Room;
+	use App\Models\Subject;
+	use Illuminate\Foundation\Application;
+	use Illuminate\Http\RedirectResponse;
+	use Illuminate\Routing\Redirector;
+	use Livewire\Volt\Component;
 
-new class extends Component {
-    public Room $room;
-    public Subject $subject;
+	new class extends Component {
+		public Room $room;
+		public Subject $subject;
 
-    public function mount(Room $room):void
-    {
-        $this->room = $room;
-        $this->subject = $this->getSubject();
-    }
+		public function mount(Room $room):void
+		{
+			$this->room = $room;
+			$this->subject = $this->getSubject();
+		}
 
-    public function showWarrants():void
-    {
-        $this->dispatch('modal.open', component: 'modals.show-warrants',
-            arguments: ['subjectId' => $this->subject->id]);
-    }
+		public function showWarrants():void
+		{
+			$this->dispatch('modal.open', component: 'modals.show-warrants',
+				arguments: ['subjectId' => $this->subject->id]);
+		}
 
-    private function getSubject():Subject
-    {
-        return $this->room->subject;
-    }
+		private function getSubject():Subject
+		{
+			return $this->room->subject;
+		}
 
-    public function editSubject():Application|Redirector|RedirectResponse
-    {
-        return redirect(route('edit.subject',
-            ['room' => $this->room, 'subject' => $this->subject]
-        ));
-    }
+		public function editSubject():Application|Redirector|RedirectResponse
+		{
+			return redirect(route('edit.subject',
+				['room' => $this->room, 'subject' => $this->subject]
+			));
+		}
 
-    public function addWarrant()
-    {
-        $this->dispatch('modal.open', component: 'modals.add-warrant-form',
-            arguments: ['subjectId' => $this->subject->id]);
-    }
+		public function addWarrant()
+		{
+			$this->dispatch('modal.open', component: 'modals.add-warrant-form',
+				arguments: ['subjectId' => $this->subject->id]);
+		}
 
-    public function getListeners():array
-    {
-        return [
-            "echo-presence:chart.{$this->room->id},ChartUpdatedEvent" => 'refresh',
-        ];
-    }
-}
+		public function getListeners():array
+		{
+			return [
+				"echo-presence:chart.{$this->room->id},ChartUpdatedEvent" => 'refresh',
+			];
+		}
+	}
 
 ?>
 
@@ -99,7 +99,7 @@ new class extends Component {
 				<div class="text-sm dark-light-text">
 					<strong class="block">Deadlines</strong>
 					<span class="block">{{ $subject->demands->first()->title ?? 'none' }}</span>
-					<span class="block">{{ $subject->demands->first()->deadline->diffForHumans() ?? 'none' }}</span>
+					<span class="block">{{ $subject->demands ? $subject->demands->first()->deadline->diffForHumans() : 'none' }}</span>
 				</div>
 
 				<div

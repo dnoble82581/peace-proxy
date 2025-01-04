@@ -5,6 +5,7 @@ namespace App\Livewire\Modals;
 use App\Livewire\Forms\TacticalAlertResponseForm;
 use App\Models\Message;
 use App\Models\Room;
+use Illuminate\View\View;
 use WireElements\Pro\Components\Modal\Modal;
 
 class TacticalAlertResponse extends Modal
@@ -38,29 +39,29 @@ class TacticalAlertResponse extends Modal
         ];
     }
 
-    public function mount($messageId, $roomId)
+    public function mount($messageId, $roomId): void
     {
         $this->message = $this->getMessage($messageId);
         $this->room = $this->getRoom($roomId);
     }
 
-    private function getMessage($messageId)
+    private function getMessage($messageId): Message
     {
         return Message::findOrFail($messageId);
     }
 
-    private function getRoom($roomId)
+    private function getRoom($roomId): Room
     {
         return Room::findOrFail($roomId);
     }
 
-    public function reply()
+    public function reply(): void
     {
         $this->form->createResponse($this->room, $this->message);
         $this->close();
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.modals.tactical-alert-response');
     }
