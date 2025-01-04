@@ -35,7 +35,7 @@
 			));
 		}
 
-		public function addWarrant()
+		public function addWarrant():void
 		{
 			$this->dispatch('modal.open', component: 'modals.add-warrant-form',
 				arguments: ['subjectId' => $this->subject->id]);

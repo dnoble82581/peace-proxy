@@ -1,56 +1,55 @@
 <?php
 
-use App\Models\Room;
-use App\Models\RoomUser;
-use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
-use Livewire\Attributes\Validate;
-use Livewire\Volt\Component;
-use Spatie\Permission\Models\Role;
+	use App\Models\Room;
+	use App\Models\RoomUser;
+	use App\Models\User;
+	use Illuminate\Database\Eloquent\Collection;
+	use Livewire\Attributes\Validate;
+	use Livewire\Volt\Component;
+	use Spatie\Permission\Models\Role;
 
-new class extends Component {
-    public Collection $roles;
+	new class extends Component {
+		public Collection $roles;
 
-    #[Validate('required')]
-    public int $chosenRole;
+		#[Validate('required')]
+		public int $chosenRole;
 
-    public Room $room;
-	
-    public User $user;
+		public Room $room;
 
-    public function mount($room):void
-    {
-        $this->room = $room;
-        $this->user = auth()->user();
-        $this->roles = $this->getRoles();
-    }
+		public User $user;
 
-    public function enterRoom():void
-    {
-        $this->validate();
-        $this->loginUser();
-    }
+		public function mount($room):void
+		{
+			$this->room = $room;
+			$this->user = auth()->user();
+			$this->roles = $this->getRoles();
+		}
 
-    private function loginUser()
-    {
-        $this->user->syncRoles($this->chosenRole);
+		public function enterRoom():void
+		{
+			$this->validate();
+			$this->loginUser();
+		}
 
-        if ($this->user->hasRole('tactical-lead')) {
-            return redirect(route('tactical.room', $this->room->id));
-        } else {
-            return redirect(route('negotiation.room', $this->room->id));
+		private function loginUser():void
+		{
+			$this->user->syncRoles($this->chosenRole);
 
-        }
-    }
+			if ($this->user->hasRole('tactical-lead')) {
+				redirect(route('tactical.room', $this->room->id));
+			} else {
+				redirect(route('negotiation.room', $this->room->id));
 
-    private function getRole($roleId) {}
+			}
+		}
 
-    private function getRoles():Collection
-    {
-        return Role::all();
-    }
+		private function getRole($roleId) {}
 
-}
+		private function getRoles():Collection
+		{
+			return Role::all();
+		}
+	}
 
 ?>
 
