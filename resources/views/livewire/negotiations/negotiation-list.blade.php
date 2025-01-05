@@ -1,29 +1,33 @@
 <?php
 
-use App\Models\Negotiation;
-use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
-use Livewire\Attributes\Validate;
-use Livewire\Volt\Component;
-use Spatie\Permission\Models\Role;
+	use App\Models\Negotiation;
+	use App\Models\User;
+	use Illuminate\Database\Eloquent\Collection;
+	use Livewire\Attributes\Computed;
+	use Livewire\Attributes\Validate;
+	use Livewire\Volt\Component;
+	use Livewire\WithPagination;
+	use Spatie\Permission\Models\Role;
 
-new class extends Component {
-    public Collection $negotiations;
-    public User $user;
+	new class extends Component {
+		use WithPagination;
 
-    public function mount():void
-    {
-        $this->negotiations = $this->getNegotiations();
-        $this->user = auth()->user();
-        $this->roles = Role::all();
-    }
+		public \Illuminate\Support\Collection $negotiations;
+		public User $user;
 
-    private function getNegotiations():Collection
-    {
-        return Negotiation::query()->with('rooms')->get();
-    }
+		public function mount():void
+		{
+			$this->negotiations = $this->getNegotiations();
+			$this->user = auth()->user();
+			$this->roles = Role::all();
+		}
 
-}
+		private function getNegotiations():Collection
+		{
+			return Negotiation::query()->with('rooms')->get();
+		}
+
+	}
 
 ?>
 
@@ -47,5 +51,5 @@ new class extends Component {
 			</div>
 		@endforeach
 	</ul>
-
+	{{--	{{ $negotiations->links() }}--}}
 </div>

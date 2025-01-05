@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
         });
 
         // Create negotiations
-        $negotiations = Negotiation::factory(100)->make()->each(function ($negotiation) use ($tenants, $allUsers) {
+        $negotiations = Negotiation::factory(20)->make()->each(function ($negotiation) use ($tenants, $allUsers) {
             $negotiation->tenant_id = $tenants->random()->id; // Randomly assign tenant
             $negotiation->user_id = $allUsers->random()->id; // Randomly assign user
             $negotiation->subject_motivation = fake()->paragraph();

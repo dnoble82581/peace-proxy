@@ -101,7 +101,14 @@ class User extends Authenticatable
     public function negotiations(): HasMany
     {
         return $this->hasMany(Negotiation::class);
+    }
 
+    public function getRoleName()
+    {
+        $role = $this->getRoleNames()->first();
+        str_replace('-', ' ', $role);
+
+        return $role;
     }
 
     public function responses(): HasMany

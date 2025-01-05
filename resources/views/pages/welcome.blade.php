@@ -13,7 +13,7 @@
 	@vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="antialiased font-sans bg-gray-100 dark:bg-gray-900">
-<div class="bg-gray-900">
+<section class="bg-gray-900">
 	<header class="absolute inset-x-0 top-0 z-50">
 		<nav
 				class="flex items-center justify-between p-6 lg:px-8"
@@ -181,7 +181,7 @@
 					style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
 		</div>
 	</div>
-</div>
+</section>
 <div class="overflow-hidden bg-gray-900 py-24 sm:py-32">
 	<div class="mx-auto max-w-7xl px-6 lg:px-8">
 		<div class="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
@@ -862,7 +862,7 @@
 		<div class="-ml-12 -mt-12 p-12 lg:sticky lg:top-4 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:overflow-hidden">
 			<img
 					class="w-[48rem] max-w-none rounded-xl bg-gray-900 shadow-xl ring-1 ring-gray-400/10 sm:w-[57rem]"
-					src="https://tailwindui.com/plus/img/component-images/dark-project-app-screenshot.png"
+					src="https://peace-proxy-public.s3.us-east-1.amazonaws.com/Assets/Screenshot+2025-01-04+at+5.23.15%E2%80%AFAM.png"
 					alt="">
 		</div>
 		<div class="lg:col-span-2 lg:col-start-1 lg:row-start-2 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
@@ -939,10 +939,7 @@
 	<div class="mx-auto max-w-7xl px-6 pb-8 pt-16 sm:pt-24 lg:px-8 lg:pt-32">
 		<div class="xl:grid xl:grid-cols-3 xl:gap-8">
 			<div class="space-y-8">
-				<img
-						class="h-9"
-						src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=500"
-						alt="Company name">
+				<x-svg-images.application-logo class="h-12 w-auto fill-slate-100" />
 				<p class="text-balance text-sm/6 text-gray-300">Making the world a better place through constructing
 				                                                elegant hierarchies.</p>
 				<div class="flex gap-x-6">

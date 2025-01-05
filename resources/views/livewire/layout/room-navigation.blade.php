@@ -35,7 +35,7 @@
 
 				<!-- Navigation Links -->
 				<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex sm:items-center">
-					<span class="text-sm text-gray-600">{{ auth()->user()->name }}: {{ auth()->user()->getRoleNames() }}</span>
+					<span class="text-sm dark-light-text capitalize"> {{ auth()->user()->getRoleName() }}</span>
 				</div>
 			</div>
 
