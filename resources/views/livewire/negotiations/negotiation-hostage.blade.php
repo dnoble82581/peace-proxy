@@ -10,7 +10,7 @@
 		public Collection $hostages;
 
 
-		public function mount($room)
+		public function mount($room):void
 		{
 			$this->room = $room;
 			$this->hostages = $this->getHostages();
@@ -25,12 +25,18 @@
 		{
 			return redirect(route('edit.hostage',
 				[
-					'roomId' => $this->room->id,
+					'room' => $this->room,
 					'hostage' => $hostage
 				]
 			));
 		}
 
+		public function getListeners():array
+		{
+			return [
+				"echo-presence:hostage.{$this->room->id},HostageEditedEvent" => 'refresh',
+			];
+		}
 	}
 
 ?>
@@ -68,7 +74,7 @@
 		<ul
 				role="list"
 				class="divide-y divide-gray-100">
-			@foreach($hostages as $hostage)
+			@foreach($room->hostages as $hostage)
 				<x-cards.hostage-card :hostage="$hostage" />
 			@endforeach
 		</ul>

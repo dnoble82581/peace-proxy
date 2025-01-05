@@ -1,3 +1,5 @@
 <x-negotiation-layout>
-	<livewire:forms.edit-hostage :roomId="$roomId" />
+	<livewire:forms.edit-hostage
+			:roomId="$roomId"
+			:hostage="$hostage" />
 </x-negotiation-layout>

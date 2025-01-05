@@ -2,10 +2,18 @@
 <div x-data="{ details: true}">
 	<li class="relative flex justify-between gap-x-6 py-5">
 		<div class="flex min-w-0 gap-x-4">
-			<img
-					class="size-12 flex-none rounded-full bg-gray-50"
-					src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-					alt="">
+			@if($hostage->images()->count())
+				<img
+						class="size-12 flex-none rounded-full bg-gray-50"
+						src="{{ $hostage->imageUrl($hostage->images->first()->image) }}"
+						alt="">
+			@else
+				<img
+						class="size-12 flex-none rounded-full bg-gray-50"
+						src="{{ $hostage->temporaryImageUrl() }}"
+						alt="Temporary Image">
+			@endif
+
 			<div class="min-w-0 flex-auto">
 				<p class="text-sm/6 font-semibold text-gray-900">
 					<a href="#">
@@ -60,7 +68,7 @@
 				<x-slot:content class="overflow-x-visible overflow-y-visible">
 					<x-dropdown.dropdown-link>
 						<button
-								wire:click="editHostage('{{ $hostage->name }}')"
+								wire:click="editHostage('{{ $hostage->id }}')"
 								type="button"
 								class="block px-3 py-1 text-sm/6 text-gray-900 w-full"
 								role="menuitem"

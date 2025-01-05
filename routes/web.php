@@ -27,10 +27,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/negotiation/room/{room}/edit-subject/{subject:name}',
         [SubjectController::class, 'update'])->name('edit.subject');
-    Route::get('/negotiation/room/{room}/show/{subject:name}',
+    Route::get('/negotiation/room/{room}/show/{subject}',
         [SubjectController::class, 'show'])->name('show.subject');
 
-    Route::get('/negotiation/room/{room}/edit-hostage/{hostage:name}/edit',
+    Route::get('/negotiation/room/{room}/edit-hostage/{hostage}/edit',
         [HostageController::class, 'update'])->name('edit.hostage');
     Route::get('negotiation/room/{room}/create-hostage',
         [HostageController::class, 'store'])->name('create.hostage');

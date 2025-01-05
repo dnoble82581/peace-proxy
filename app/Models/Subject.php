@@ -82,7 +82,6 @@ class Subject extends Model
     public function imageUrl($image): string
     {
         return Storage::disk('s3-public')->url($image);
-
     }
 
     public function images(): HasMany

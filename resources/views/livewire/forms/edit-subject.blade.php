@@ -1,71 +1,71 @@
 <?php
 
-use App\Livewire\Forms\SubjectForm;
-use App\Models\Document;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
-use App\Models\Room;
-use App\Models\Subject;
-use App\Models\SubjectImages;
-use LaravelIdea\Helper\App\Models\_IH_Room_C;
-use Livewire\Volt\Component;
-use Livewire\WithFileUploads;
-use Livewire\Attributes\On;
+	use App\Livewire\Forms\SubjectForm;
+	use App\Models\Document;
+	use Illuminate\Support\Collection;
+	use Illuminate\Support\Facades\Storage;
+	use App\Models\Room;
+	use App\Models\Subject;
+	use App\Models\SubjectImages;
+	use LaravelIdea\Helper\App\Models\_IH_Room_C;
+	use Livewire\Volt\Component;
+	use Livewire\WithFileUploads;
+	use Livewire\Attributes\On;
 
-new class extends Component {
-    use WithFileUploads;
+	new class extends Component {
+		use WithFileUploads;
 
-    public SubjectForm $form;
-    public Room $room;
-    public Subject $subject;
+		public SubjectForm $form;
+		public Room $room;
+		public Subject $subject;
 
 
-    public function mount($roomId):void
-    {
-        $this->room = $this->getRoom($roomId);
-        $this->subject = $this->room->subject;
-        $this->form->setForm($this->subject);
-    }
+		public function mount($roomId):void
+		{
+			$this->room = $this->getRoom($roomId);
+			$this->subject = $this->room->subject;
+			$this->form->setForm($this->subject);
+		}
 
-    public function update():void
-    {
-        $this->form->update();
-        $this->dispatch('subject-updated');
-    }
+		public function update():void
+		{
+			$this->form->update();
+			$this->dispatch('subject-updated');
+		}
 
-    #[On('subject-updated')]
-    public function redirectToRoom()
-    {
-        return $this->redirect(route('negotiation.room', $this->room->id), navigate: true);
-    }
+		#[On('subject-updated')]
+		public function redirectToRoom()
+		{
+			return $this->redirect(route('negotiation.room', $this->room->id), navigate: true);
+		}
 
-    private function getRoom($roomId):Room
-    {
-        return Room::findOrFail($roomId);
-    }
+		private function getRoom($roomId):Room
+		{
+			return Room::findOrFail($roomId);
+		}
 
-    public function deleteDocument($documentId)
-    {
+		public function deleteDocument($documentId)
+		{
 
-        $documentToDelete = Document::findOrFail($documentId);
-        Storage::disk('s3')->delete('/documents/'.$this->subject->id.'/'.$documentToDelete->filename);
-        $documentToDelete->delete();
-    }
+			$documentToDelete = Document::findOrFail($documentId);
+			Storage::disk('s3')->delete('/documents/'.$this->subject->id.'/'.$documentToDelete->filename);
+			$documentToDelete->delete();
+		}
 
-    public function removeImage($imageId):void
-    {
-        $image = SubjectImages::find($imageId);
+		public function removeImage($imageId):void
+		{
+			$image = SubjectImages::find($imageId);
 
-        if (!$image) {
-            $this->dispatch('error', 'Image not found');
-            return;
-        }
-        $this->form->deleteImage($imageId);
-    }
-}
+			if (!$image) {
+				$this->dispatch('error', 'Image not found');
+				return;
+			}
+			$this->form->deleteImage($imageId);
+		}
+	}
 
 ?>
-<div>
+<div class="mt-5">
 	<x-form-layouts.form-layout
 			class="bg-white"
 			submit="update">

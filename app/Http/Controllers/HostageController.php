@@ -64,9 +64,9 @@ class HostageController extends Controller
         return $hostage;
     }
 
-    public function update($roomId)
+    public function update($roomId, Hostage $hostage)
     {
-        return view('pages.hostage.edit-hostage')->with('roomId', $roomId);
+        return view('pages.hostage.edit-hostage')->with('roomId', $roomId)->with('hostage', $hostage);
 
         //        $this->authorize('update', $hostage);
         //

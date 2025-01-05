@@ -14,7 +14,6 @@ return new class extends Migration
             $table->foreignId('subject_id');
             $table->foreignId('room_id');
             $table->foreignId('tenant_id');
-            //            $table->string('image_path')->nullable();
             $table->string('name');
             $table->string('phone')->nullable();
             $table->string('email')->nullable();

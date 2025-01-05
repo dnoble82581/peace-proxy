@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Hostage extends Model
 {
@@ -23,9 +24,19 @@ class Hostage extends Model
         return $this->belongsTo(Subject::class);
     }
 
-    public function hostageImages(): HasMany
+    public function images(): HasMany
     {
         return $this->hasMany(Hostageimage::class);
+    }
+
+    public function imageUrl($image): string
+    {
+        return Storage::disk('s3-public')->url($image);
+    }
+
+    public function temporaryImageUrl(): string
+    {
+        return 'https://api.dicebear.com/9.x/initials/svg?seed='.$this->name;
     }
 
     public function room(): BelongsTo
