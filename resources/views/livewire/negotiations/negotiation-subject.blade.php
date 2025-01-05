@@ -96,10 +96,10 @@
 					<span class="block">{{ $subject->address ?? 'No Address' }}</span>
 					<span class="block">{{ $subject->phone() }}</span>
 				</div>
-				<div class="text-sm dark-light-text">
-					<strong class="block">Deadlines</strong>
-					<span class="block">{{ $subject->demands->count() ? $subject->demands->first()->title : 'none' }}</span>
-					<span class="block">{{ $subject->demands->count() ? $subject->demands->first()->deadline->diffForHumans() : 'none' }}</span>
+				<div class="text-sm dark-light-text max-w-36">
+					<strong class="block">Deadline</strong>
+					<span class="block truncate">{{ $subject->demands->count() ? $subject->demands()->latest('created_at')->first()->title : 'none' }}</span>
+					<span class="block">{{ $subject->demands->count() ? $subject->demands()->latest('created_at')->first()->deadline->diffForHumans() : 'none' }}</span>
 				</div>
 
 				<div
@@ -145,6 +145,12 @@
 								type="button"
 								class="rounded bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
 							Warrants({{ $subject->warrants->count() }})
+						</button>
+						<button
+								wire:click="showWarrants"
+								type="button"
+								class="rounded bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+							Hostages({{ $subject->warrants->count() }})
 						</button>
 					</div>
 				</div>

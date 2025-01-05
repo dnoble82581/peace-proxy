@@ -40,6 +40,11 @@ class Subject extends Model
         return $this->hasMany(CallLog::class);
     }
 
+    public function hostages(): HasMany
+    {
+        return $this->hasMany(Hostage::class);
+    }
+
     public function demands(): HasMany
     {
         return $this->hasMany(Demand::class);
