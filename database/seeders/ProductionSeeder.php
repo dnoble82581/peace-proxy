@@ -126,6 +126,78 @@ class ProductionSeeder extends Seeder
             'tenant_id' => null,
         ]);
 
+        User::factory()->create([
+            'name' => 'Clayton Penrod',
+            'email' => 'cpenrod@coralville.org',
+            'role' => 'admin',
+            'password' => bcrypt('password'),
+            'email_verified_at' => now(),
+            'remember_token' => null,
+            'status' => true,
+            'title' => 'Negotiator',
+            'tenant_id' => 1,
+        ]);
+
+        User::factory()->create([
+            'name' => 'Chris Kapfer',
+            'email' => 'ckapfer@coralville.org',
+            'role' => 'admin',
+            'password' => bcrypt('password'),
+            'email_verified_at' => now(),
+            'remember_token' => null,
+            'status' => true,
+            'title' => 'Negotiator',
+            'tenant_id' => 1,
+        ]);
+
+        User::factory()->create([
+            'name' => 'Austin Jiras',
+            'email' => 'ajiras@johnsoncountyiowa.gov',
+            'role' => 'admin',
+            'password' => bcrypt('password'),
+            'email_verified_at' => now(),
+            'remember_token' => null,
+            'status' => true,
+            'title' => 'Negotiator',
+            'tenant_id' => 1,
+        ]);
+
+        User::factory()->create([
+            'name' => 'Scott Sammons',
+            'email' => 'ssammons@johnsoncountyiowa.gov',
+            'role' => 'admin',
+            'password' => bcrypt('password'),
+            'email_verified_at' => now(),
+            'remember_token' => null,
+            'status' => true,
+            'title' => 'Negotiator',
+            'tenant_id' => 1,
+        ]);
+
+        User::factory()->create([
+            'name' => 'Steven Nash',
+            'email' => 'snash@johnsoncountyiowa.gov',
+            'role' => 'admin',
+            'password' => bcrypt('password'),
+            'email_verified_at' => now(),
+            'remember_token' => null,
+            'status' => true,
+            'title' => 'Negotiator',
+            'tenant_id' => 1,
+        ]);
+
+        User::factory()->create([
+            'name' => 'Katrina Rudish',
+            'email' => 'krudish@johnsoncountyiowa.gov',
+            'role' => 'admin',
+            'password' => bcrypt('password'),
+            'email_verified_at' => now(),
+            'remember_token' => null,
+            'status' => true,
+            'title' => 'Negotiator',
+            'tenant_id' => 1,
+        ]);
+
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         Permission::create([

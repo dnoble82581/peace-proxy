@@ -121,7 +121,7 @@
 			class="divide-y divide-gray-100 mt-3 dark:divide-gray-700">
 
 		@if($room->subject->demands->count() == 0)
-			<div>No current Demands</div>
+			<div class="ml-8">No current Demands</div>
 		@else
 			@foreach($room->subject->demands as $demand)
 				<div class="px-6 mt-4">

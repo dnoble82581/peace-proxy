@@ -19,7 +19,7 @@ class CreateDemandForm extends Modal
     public string $type;
 
     #[Validate('string|nullable|min:3|max:755')]
-    public string $notes;
+    public string $notes = '';
 
     #[Validate('required|date|after:today')]
     public string $deadline;
