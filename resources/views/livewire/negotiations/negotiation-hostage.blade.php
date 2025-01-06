@@ -31,10 +31,16 @@
 			));
 		}
 
+		public function addHostage()
+		{
+			return redirect(route('create.hostage', ['room' => $this->room]));
+		}
+
 		public function getListeners():array
 		{
 			return [
 				"echo-presence:hostage.{$this->room->id},HostageEditedEvent" => 'refresh',
+				"echo-presence:hostage.{$this->room->id},HostageCreatedEvent" => 'refresh',
 			];
 		}
 	}
@@ -42,8 +48,9 @@
 ?>
 
 <div x-data="{showList:true}">
-	<div>
+	<div class="px-3">
 		<x-board-elements.category-header
+				click-action="addHostage"
 				class="bg-violet-400 dark:bg-violet-600 border-gray-300"
 				value="Hostages">
 			<x-slot:actions>

@@ -31,7 +31,7 @@
 			<div class="hidden sm:flex sm:flex-col sm:items-end">
 				<p class="text-sm/6 text-gray-900">{{ $hostage->relationship_to_subject }}</p>
 				<p class="mt-1 text-xs/5 text-gray-500">Last Contact
-					<time datetime="2023-01-23T13:23Z">{{ $hostage->last_contacted_at->diffForHumans() ?? 'None' }}</time>
+					<time datetime="2023-01-23T13:23Z">{{ $hostage->last_contacted_at ? $hostage->last_contacted_at->diffForHumans() : 'None' }}</time>
 				</p>
 			</div>
 			<button

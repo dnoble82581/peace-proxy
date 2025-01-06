@@ -1,9 +1,8 @@
 <?php
 
-	use App\Events\HostageEditedEvent;
+
+	use App\Events\HostageCreatedEvent;
 	use App\Livewire\Forms\HostageForm;
-	use App\Models\Hostage;
-	use App\Models\HostageImage;
 	use App\Models\Room;
 	use Livewire\Volt\Component;
 	use Livewire\WithFileUploads;
@@ -11,43 +10,28 @@
 	new class extends Component {
 		use WithFileUploads;
 
-		public Room $room;
 		public HostageForm $form;
-		public Hostage $hostage;
+		public Room $room;
 
-		public function mount($roomId, $hostage = null):void
+		public function mount($roomId)
 		{
-			if ($hostage) {
-				$this->hostage = $hostage;
-				$this->form->setForm($this->hostage);
-			}
 			$this->room = $this->getRoom($roomId);
 		}
 
-		private function getRoom($roomId):Room
+		public function getRoom($roomId)
 		{
 			return Room::findOrFail($roomId);
 		}
 
-		public function editHostage():void
+		public function cancel()
 		{
-			$this->form->update();
-			event(new HostageEditedEvent($this->room->id, $this->hostage->id));
-			$this->redirect(route('negotiation.room', $this->room->id));
+			return redirect(route('negotiation.room', $this->room));
 		}
 
-		public function removeImage($imageId):void
+		public function saveHostage()
 		{
-			$imageToDelete = HostageImage::findOrFail($imageId);
-			if (Storage::disk('s3-public')->exists($imageToDelete->image)) {
-				Storage::disk('s3-public')->delete($imageToDelete->image);
-			}
-			$imageToDelete->delete();
-		}
-
-		public function cancel():void
-		{
-			$this->redirect(route('negotiation.room', $this->room));
+			$this->form->create($this->room);
+			event(new HostageCreatedEvent($this->room->id));
 		}
 	}
 
@@ -56,7 +40,7 @@
 <div class="mt-5 pb-8">
 	<x-form-layouts.form-layout
 			class="bg-white"
-			submit="editHostage">
+			submit="saveHostage">
 		<x-slot:header>Edit Hostage</x-slot:header>
 		<x-slot:description>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae dolore minus natus
 		                    necessitatibus odio possimus quam sed temporibus, voluptate? Accusamus asperiores aspernatur
@@ -137,7 +121,7 @@
 			<x-input
 					label="Relation to Subject"
 					class="sm:col-span-2"
-					wire:model="form.relation_to_subject"
+					wire:model="form.relationship_to_subject"
 					placeholder="Relation to Subject" />
 			<x-select
 					wire:model="form.children"
@@ -217,6 +201,12 @@
 					placeholder="Snapchat Url"
 					wire:model="form.snapchat_url" />
 
+			<x-input
+					class="sm:col-span-2"
+					label="Youtube Url"
+					placeholder="Youtube Url"
+					wire:model="form.youtube_url" />
+
 			<x-datetime-picker
 					label="Last Contact"
 					class="sm:col-span-2"
@@ -247,24 +237,6 @@
 									src="{{ $image->temporaryUrl() }}"
 									class="h-24 w-24 object-cover rounded-md"
 									alt="Hostage Image">
-						@endforeach
-					@endif
-					@if($this->hostage->images()->count())
-						@foreach($this->hostage->images as $image)
-							<div class="relative">
-								<img
-										class="h-24 w-full object-cover rounded-md"
-										src="{{ $this->hostage->imageUrl($image->image) }}"
-										alt="Hostage Image">
-								<button
-										type="button"
-										class="absolute bottom-1 right-2 text-white hover:text-rose-400"
-										wire:click="removeImage({{ $image->id }})">
-									<x-heroicons::outline.trash
-											class="w-4 h-4 " />
-								</button>
-							</div>
-
 						@endforeach
 					@endif
 				</div>

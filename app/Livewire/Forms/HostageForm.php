@@ -13,18 +13,6 @@ class HostageForm extends Form
     #[Validate(['images.*' => 'image|max:1024'])]
     public $images = [];
 
-    #[Validate(['required', 'integer'])]
-    public $negotiation_id = '';
-
-    #[Validate(['required', 'integer'])]
-    public $subject_id = '';
-
-    #[Validate(['required', 'integer'])]
-    public $room_id = '';
-
-    #[Validate(['required', 'integer'])]
-    public $tenant_id = '';
-
     #[Validate(['required'])]
     public $name = '';
 
@@ -56,13 +44,13 @@ class HostageForm extends Form
     public $dob = '';
 
     #[Validate(['nullable', 'integer'])]
-    public $age = '';
+    public $age = 0;
 
     #[Validate(['nullable', 'integer'])]
-    public $children = '';
+    public $children = 0;
 
     #[Validate(['nullable'])]
-    public $veteran = '';
+    public $veteran = 'Unknown';
 
     #[Validate(['nullable'])]
     public $facebook_url = '';
@@ -132,6 +120,49 @@ class HostageForm extends Form
         }
     }
 
+    public function create($room)
+    {
+        $this->validate();
+
+        $this->hostage = $room->hostages()->create([
+            'negotiation_id' => $room->negotiation_id,
+            'room_id' => $room->id,
+            'subject_id' => $room->subject_id,
+            'tenant_id' => $room->tenant_id,
+            'name' => $this->name,
+            'phone' => $this->phone,
+            'email' => $this->email,
+            'race' => $this->race,
+            'gender' => $this->gender,
+            'address' => $this->address,
+            'city' => $this->city,
+            'state' => $this->state,
+            'zipcode' => $this->zipcode,
+            'dob' => $this->dob,
+            'age' => $this->age,
+            'children' => $this->children,
+            'veteran' => $this->veteran,
+            'facebook_url' => $this->facebook_url,
+            'x_url' => $this->x_url,
+            'instagram_url' => $this->instagram_url,
+            'youtube_url' => $this->youtube_url,
+            'snapchat_url' => $this->snapchat_url,
+            'notes' => $this->notes,
+            'physical_description' => $this->physical_description,
+            'substance_abuse' => $this->substance_abuse,
+            'last_contacted_at' => $this->last_contacted_at,
+            'relationship_to_subject' => $this->relationship_to_subject,
+            'weapons' => $this->weapons,
+            'highest_education' => $this->highest_education,
+            'medical_issues' => $this->medical_issues,
+            'mental_health_history' => $this->mental_health_history,
+        ]);
+
+        if ($this->images) {
+            $this->processImages();
+        }
+    }
+
     private function saveImage($image)
     {
         return $image->store('hostages/'.$this->hostage->id, 's3-public');
@@ -140,10 +171,6 @@ class HostageForm extends Form
     public function setForm(Hostage $hostage): void
     {
         $this->hostage = $hostage;
-        $this->negotiation_id = $hostage->negotiation_id;
-        $this->subject_id = $hostage->subject_id;
-        $this->room_id = $hostage->room_id;
-        $this->tenant_id = $hostage->tenant_id;
         $this->name = $hostage->name;
         $this->phone = $hostage->phone;
         $this->email = $hostage->email;

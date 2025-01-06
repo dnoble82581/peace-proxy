@@ -1,81 +1,83 @@
 <?php
 
-use App\Events\TriggerDeletedEvent;
-use App\Models\Room;
-use App\Models\Trigger;
-use App\Models\User;
-use Livewire\Volt\Component;
+	use App\Events\TriggerDeletedEvent;
+	use App\Models\Room;
+	use App\Models\Trigger;
+	use App\Models\User;
+	use Livewire\Volt\Component;
 
-new class extends Component {
-    public Room $room;
-    public User $user;
-    public Trigger $trigger;
+	new class extends Component {
+		public Room $room;
+		public User $user;
+		public Trigger $trigger;
 
 
-    public function mount($room)
-    {
-        $this->$room = $room;
-        $this->user = $this->getUser();
-    }
+		public function mount($room)
+		{
+			$this->$room = $room;
+			$this->user = $this->getUser();
+		}
 
-    private function getUser()
-    {
-        return auth()->user();
-    }
+		private function getUser()
+		{
+			return auth()->user();
+		}
 
-    public function createTrigger()
-    {
-        $this->dispatch('modal.open', component: 'modals.create-trigger-form', arguments: [
-            'roomId' => $this->room->id
-        ]);
-    }
+		public function createTrigger()
+		{
+			$this->dispatch('modal.open', component: 'modals.create-trigger-form', arguments: [
+				'roomId' => $this->room->id
+			]);
+		}
 
-    public function getListeners()
-    {
-        return [
-            "echo-presence:trigger.{$this->room->id},TriggerCreatedEvent" => 'refresh',
-            "echo-presence:trigger.{$this->room->id},TriggerEditedEvent" => 'refresh',
-            "echo-presence:trigger.{$this->room->id},TriggerDeletedEvent" => 'refresh',
-        ];
-    }
+		public function getListeners()
+		{
+			return [
+				"echo-presence:trigger.{$this->room->id},TriggerCreatedEvent" => 'refresh',
+				"echo-presence:trigger.{$this->room->id},TriggerEditedEvent" => 'refresh',
+				"echo-presence:trigger.{$this->room->id},TriggerDeletedEvent" => 'refresh',
+			];
+		}
 
-    public function deleteTrigger($triggerId)
-    {
-        $triggerToDelete = Trigger::findOrFail($triggerId);
-        $triggerToDelete->delete();
-        event(new TriggerDeletedEvent($triggerId, $this->room->id));
-    }
+		public function deleteTrigger($triggerId)
+		{
+			$triggerToDelete = Trigger::findOrFail($triggerId);
+			$triggerToDelete->delete();
+			event(new TriggerDeletedEvent($triggerId, $this->room->id));
+		}
 
-    public function editTrigger($triggerId)
-    {
-        $this->dispatch('modal.open', component: 'modals.edit-trigger-form', arguments: [
-            'roomId' => $this->room->id, 'triggerId' => $triggerId
-        ]);
-    }
-}
+		public function editTrigger($triggerId)
+		{
+			$this->dispatch('modal.open', component: 'modals.edit-trigger-form', arguments: [
+				'roomId' => $this->room->id, 'triggerId' => $triggerId
+			]);
+		}
+	}
 
 ?>
 
 <div x-data="{showList: true}">
-	<x-board-elements.category-header
-			class="bg-rose-400 dark:bg-rose-500 dark:text-slate-300"
-			value="Triggers"
-			click-action="createTrigger()">
-		<x-slot:actions>
-			<button @click="showList = !showList">
-				<x-heroicons::mini.solid.chevron-up-down class="w-5 h-5 text-slate-700 dark:text-slate-300" />
-			</button>
-			<span
-					x-transition:enter="transition ease-out duration-200"
-					x-transition:enter-start="opacity-0 scale-95"
-					x-transition:enter-end="opacity-100 scale-100"
-					x-transition:leave="transition ease-in duration-75"
-					x-transition:leave-start="opacity-100 scale-100"
-					x-transition:leave-end="opacity-0 scale-95"
-					class="text-sm text-slate-700 dark:text-slate-300"
-					x-show="!showList">{{ $room->subject->triggers->count() }} items hidden</span>
-		</x-slot:actions>
-	</x-board-elements.category-header>
+	<div class="px-3">
+		<x-board-elements.category-header
+				class="bg-rose-400 dark:bg-rose-500 dark:text-slate-300"
+				value="Triggers"
+				click-action="createTrigger()">
+			<x-slot:actions>
+				<button @click="showList = !showList">
+					<x-heroicons::mini.solid.chevron-up-down class="w-5 h-5 text-slate-700 dark:text-slate-300" />
+				</button>
+				<span
+						x-transition:enter="transition ease-out duration-200"
+						x-transition:enter-start="opacity-0 scale-95"
+						x-transition:enter-end="opacity-100 scale-100"
+						x-transition:leave="transition ease-in duration-75"
+						x-transition:leave-start="opacity-100 scale-100"
+						x-transition:leave-end="opacity-0 scale-95"
+						class="text-sm text-slate-700 dark:text-slate-300"
+						x-show="!showList">{{ $room->subject->triggers->count() }} items hidden</span>
+			</x-slot:actions>
+		</x-board-elements.category-header>
+	</div>
 
 	<div
 			x-transition:enter="transition ease-out duration-200"

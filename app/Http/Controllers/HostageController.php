@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Hostage;
+use App\Models\Room;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Http\Request;
 
 class HostageController extends Controller
 {
@@ -17,44 +17,9 @@ class HostageController extends Controller
         return Hostage::all();
     }
 
-    public function store(Request $request)
+    public function store(Room $room)
     {
-        $this->authorize('create', Hostage::class);
-
-        $data = $request->validate([
-            'negotiation_id' => ['required', 'exists:negotiations'],
-            'subject_id' => ['required', 'exists:subjects'],
-            'room_id' => ['required', 'exists:rooms'],
-            'image_path' => ['nullable'],
-            'name' => ['required'],
-            'phone' => ['nullable'],
-            'email' => ['nullable', 'email', 'max:254'],
-            'race' => ['nullable'],
-            'gender' => ['nullable'],
-            'address' => ['nullable'],
-            'city' => ['nullable'],
-            'state' => ['nullable'],
-            'zipcode' => ['nullable'],
-            'dob' => ['nullable'],
-            'age' => ['nullable', 'integer'],
-            'children' => ['nullable', 'integer'],
-            'veteran' => ['nullable'],
-            'facebook_url' => ['nullable'],
-            'x_url' => ['nullable'],
-            'instagram_url' => ['nullable'],
-            'youtube_url' => ['nullable'],
-            'snapchat_url' => ['nullable'],
-            'notes' => ['nullable'],
-            'physical_description' => ['nullable'],
-            'relationship_to_subject' => ['nullable'],
-            'weapons' => ['nullable'],
-            'highest_education' => ['nullable'],
-            'medical_issues' => ['nullable'],
-            'mental_health_history' => ['nullable'],
-            'substance_abuse' => ['nullable'],
-        ]);
-
-        return Hostage::create($data);
+        return view('pages.hostage.create-hostage')->with('roomId', $room->id);
     }
 
     public function show(Hostage $hostage)

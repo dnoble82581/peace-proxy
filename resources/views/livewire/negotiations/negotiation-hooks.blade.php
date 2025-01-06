@@ -1,126 +1,127 @@
 <?php
 
-use App\Events\HookDeletedEvent;
-use App\Models\Hook;
-use App\Models\Room;
-use App\Models\User;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Livewire\Volt\Component;
-use App\Policies\HookPolicy;
+	use App\Events\HookDeletedEvent;
+	use App\Models\Hook;
+	use App\Models\Room;
+	use App\Models\User;
+	use Illuminate\Auth\Access\AuthorizationException;
+	use Illuminate\Database\Eloquent\ModelNotFoundException;
+	use Livewire\Volt\Component;
+	use App\Policies\HookPolicy;
 
-/**
- * Livewire component for managing negotiation hooks.
- * Handles actions such as creating, editing, and deleting hooks tied to a specific room,
- * and listens for related events via broadcasting.
- */
-new class extends Component {
-    /**
-     * The current room associated with the hooks.
-     *
-     * @var Room
-     */
-    public Room $room;
+	/**
+	 * Livewire component for managing negotiation hooks.
+	 * Handles actions such as creating, editing, and deleting hooks tied to a specific room,
+	 * and listens for related events via broadcasting.
+	 */
+	new class extends Component {
+		/**
+		 * The current room associated with the hooks.
+		 *
+		 * @var Room
+		 */
+		public Room $room;
 
-    /**
-     * The authenticated user.
-     *
-     * @var User
-     */
-    public User $user;
+		/**
+		 * The authenticated user.
+		 *
+		 * @var User
+		 */
+		public User $user;
 
-    /**
-     * Initialize the component with the provided room and authenticated user data.
-     *
-     * @param  Room  $room  Represents the room the user is managing hooks for.
-     */
-    public function mount(Room $room):void
-    {
-        $this->room = $room;
-        $this->user = auth()->user();
-    }
+		/**
+		 * Initialize the component with the provided room and authenticated user data.
+		 *
+		 * @param  Room  $room  Represents the room the user is managing hooks for.
+		 */
+		public function mount(Room $room):void
+		{
+			$this->room = $room;
+			$this->user = auth()->user();
+		}
 
-    /**
-     * Define the event listeners for the Livewire component.
-     * These handle real-time events for hook creation, editing, and deletion.
-     *
-     * @return array An array of event-key-to-method mappings.
-     */
-    public function getListeners():array
-    {
-        return [
-            // Listens for HookCreatedEvent and refreshes the component
-            "echo-presence:hook.{$this->room->id},HookCreatedEvent" => 'refresh',
-            // Listens for HookDeletedEvent and refreshes the component
-            "echo-presence:hook.{$this->room->id},HookDeletedEvent" => 'refresh',
-            // Listens for HookEditedEvent and refreshes the component
-            "echo-presence:hook.{$this->room->id},HookEditedEvent" => 'refresh',
-        ];
-    }
+		/**
+		 * Define the event listeners for the Livewire component.
+		 * These handle real-time events for hook creation, editing, and deletion.
+		 *
+		 * @return array An array of event-key-to-method mappings.
+		 */
+		public function getListeners():array
+		{
+			return [
+				// Listens for HookCreatedEvent and refreshes the component
+				"echo-presence:hook.{$this->room->id},HookCreatedEvent" => 'refresh',
+				// Listens for HookDeletedEvent and refreshes the component
+				"echo-presence:hook.{$this->room->id},HookDeletedEvent" => 'refresh',
+				// Listens for HookEditedEvent and refreshes the component
+				"echo-presence:hook.{$this->room->id},HookEditedEvent" => 'refresh',
+			];
+		}
 
-    /**
-     * Opens a modal for creating a new hook tied to the current room.
-     *
-     * This will trigger a frontend event (`modal.open`) to display the hook creation form.
-     */
-    public function addHook():void
-    {
-        $this->dispatch('modal.open', component: 'modals.create-hook-form', arguments: ['roomId' => $this->room->id]);
-    }
+		/**
+		 * Opens a modal for creating a new hook tied to the current room.
+		 *
+		 * This will trigger a frontend event (`modal.open`) to display the hook creation form.
+		 */
+		public function addHook():void
+		{
+			$this->dispatch('modal.open', component: 'modals.create-hook-form',
+				arguments: ['roomId' => $this->room->id]);
+		}
 
-    /**
-     * Handles deletion of a specific hook by ID.
-     * Ensures only authorized users can delete hooks, and dispatches an event on deletion.
-     *
-     * @param  int  $hookId  The ID of the hook to delete.
-     *
-     * @return void
-     */
-    public function deleteHook(int $hookId):void
-    {
-        // Find the hook by ID within the current room
-        $hook = $this->findHookOrFail($hookId);
+		/**
+		 * Handles deletion of a specific hook by ID.
+		 * Ensures only authorized users can delete hooks, and dispatches an event on deletion.
+		 *
+		 * @param  int  $hookId  The ID of the hook to delete.
+		 *
+		 * @return void
+		 */
+		public function deleteHook(int $hookId):void
+		{
+			// Find the hook by ID within the current room
+			$hook = $this->findHookOrFail($hookId);
 
-        try {
-            // Check if the authenticated user is authorized to delete the hook
+			try {
+				// Check if the authenticated user is authorized to delete the hook
 //            $this->authorize('delete', $hook);
 
-            // Perform deletion and broadcast the HookDeletedEvent
-            $hook->delete();
-            event(new HookDeletedEvent($hookId, $this->room->id));
-        } catch (AuthorizationException $exception) {
-            // Handle the case where the user is not authorized to delete the hook
-            session()->flash('error', 'You are not authorized to delete this hook.');
-        }
-    }
+				// Perform deletion and broadcast the HookDeletedEvent
+				$hook->delete();
+				event(new HookDeletedEvent($hookId, $this->room->id));
+			} catch (AuthorizationException $exception) {
+				// Handle the case where the user is not authorized to delete the hook
+				session()->flash('error', 'You are not authorized to delete this hook.');
+			}
+		}
 
-    /**
-     * Finds a hook by its ID within the current room, or throws an exception if not found.
-     *
-     * @param  int  $hookId  The ID of the hook.
-     *
-     * @return Hook The found hook.
-     * @throws ModelNotFoundException
-     */
-    private function findHookOrFail(int $hookId):Hook
-    {
-        return Hook::findOrFail($hookId);
-    }
+		/**
+		 * Finds a hook by its ID within the current room, or throws an exception if not found.
+		 *
+		 * @param  int  $hookId  The ID of the hook.
+		 *
+		 * @return Hook The found hook.
+		 * @throws ModelNotFoundException
+		 */
+		private function findHookOrFail(int $hookId):Hook
+		{
+			return Hook::findOrFail($hookId);
+		}
 
-    /**
-     * Opens a modal for editing an existing hook by ID.
-     *
-     * This will trigger a frontend event (`modal.open`) to display the hook editing form.
-     *
-     * @param  int  $hookId  The ID of the hook to edit.
-     */
-    public function editHook(int $hookId):void
-    {
-        $this->dispatch('modal.open', component: 'modals.edit-hook-form', arguments: [
-            'hookId' => $hookId, 'roomId' => $this->room->id
-        ]);
-    }
-}
+		/**
+		 * Opens a modal for editing an existing hook by ID.
+		 *
+		 * This will trigger a frontend event (`modal.open`) to display the hook editing form.
+		 *
+		 * @param  int  $hookId  The ID of the hook to edit.
+		 */
+		public function editHook(int $hookId):void
+		{
+			$this->dispatch('modal.open', component: 'modals.edit-hook-form', arguments: [
+				'hookId' => $hookId, 'roomId' => $this->room->id
+			]);
+		}
+	}
 
 ?>
 
@@ -129,7 +130,7 @@ new class extends Component {
 		x-data="{showList:true}">
 
 	<!-- Section header for hooks with a button for adding a new hook -->
-	<div class="">
+	<div class="px-3">
 		<x-board-elements.category-header
 				id="HookHeader"
 				class="border-gray-300 dark:bg-blue-500 bg-blue-400"
