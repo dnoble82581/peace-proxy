@@ -26,7 +26,7 @@ class Hostage extends Model
 
     public function images(): HasMany
     {
-        return $this->hasMany(Hostageimage::class);
+        return $this->hasMany(HostageImage::class);
     }
 
     public function imageUrl($image): string
