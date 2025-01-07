@@ -15,7 +15,7 @@
 			@endif
 
 			<div class="min-w-0 flex-auto">
-				<p class="text-sm/6 font-semibold text-gray-900">
+				<p class="text-sm/6 font-semibold dark-light-text">
 					<a href="#">
 						{{ $hostage->name }}
 					</a>
@@ -29,9 +29,9 @@
 		</div>
 		<div class="flex shrink-0 items-center gap-x-4">
 			<div class="hidden sm:flex sm:flex-col sm:items-end">
-				<p class="text-sm/6 text-gray-900">{{ $hostage->relationship_to_subject }}</p>
+				<p class="text-sm/6 dark-light-text">{{ $hostage->relationship_to_subject }}</p>
 				<p class="mt-1 text-xs/5 text-gray-500">Last Contact
-					<time datetime="2023-01-23T13:23Z">{{ $hostage->last_contacted_at ? $hostage->last_contacted_at->diffForHumans() : 'None' }}</time>
+					<time datetime="2023-01-23T13:23Z">{{ isset($hostage->last_contacted_at) ? $hostage->last_contacted_at->diffForHumans() : 'None' }}</time>
 				</p>
 			</div>
 			<button
