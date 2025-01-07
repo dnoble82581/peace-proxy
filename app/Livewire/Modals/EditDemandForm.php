@@ -19,7 +19,7 @@ class EditDemandForm extends Modal
     #[Validate('string|required|min:3|max:755')]
     public string $type;
 
-    #[Validate('string|nullable|min:3|max:755')]
+    #[Validate('string|nullable|min:3')]
     public string $notes;
 
     #[Validate('required|date|after:today')]
