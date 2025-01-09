@@ -1,27 +1,28 @@
-@php use Carbon\Carbon; @endphp
-@props(['demand'])
+@props(['associate' => null])
 <li
 		x-data="{ details: true }"
 		class="dark:bg-gray-700 rounded shadow">
 	<div class="flex items-center justify-between gap-x-6 p-4">
-		<div class="min-w-0">
-			<div class="flex items-start gap-x-3">
-				<p class="text-sm/6 font-semibold dark-light-text capitalize">{{ $demand->title }}</p>
-				<span class="inline-flex items-center rounded-md bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 capitalize">{{ $demand->status }}</span>
-			</div>
-			<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500 dark:text-slate-300">
-				<p class="whitespace-nowrap text-red-700 dark:text-slate-300">Due on
-					<time datetime="2023-03-17T00:00Z">{{ $demand->deadline->diffForHumans() }}</time>
-				</p>
-			</div>
-		</div>
-		<div class="min-w-0">
-			<div class="flex items-start gap-x-3">
-				<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300">{{ $demand->type }}</p>
-			</div>
-			<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
-				<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
-					<p class="whitespace-nowrap text-gray-500 dark:text-slate-300">{{ $demand->status }}
+		<div class="flex items-center gap-x-3">
+			@if($associate->images()->count())
+				<img
+						class="w-14 h-14 rounded-full"
+						src="{{ $associate->imageUrl($associate->images()->first()->image) }}"
+						alt="">
+			@else
+				<img
+						class="w-14 h-14 rounded-full"
+						src="{{ $associate->temporaryImageUrl() }}"
+						alt="temporary image">
+			@endif
+			<div class="min-w-0">
+				<div class="flex items-start gap-x-3">
+					<p class="text-sm/6 font-semibold dark-light-text capitalize">{{ $associate->name }}</p>
+					<span class="inline-flex items-center rounded-md bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 capitalize">status</span>
+				</div>
+				<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500 dark:text-slate-300">
+					<p class="whitespace-nowrap dark-light-text">
+						{{ $associate->email }}
 					</p>
 				</div>
 			</div>
@@ -30,6 +31,16 @@
 				class="flex flex-none items-center gap-x-4">
 			<span class="sr-only">, Demand Details</span>
 			<div class="relative flex items-center gap-x-2">
+				<div class="min-w-0">
+					<div class="flex items-start gap-x-3 justify-end">
+						<p class="text-sm/6 font-semibold dark-light-text capitalize">{{ $associate->relationship_to_subject }}</p>
+					</div>
+					<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500 dark:text-slate-300">
+						<p class="whitespace-nowrap dark-light-text">Last Contact:
+							{{ $associate->last_contacted_at->diffForHumans() }}
+						</p>
+					</div>
+				</div>
 				<button
 						@click="details = !details"
 						:aria-expanded="details.toString()"
@@ -38,7 +49,7 @@
 						@keydown.space.prevent="details = !details"
 						class="focus:outline-none focus-visible:ring focus-visible:ring-offset-2 focus-visible:ring-blue-500">
 					<span class="sr-only">Toggle Details</span>
-					<x-heroicons::mini.solid.chevron-up-down />
+					<x-heroicons::mini.solid.chevron-up-down class="dark-light-text" />
 				</button>
 				<x-dropdown.dropdown
 						width="40">
@@ -63,28 +74,29 @@
 					<x-slot:content class="overflow-x-visible overflow-y-visible">
 						<x-dropdown.dropdown-link>
 							<button
-									wire:click="sendRequest({{ $demand->id }})"
-									class="block px-3 py-1 text-sm/6 text-gray-900 dark-light-text"
+									wire:click="editAssociate({{ $associate->id }})"
+									class="block px-3 py-1 text-sm/6 text-gray-900 h-full"
 									role="menuitem"
 									tabindex="-1"
-									id="options-menu-0-item-0">Request<span class="sr-only">, Request Demand</span>
+									id="options-menu-0-item-1">Edit<span class="sr-only">, Edit Associate</span>
 							</button>
 						</x-dropdown.dropdown-link>
 						<x-dropdown.dropdown-link>
 							<button
-									wire:click="editDemand({{ $demand->id }})"
-									class="block px-3 py-1 text-sm/6 text-gray-900 h-full dark-light-text"
+									wire:click="showAssociate({{ $associate->id }})"
+									class="block px-3 py-1 text-sm/6 text-gray-900 h-full"
 									role="menuitem"
 									tabindex="-1"
-									id="options-menu-0-item-1">Edit<span class="sr-only">, Edit Demand</span></button>
+									id="options-menu-0-item-1">View<span class="sr-only">, View Associate</span>
+							</button>
 						</x-dropdown.dropdown-link>
 						<x-dropdown.dropdown-link>
 							<button
-									wire:click="deleteDemand({{ $demand->id }})"
-									class="block px-3 py-1 text-sm/6 text-gray-900 h-full dark-light-text"
+									wire:click="deleteAssociate({{ $associate }})"
+									class="block px-3 py-1 text-sm/6 text-gray-900 h-full"
 									role="menuitem"
 									tabindex="-1"
-									id="options-menu-0-item-1">Delete<span class="sr-only">, Delete Demand</span>
+									id="options-menu-0-item-1">Delete<span class="sr-only">, Delete Associate</span>
 							</button>
 						</x-dropdown.dropdown-link>
 					</x-slot:content>
@@ -105,7 +117,7 @@
 			<p
 					role="region"
 					class="text-sm/6 text-gray-500 dark:text-slate-300">
-				{{ $demand->description }}
+				{{ $associate->notes }}
 			</p>
 		</div>
 	</div>

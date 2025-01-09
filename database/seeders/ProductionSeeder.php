@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\associate;
 use App\Models\CallLog;
 use App\Models\Demand;
 use App\Models\Hook;
-use App\Models\Hostage;
 use App\Models\MoodLog;
 use App\Models\Negotiation;
 use App\Models\Room;
@@ -80,7 +80,7 @@ class ProductionSeeder extends Seeder
                 'tenant_id' => $room->tenant_id,
             ]);
 
-            Hostage::factory(4)->create([
+            associate::factory(4)->create([
                 'subject_id' => $subject->id,
                 'tenant_id' => $room->tenant_id,
                 'room_id' => $room->id,
@@ -104,7 +104,7 @@ class ProductionSeeder extends Seeder
                 'tenant_id' => $room->tenant_id,
             ]);
 
-            Hostage::factory(4)->create([
+            associate::factory(4)->create([
                 'subject_id' => $subject->id,
                 'tenant_id' => $room->tenant_id,
                 'room_id' => $room->id,

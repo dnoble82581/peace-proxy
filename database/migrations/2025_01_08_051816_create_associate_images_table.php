@@ -8,9 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('hostage_images', function (Blueprint $table) {
+        Schema::create('associate_images', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('hostage_id');
+            $table->foreignId('associate_id');
             $table->string('image');
             $table->timestamps();
         });

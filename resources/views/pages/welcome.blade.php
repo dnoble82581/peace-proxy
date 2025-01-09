@@ -683,7 +683,7 @@
 										d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" />
 							</svg>
 						</dt>
-						<dd>545 Mavis Island<br>Chicago, IL 99191</dd>
+						<dd>Iowa City, Iowa</dd>
 					</div>
 					<div class="flex gap-x-4">
 						<dt class="flex-none">
@@ -704,7 +704,7 @@
 						</dt>
 						<dd><a
 									class="hover:text-white"
-									href="tel:+1 (555) 234-5678">+1 (555) 234-5678</a></dd>
+									href="tel:+1 (555) 234-5678">+1(319)-594-7290</a></dd>
 					</div>
 					<div class="flex gap-x-4">
 						<dt class="flex-none">
@@ -725,7 +725,7 @@
 						</dt>
 						<dd><a
 									class="hover:text-white"
-									href="mailto:hello@example.com">hello@example.com</a></dd>
+									href="mailto:hello@example.com">dnoble82581@gmail.com</a></dd>
 					</div>
 				</dl>
 			</div>
@@ -1128,7 +1128,7 @@
 			</div>
 		</div>
 		<div class="mt-16 border-t border-white/10 pt-8 sm:mt-20 lg:mt-24">
-			<p class="text-sm/6 text-gray-400">&copy; 2024 Your Company, Inc. All rights reserved.</p>
+			<p class="text-sm/6 text-gray-400">&copy; 2024 Peace Proxy, Inc. All rights reserved.</p>
 		</div>
 	</div>
 </footer>

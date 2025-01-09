@@ -1,9 +1,8 @@
 <?php
 
-	use App\Events\HostageEditedEvent;
-	use App\Livewire\Forms\HostageForm;
-	use App\Models\Hostage;
-	use App\Models\HostageImage;
+
+	use App\Events\AssociateCreatedEvent;
+	use App\Livewire\Forms\AssociateForm;
 	use App\Models\Room;
 	use Livewire\Volt\Component;
 	use Livewire\WithFileUploads;
@@ -11,43 +10,28 @@
 	new class extends Component {
 		use WithFileUploads;
 
+		public AssociateForm $form;
 		public Room $room;
-		public HostageForm $form;
-		public Hostage $hostage;
 
-		public function mount($roomId, $hostage = null):void
+		public function mount($roomId)
 		{
-			if ($hostage) {
-				$this->hostage = $hostage;
-				$this->form->setForm($this->hostage);
-			}
 			$this->room = $this->getRoom($roomId);
 		}
 
-		private function getRoom($roomId):Room
+		public function getRoom($roomId)
 		{
 			return Room::findOrFail($roomId);
 		}
 
-		public function editHostage():void
+		public function cancel()
 		{
-			$this->form->update();
-			event(new HostageEditedEvent($this->room->id, $this->hostage->id));
-			$this->redirect(route('negotiation.room', $this->room->id));
+			return redirect(route('negotiation.room', $this->room));
 		}
 
-		public function removeImage($imageId):void
+		public function saveassociate()
 		{
-			$imageToDelete = HostageImage::findOrFail($imageId);
-			if (Storage::disk('s3-public')->exists($imageToDelete->image)) {
-				Storage::disk('s3-public')->delete($imageToDelete->image);
-			}
-			$imageToDelete->delete();
-		}
-
-		public function cancel():void
-		{
-			$this->redirect(route('negotiation.room', $this->room));
+			$this->form->create($this->room);
+			event(new AssociateCreatedEvent($this->room->id));
 		}
 	}
 
@@ -56,8 +40,8 @@
 <div class="mt-5 pb-8">
 	<x-form-layouts.form-layout
 			class="bg-white"
-			submit="editHostage">
-		<x-slot:header>Edit Hostage</x-slot:header>
+			submit="saveassociate">
+		<x-slot:header>Edit Associate</x-slot:header>
 		<x-slot:description>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae dolore minus natus
 		                    necessitatibus odio possimus quam sed temporibus, voluptate? Accusamus asperiores aspernatur
 		                    beatae dolorem ipsum laborum libero nisi numquam possimus?
@@ -117,13 +101,13 @@
 			<x-select
 					class="sm:col-span-2"
 					wire:model="form.gender"
-					label="Hostage Gender"
+					label="associate Gender"
 					:options="['Male', 'Female', 'Transgender', 'Unknown']" />
 			<x-select
 					class="sm:col-span-2"
 					wire:model="form.race"
-					label="Hostage Race"
-					placeholder="Hostage Race"
+					label="associate Race"
+					placeholder="associate Race"
 					:options="[
 					['name' => 'White', 'id' => 'White', 'description' => '(Europe, Middle East, North Africa)'],
 					['name' => 'Mongoloid', 'id' => 'Mongoloid', 'description' => '(East Asia, Central Asia, Indigenous peoples of the Americas)'],
@@ -137,7 +121,7 @@
 			<x-input
 					label="Relation to Subject"
 					class="sm:col-span-2"
-					wire:model="form.relation_to_subject"
+					wire:model="form.relationship_to_subject"
 					placeholder="Relation to Subject" />
 			<x-select
 					wire:model="form.children"
@@ -217,6 +201,12 @@
 					placeholder="Snapchat Url"
 					wire:model="form.snapchat_url" />
 
+			<x-input
+					class="sm:col-span-2"
+					label="Youtube Url"
+					placeholder="Youtube Url"
+					wire:model="form.youtube_url" />
+
 			<x-datetime-picker
 					label="Last Contact"
 					class="sm:col-span-2"
@@ -246,25 +236,7 @@
 							<img
 									src="{{ $image->temporaryUrl() }}"
 									class="h-24 w-24 object-cover rounded-md"
-									alt="Hostage Image">
-						@endforeach
-					@endif
-					@if($this->hostage->images()->count())
-						@foreach($this->hostage->images as $image)
-							<div class="relative">
-								<img
-										class="h-24 w-full object-cover rounded-md"
-										src="{{ $this->hostage->imageUrl($image->image) }}"
-										alt="Hostage Image">
-								<button
-										type="button"
-										class="absolute bottom-1 right-2 text-white hover:text-rose-400"
-										wire:click="removeImage({{ $image->id }})">
-									<x-heroicons::outline.trash
-											class="w-4 h-4 " />
-								</button>
-							</div>
-
+									alt="associate Image">
 						@endforeach
 					@endif
 				</div>
@@ -281,8 +253,8 @@
 					<x-form-elements.file-input
 							multiple="true"
 							wire-to="form.images"
-							label="Hostage Images"
-							placeholder="Hostage Images" />
+							label="associate Images"
+							placeholder="associate Images" />
 					<p
 							class="mt-0.5 text-xs text-gray-500"
 							id="image-description">.JPG, .PNG, TIFF up to 10MB</p>
@@ -291,8 +263,8 @@
 					<x-form-elements.file-input
 							multiple="true"
 							wire-to="form.images"
-							label="Hostage Images"
-							placeholder="Hostage Images" />
+							label="associate Images"
+							placeholder="associate Images" />
 					<p
 							class="mt-0.5 text-xs text-gray-500"
 							id="image-description">.DOC, .PDF, .CSV up to 10MB</p>

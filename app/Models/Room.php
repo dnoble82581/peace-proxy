@@ -28,9 +28,9 @@ class Room extends Model
             ->using(RoomUser::class);
     }
 
-    public function hostages(): HasMany
+    public function associates(): HasMany
     {
-        return $this->hasMany(Hostage::class);
+        return $this->hasMany(Associate::class);
     }
 
     public function subject(): HasOne

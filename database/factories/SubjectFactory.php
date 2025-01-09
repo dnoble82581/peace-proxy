@@ -42,9 +42,11 @@ class SubjectFactory extends Factory
             'x_url' => $this->faker->url(),
             'instagram_url' => $this->faker->url(),
             'snapchat_url' => $this->faker->url(),
+            'youtube_url' => $this->faker->url(),
+            'weapons' => $this->faker->randomElement(['Yes', 'No', 'Unknown']),
+            'weapons_details' => $this->faker->sentence(15),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
-
             'room_id' => Room::factory(),
             'tenant_id' => 1,
         ];

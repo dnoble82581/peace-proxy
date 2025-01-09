@@ -1,4 +1,4 @@
-@props(['message', 'isOwnMessage', 'isEmergent', 'hasResponse'])
+@props(['message', 'isOwnMessage', 'isEmergent', 'hasResponse', 'id' => ''])
 
 <!--
 Render an individual chat message.
@@ -7,7 +7,9 @@ Render an individual chat message.
     - $isOwnMessage: A boolean indicating if this message belongs to the logged-in user.
 -->
 
-<div class="flex items-start {{ $isOwnMessage ? 'justify-start' : 'justify-end' }} gap-2.5">
+<div
+		id="{{ $id }}"
+		class="flex items-start {{ $isOwnMessage ? 'justify-start' : 'justify-end' }} gap-2.5">
 	<!--
 	Wrapper div to position the message content.
 	- Flexbox is used to align the message and add spacing.
@@ -67,12 +69,10 @@ Render an individual chat message.
 				<button
 						wire:click="showResponses({{ $message->id }})"
 						type="button"
-						class="text-xs font-normal text-indigo-700 dark:text-gray-400"> {{ $message->responses()->count()  }}
+						class="text-xs font-normal text-indigo-700 dark:text-gray-400"> {{ $message->responses()->count() }}
 					responses
 				</button>
 			@endif
 		</div>
-
-		<!-- Footer text typically for delivery status (static in this example). -->
 	</div>
 </div>

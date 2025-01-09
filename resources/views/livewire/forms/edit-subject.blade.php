@@ -18,8 +18,7 @@
 		public SubjectForm $form;
 		public Room $room;
 		public Subject $subject;
-
-
+		
 		public function mount($roomId):void
 		{
 			$this->room = $this->getRoom($roomId);
@@ -108,7 +107,6 @@
 					placeholder="Subject Address" />
 		</div>
 
-		<x-dividers.form-divider class="font-bold">Details</x-dividers.form-divider>
 		<div class="flex flex-col sm:flex-row items-center gap-4">
 			<x-input
 					wire:model="form.city"
@@ -123,6 +121,20 @@
 					label="Zip"
 					placeholder="Subject Zip" />
 		</div>
+
+		<div class="flex flex-col sm:flex-row gap-4">
+			<x-select
+					wire:model="form.weapons"
+					label="Believed to hae weapons?"
+					placeholder="Weapons"
+					:options="['Yes', 'No', 'Unknown']" />
+			<x-textarea
+					label="Weapons Details"
+					placeholder="Weapons Description"
+					wire:model="form.weapons_details" />
+		</div>
+
+		<x-dividers.form-divider class="font-bold">Details</x-dividers.form-divider>
 
 		<div class="flex flex-col sm:flex-row items-center gap-4">
 			<x-datetime-picker

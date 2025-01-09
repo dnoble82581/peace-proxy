@@ -9,20 +9,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
-class Subject extends Model
+class Associate extends Model
 {
     use BelongsToTenant, HasFactory;
 
     protected $guarded = ['id'];
 
-    public function hooks(): HasMany
+    public function negotiation(): BelongsTo
     {
-        return $this->hasMany(Hook::class);
+        return $this->belongsTo(Negotiation::class);
     }
 
-    public function triggers(): HasMany
+    public function subject(): BelongsTo
     {
-        return $this->hasMany(Trigger::class);
+        return $this->belongsTo(Subject::class);
     }
 
     public function room(): BelongsTo
@@ -30,39 +30,14 @@ class Subject extends Model
         return $this->belongsTo(Room::class);
     }
 
-    public function moodLogs(): HasMany
+    public function images(): HasMany
     {
-        return $this->hasMany(MoodLog::class);
+        return $this->hasMany(AssociateImage::class);
     }
 
-    public function callLogs(): HasMany
+    public function imageUrl($image): string
     {
-        return $this->hasMany(CallLog::class);
-    }
-
-    public function associates(): HasMany
-    {
-        return $this->hasMany(associate::class);
-    }
-
-    public function demands(): HasMany
-    {
-        return $this->hasMany(Demand::class);
-    }
-
-    public function documents(): HasMany
-    {
-        return $this->hasMany(Document::class);
-    }
-
-    public function warnings(): HasMany
-    {
-        return $this->hasMany(Warning::class);
-    }
-
-    public function warrants(): HasMany
-    {
-        return $this->hasMany(Warrant::class);
+        return Storage::disk('s3-public')->url($image);
     }
 
     public function phone(): array|string|null
@@ -84,20 +59,16 @@ class Subject extends Model
         return round($age_years);
     }
 
-    public function imageUrl($image): string
+    public function temporaryImageUrl(): string
     {
-        return Storage::disk('s3-public')->url($image);
-    }
-
-    public function images(): HasMany
-    {
-        return $this->hasMany(SubjectImages::class);
+        return 'https://api.dicebear.com/9.x/initials/svg?seed='.$this->name;
     }
 
     protected function casts(): array
     {
         return [
-            'date_of_birth' => 'date',
+            'dob' => 'date',
+            'last_contacted_at' => 'datetime',
         ];
     }
 }

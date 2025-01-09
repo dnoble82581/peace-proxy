@@ -32,8 +32,11 @@ return new class extends Migration
             $table->string('x_url')->nullable();
             $table->string('instagram_url')->nullable();
             $table->string('snapchat_url')->nullable();
+            $table->string('youtube_url')->nullable();
+            $table->string('weapons')->nullable();
+            $table->text('weapons_details')->nullable();
             $table->foreignId('room_id')->constrained('rooms')->cascadeOnDelete();
-            $table->foreignId('tenant_id');
+            $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->timestamps();
         });
     }

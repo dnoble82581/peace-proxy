@@ -2,13 +2,13 @@
 
 namespace App\Livewire\Forms;
 
-use App\Models\Hostage;
+use App\Models\Associate;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
 
-class HostageForm extends Form
+class AssociateForm extends Form
 {
-    public ?Hostage $hostage;
+    public ?Associate $associate;
 
     #[Validate(['images.*' => 'image|max:1024'])]
     public $images = [];
@@ -105,15 +105,15 @@ class HostageForm extends Form
         //            $this->processDocuments();
         //        }
 
-        $this->hostage->update($this->all());
+        $this->associate->update($this->all());
     }
 
     private function processImages(): void
     {
         foreach ($this->images as $image) {
-            $this->hostage->images()->create([
+            $this->associate->images()->create([
                 'image' => $this->saveImage($image),
-                'hostage_id' => $this->hostage->id,
+                'associate_id' => $this->associate->id,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -124,7 +124,7 @@ class HostageForm extends Form
     {
         $this->validate();
 
-        $this->hostage = $room->hostages()->create([
+        $this->associate = $room->associates()->create([
             'negotiation_id' => $room->negotiation_id,
             'room_id' => $room->id,
             'subject_id' => $room->subject_id,
@@ -165,39 +165,39 @@ class HostageForm extends Form
 
     private function saveImage($image)
     {
-        return $image->store('hostages/'.$this->hostage->id, 's3-public');
+        return $image->store('associates/'.$this->associate->id, 's3-public');
     }
 
-    public function setForm(Hostage $hostage): void
+    public function setForm(Associate $associate): void
     {
-        $this->hostage = $hostage;
-        $this->name = $hostage->name;
-        $this->phone = $hostage->phone;
-        $this->email = $hostage->email;
-        $this->race = $hostage->race;
-        $this->gender = $hostage->gender;
-        $this->address = $hostage->address;
-        $this->city = $hostage->city;
-        $this->state = $hostage->state;
-        $this->zipcode = $hostage->zipcode;
-        $this->dob = $hostage->dob;
-        $this->age = $hostage->age;
-        $this->children = $hostage->children;
-        $this->veteran = $hostage->veteran;
-        $this->facebook_url = $hostage->facebook_url;
-        $this->x_url = $hostage->x_url;
-        $this->instagram_url = $hostage->instagram_url;
-        $this->youtube_url = $hostage->youtube_url;
-        $this->snapchat_url = $hostage->snapchat_url;
-        $this->notes = $hostage->notes;
-        $this->physical_description = $hostage->physical_description;
-        $this->relationship_to_subject = $hostage->relationship_to_subject;
-        $this->weapons = $hostage->weapons;
-        $this->highest_education = $hostage->highest_education;
-        $this->medical_issues = $hostage->medical_issues;
-        $this->mental_health_history = $hostage->mental_health_history;
-        $this->substance_abuse = $hostage->substance_abuse;
-        $this->last_contacted_at = $hostage->last_contacted_at;
+        $this->associate = $associate;
+        $this->name = $associate->name;
+        $this->phone = $associate->phone;
+        $this->email = $associate->email;
+        $this->race = $associate->race;
+        $this->gender = $associate->gender;
+        $this->address = $associate->address;
+        $this->city = $associate->city;
+        $this->state = $associate->state;
+        $this->zipcode = $associate->zipcode;
+        $this->dob = $associate->dob;
+        $this->age = $associate->age;
+        $this->children = $associate->children;
+        $this->veteran = $associate->veteran;
+        $this->facebook_url = $associate->facebook_url;
+        $this->x_url = $associate->x_url;
+        $this->instagram_url = $associate->instagram_url;
+        $this->youtube_url = $associate->youtube_url;
+        $this->snapchat_url = $associate->snapchat_url;
+        $this->notes = $associate->notes;
+        $this->physical_description = $associate->physical_description;
+        $this->relationship_to_subject = $associate->relationship_to_subject;
+        $this->weapons = $associate->weapons;
+        $this->highest_education = $associate->highest_education;
+        $this->medical_issues = $associate->medical_issues;
+        $this->mental_health_history = $associate->mental_health_history;
+        $this->substance_abuse = $associate->substance_abuse;
+        $this->last_contacted_at = $associate->last_contacted_at;
     }
 
     private function processDocuments() {}

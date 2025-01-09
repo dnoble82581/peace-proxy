@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\AssociateController;
 use App\Http\Controllers\DocumentController;
-use App\Http\Controllers\HostageController;
 use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\SubjectController;
@@ -30,12 +30,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/negotiation/room/{room}/show/{subject}',
         [SubjectController::class, 'show'])->name('show.subject');
 
-    Route::get('/negotiation/room/{room}/edit-hostage/{hostage}/edit',
-        [HostageController::class, 'update'])->name('edit.hostage');
-    Route::get('negotiation/room/{room}/create-hostage',
-        [HostageController::class, 'store'])->name('create.hostage');
-    Route::get('/negotiation/room/{room}/show-hostage/{hostage:name}',
-        [HostageController::class, 'show'])->name('show.hostage');
+    Route::get('/negotiation/room/{room}/edit-associate/{associate}/edit',
+        [AssociateController::class, 'update'])->name('edit.associate');
+    Route::get('negotiation/room/{room}/create-associate',
+        [AssociateController::class, 'store'])->name('create.associate');
+    Route::get('/negotiation/room/{room}/show-associate/{associate}',
+        [AssociateController::class, 'show'])->name('show.associate');
 
     //    ToDO: Organize routes using controllers instead of PagesController
 

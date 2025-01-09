@@ -83,6 +83,12 @@ class SubjectForm extends Form
     #[Validate(['nullable'])]
     public $snapchat_url = '';
 
+    #[Validate(['nullable'])]
+    public $weapons = 'No';
+
+    #[Validate(['nullable'])]
+    public $weapons_details = '';
+
     public function setForm($subject): void
     {
         $this->subject = $subject;
@@ -108,6 +114,8 @@ class SubjectForm extends Form
         $this->x_url = $this->subject->x_url;
         $this->instagram_url = $this->subject->instagram_url;
         $this->snapchat_url = $this->subject->snapchat_url;
+        $this->weapons = $this->subject->weapons;
+        $this->weapons_details = $this->subject->weapons_details;
     }
 
     public function update(): void
@@ -121,7 +129,7 @@ class SubjectForm extends Form
         $this->subject->update($this->all());
     }
 
-    private function processImages()
+    private function processImages(): void
     {
         foreach ($this->images as $image) {
             $this->subject->images()->create([
@@ -136,7 +144,7 @@ class SubjectForm extends Form
         return $image->store('subjects/'.$this->subject->id, 's3-public');
     }
 
-    private function processDocuments()
+    private function processDocuments(): void
     {
         foreach ($this->documentsToUpload as $document) {
             $filename = pathinfo($document->getClientOriginalName(), PATHINFO_FILENAME)

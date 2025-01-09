@@ -85,7 +85,6 @@
 		 */
 		private function createMessage():Message
 		{
-			
 			return Message::create([
 				'user_id' => $this->user->id,
 				'tenant_id' => $this->user->tenant_id,
@@ -93,6 +92,12 @@
 				'room_id' => $this->room->id,
 				'message' => $this->newMessage,
 			]);
+		}
+
+		public function refreshChat():void
+		{
+			$this->room->load('messages');
+			$this->dispatch('new-message');
 		}
 
 		/**
@@ -119,12 +124,12 @@
 		public function getListeners():array
 		{
 			return [
-				"echo-presence:chat.{$this->room->id},NewMessageEvent" => 'refresh',
+				"echo-presence:chat.{$this->room->id},NewMessageEvent" => 'refreshChat',
 				"echo-presence:chat.{$this->room->id},here" => 'handleUserHere',
 			];
 		}
 
-		public function showResponses($messageId)
+		public function showResponses($messageId):void
 		{
 			$this->dispatch('modal.open', component: 'modals.message-responses',
 				arguments: ['messageId' => $messageId]);
@@ -169,10 +174,17 @@
 	};
 ?>
 
-<div class="bg-white dark:bg-gray-800 shadow-lg">
-	<div class="h-[500px] flex flex-col overflow-y-auto">
+<div
+		class="bg-white dark:bg-gray-800 shadow-lg">
+	<div
+			x-data
+			x-init="$nextTick(() => $el.scrollTop = $el.scrollHeight)"
+			@new-message.window="setTimeout(() => $el.scrollTop = $el.scrollHeight, 100)"
+			id="conversation"
+			class="h-[500px] flex flex-col overflow-y-auto">
 		<div class="flex flex-col justify-end flex-1 p-4">
-			<div class="space-y-1">
+			<div
+					class="space-y-1">
 				@foreach($this->room->messages as $message)
 					@php
 						$isOwnMessage = auth()->id() === $message->user_id;
@@ -191,7 +203,7 @@
 	<form
 			wire:submit.prevent="sendMessage">
 		<label
-				for="chat"
+				for="chat-input"
 				class="sr-only">Your message</label>
 		<div
 				x-data="{alert: @entangle('alert')}"
@@ -223,7 +235,7 @@
 		<div class="flex items-center px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700">
 						<textarea
 								wire:model="newMessage"
-								id="chat"
+								id="chat-input"
 								rows="1"
 								class="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 								placeholder="Your message..."></textarea>

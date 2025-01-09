@@ -28,7 +28,7 @@
 			return $this->room->subject;
 		}
 
-		public function editSubject():Application|Redirector|RedirectResponse
+		public function editSubject():Redirector
 		{
 			return redirect(route('edit.subject',
 				['room' => $this->room, 'subject' => $this->subject]
@@ -51,7 +51,20 @@
 
 ?>
 
-<div class="rounded-lg bg-white dark:bg-gray-800 col-span-6">
+<div class="rounded-lg bg-white dark:bg-gray-800 col-span-6 relative">
+	@if($subject->weapons === 'Yes')
+		<div class="flex items-center gap-4">
+		<span class="relative flex h-3 w-3 mt-2 ml-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
+		</span>
+			<button
+					type="button"
+					class="text-sm flex items-center mt-2 text-red-400 hover:cursor-pointer">Weapons Alert
+				<x-heroicons::micro.solid.arrow-right class="ml-2" />
+			</button>
+		</div>
+	@endif
 	<div class="rounded-lg shadow dark:bg-gray-700">
 		<div class="px-4 py-5 sm:p-6 relative">
 			<div class="flex gap-5 justify-evenly">
@@ -76,7 +89,7 @@
 						</x-slot:content>
 					</x-dropdown.dropdown>
 				</div>
-				<div>
+				<div class="">
 					@if($subject->images()->count())
 						@php
 							$image = $subject->images()->first()->image;
@@ -138,14 +151,43 @@
 						</a>
 					@endif
 				</div>
-				<div class="col-span-5">
+				<div
+						x-cloak
+						class="col-span-5 relative"
+						x-data="{warnings: false}">
 					<div class="flex items-center gap-2">
-						<button
-								wire:click="showWarrants"
-								type="button"
-								class="rounded bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-							Warrants({{ $subject->warrants->count() }})
-						</button>
+						@if($subject->warrants()->count())
+							<button
+									wire:click="showWarrants"
+									type="button"
+									class="rounded bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+								Warrants({{ $subject->warrants->count() }})
+							</button>
+						@endif
+						@if($subject->warnings()->count())
+							<div
+									x-transition:enter="transition ease-out duration-200"
+									x-transition:enter-start="opacity-0 scale-95"
+									x-transition:enter-end="opacity-100 scale-100"
+									x-transition:leave="transition ease-in duration-75"
+									x-transition:leave-start="opacity-100 scale-100"
+									x-transition:leave-end="opacity-0 scale-95"
+									x-show="warnings"
+									class="absolute top-8 right-52">
+								<ul class="list-disc list-inside bg-red-50 text-sm text-red-500 p-3 rounded">
+									@foreach($subject->warnings as $warning)
+										<li>{{ $warning->warning }}</li>
+									@endforeach
+								</ul>
+							</div>
+							<button
+									@click="warnings = !warnings"
+									@click.away="warnings = false"
+									type="button"
+									class="rounded bg-rose-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600">
+								Alerts ({{ $subject->warnings()->count() }})
+							</button>
+						@endif
 					</div>
 				</div>
 			</div>

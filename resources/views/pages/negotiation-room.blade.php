@@ -20,7 +20,7 @@
 				<livewire:negotiations.negotiation-hooks :room="$room" />
 				<livewire:negotiations.negotiation-triggers :room="$room" />
 				<livewire:negotiations.negotiation-demands :room="$room" />
-				<livewire:negotiations.negotiation-hostage :room="$room" />
+				<livewire:negotiations.negotiation-associate :room="$room" />
 			</div>
 		</div>
 
@@ -36,3 +36,4 @@
 	</div>
 
 </x-negotiation-layout>
+

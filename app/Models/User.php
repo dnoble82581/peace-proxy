@@ -72,6 +72,11 @@ class User extends Authenticatable
         return $this->role == 'super_admin';
     }
 
+    public function warnings(): HasMany
+    {
+        return $this->hasMany(Warning::class);
+    }
+
     public function applicationUrl(): string
     {
         if ($this->application()) {
