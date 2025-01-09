@@ -52,9 +52,9 @@
 ?>
 
 <div class="rounded-lg bg-white dark:bg-gray-800 col-span-6 relative">
-	@if($subject->weapons === 'Yes')
-		<div class="flex items-center gap-4">
-		<span class="relative flex h-3 w-3 mt-2 ml-2">
+	<div class="flex items-center gap-4 h-12">
+		@if($subject->weapons === 'Yes')
+			<span class="relative flex h-3 w-3 mt-2 ml-2">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
             <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
 		</span>
@@ -63,8 +63,9 @@
 					class="text-sm flex items-center mt-2 text-red-400 hover:cursor-pointer">Weapons Alert
 				<x-heroicons::micro.solid.arrow-right class="ml-2" />
 			</button>
-		</div>
-	@endif
+		@endif
+	</div>
+
 	<div class="rounded-lg shadow dark:bg-gray-700">
 		<div class="px-4 py-5 sm:p-6 relative">
 			<div class="flex gap-5 justify-evenly">
