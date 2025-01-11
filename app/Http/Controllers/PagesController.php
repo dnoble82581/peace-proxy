@@ -32,7 +32,7 @@ class PagesController extends Controller
     {
         $roomId = Redis::get('room_id');
         $room = Room::query()
-            ->with('subject')
+            ->with('subject', 'associates')
             ->findOrFail($roomId);
 
         return view('pages.tactical')->with('room', $room);
@@ -48,6 +48,7 @@ class PagesController extends Controller
             'subject.moodLogs:id,subject_id,tenant_id,mood,name,created_at',
             'subject.callLogs',
             'subject.warnings:id,subject_id,user_id,tenant_id,room_id,warning_type,warning',
+            'subject.associates',
         ])->findOrFail($roomId);
 
         // Perform authorization check directly on the retrieved instance

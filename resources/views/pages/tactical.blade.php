@@ -5,7 +5,9 @@
 		</div>
 		<div class="max-w-full w-full mx-auto sm:grid sm:grid-cols-12 sm:gap-3 pt-4 overflow-hidden pb-8">
 			<livewire:negotiations.negotiation-subject :room="$room" />
-			<x-cards.negotiation-information :negotiation="$room->negotiation" />
+			<x-cards.negotiation-information
+					:negotiation="$room->negotiation"
+					:hostages="$room->subject->associates->where('relationship_to_subject', 'Hostage')" />
 		</div>
 
 		<div class="mb-5 flex gap-5">

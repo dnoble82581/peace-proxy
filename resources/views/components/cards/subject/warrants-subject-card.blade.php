@@ -5,9 +5,11 @@
 			<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
 				@if($subject->warrants->count())
 					<x-table-elements.subject-card-table-layout
-							:labels="['Offense', 'Originating Agency', 'Originating County', 'Originating State', 'Extraditable']">
+							:labels="['Offense', 'Originating County', 'Originating State', 'Extraditable', 'Action']">
 						@foreach($subject->warrants as $warrant)
-							<x-table-elements.subject-warrants-row :warrant="$warrant" />
+							<a href="#">
+								<x-table-elements.subject-warrants-row :warrant="$warrant" />
+							</a>
 						@endforeach
 					</x-table-elements.subject-card-table-layout>
 				@else

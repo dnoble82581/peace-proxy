@@ -137,7 +137,7 @@
 			<x-input
 					label="Relation to Subject"
 					class="sm:col-span-2"
-					wire:model="form.relation_to_subject"
+					wire:model="form.relationship_to_subject"
 					placeholder="Relation to Subject" />
 			<x-select
 					wire:model="form.children"

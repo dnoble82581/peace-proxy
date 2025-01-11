@@ -1,7 +1,7 @@
 @props(['subject'])
-<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 p-3">
+<div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 p-3">
 	@if(isset($subject->facebook_url))
-		<div class="flex items-center justify-between border border-gray-200 rounded-md p-2 mt-4">
+		<div class="flex items-center justify-between border border-gray-200 rounded-md mt-1">
 			<div>
 				<x-svg-images.social.facebook-icon class="w-6 h-6" />
 			</div>
@@ -21,7 +21,7 @@
 		</div>
 	@endif
 	@if(isset($subject->x_url))
-		<div class="flex items-center justify-between border border-gray-200 rounded-md p-2 mt-4">
+		<div class="flex items-center justify-between border border-gray-200 rounded-md p-2 mt-1">
 			<div>
 				<x-svg-images.social.x-icon class="w-6 h-6 dark:fill-gray-300" />
 			</div>
@@ -41,7 +41,7 @@
 		</div>
 	@endif
 	@if(isset($subject->instagram_url))
-		<div class="flex items-center justify-between border border-gray-200 rounded-md p-2 mt-4">
+		<div class="flex items-center justify-between border border-gray-200 rounded-md p-2 mt-1">
 			<div>
 				<x-svg-images.social.instagram-icon class="w-6 h-6" />
 			</div>
@@ -61,7 +61,7 @@
 		</div>
 	@endif
 	@if(isset($subject->instagram_url))
-		<div class="flex items-center justify-between border border-gray-200 rounded-md p-2 mt-4">
+		<div class="flex items-center justify-between border border-gray-200 rounded-md p-2 mt-1">
 			<div>
 				<x-svg-images.social.snapchat-icon class="w-6 h-6" />
 			</div>
@@ -81,7 +81,7 @@
 		</div>
 	@endif
 	@if(isset($subject->youtube_url))
-		<div class="flex items-center justify-between border border-gray-200 rounded-md p-2 mt-4">
+		<div class="flex items-center justify-between border border-gray-200 rounded-md p-2 mt-1">
 			<div>
 				<x-svg-images.social.youtube-icon class="w-6 h-6" />
 			</div>

@@ -15,13 +15,10 @@
 	</div>
 	<div class="min-w-0 flex-1">
 		<a
-				href="#"
+				href="{{ route('show.associate', ['room' => $hostage->room->id, 'associate' => $hostage]) }}"
 				class="focus:outline-none dark-light-text">
-						<span
-								class="absolute inset-0"
-								aria-hidden="true"></span>
-			<p class="text-sm font-medium dark-light-text">{{ $hostage->name }}</p>
-			<p class="truncate text-sm text-gray-500 dark:text-gray-400">{{ $hostage->gender }}</p>
+			<p class="text-xs font-medium dark-light-text">{{ $hostage->name }}</p>
+			<p class="truncate text-xs text-gray-500 dark:text-gray-400">{{ $hostage->gender }}</p>
 		</a>
 	</div>
 	<div>
@@ -61,7 +58,20 @@
 			</span>
 			</div>
 		@endif
-
 	</div>
-
+	<div class="">
+		<x-dropdown.dropdown class="">
+			<x-slot:trigger>
+				<x-heroicons::mini.solid.ellipsis-vertical class="w-5 h-5 text-gray-400 hover:text-gray-500 dark:text-gray-400 dark-light-text" />
+			</x-slot:trigger>
+			<x-slot:content>
+				<x-dropdown.dropdown-link>
+					View
+				</x-dropdown.dropdown-link>
+				<x-dropdown.dropdown-link>
+					Edit
+				</x-dropdown.dropdown-link>
+			</x-slot:content>
+		</x-dropdown.dropdown>
+	</div>
 </div>

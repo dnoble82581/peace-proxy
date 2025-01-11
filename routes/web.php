@@ -4,7 +4,9 @@ use App\Http\Controllers\AssociateController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\PagesController;
+use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'pages.welcome');
@@ -14,13 +16,12 @@ Route::middleware(['auth'])->group(function () {
         [ImpersonationController::class, 'leave'])->name('leave-impersonation');
     Route::view('team', 'pages.team')->name('team');
     Route::view('create-user', 'pages.create-user')->name('create.user');
-    Route::get('edit-user/{id}', [PagesController::class, 'editUser'])->name('edit.user');
+    Route::get('edit-user/{id}', [UserController::class, 'update'])->name('edit.user');
 
     Route::get('/documents/{user}/{filename}', [DocumentController::class, 'show']);
 
     Route::view('/create-negotiation', 'pages.create-negotiation')->name('create.negotiation');
-    Route::get('/negotiation/room/{room}', [PagesController::class, 'negotiationRoom'])->name('negotiation.room');
-    Route::get('/command', [PagesController::class, 'command'])->name('command');
+    Route::get('/negotiation/room/{room}', [RoomController::class, 'index'])->name('negotiation.room');
 
     Route::get('/negotiation/tactical/{room}',
         [PagesController::class, 'tacticalRoom'])->name('tactical.room');
@@ -36,9 +37,6 @@ Route::middleware(['auth'])->group(function () {
         [AssociateController::class, 'store'])->name('create.associate');
     Route::get('/negotiation/room/{room}/show-associate/{associate}',
         [AssociateController::class, 'show'])->name('show.associate');
-
-    //    ToDO: Organize routes using controllers instead of PagesController
-
 });
 
 Route::view('dashboard', 'pages.dashboard')

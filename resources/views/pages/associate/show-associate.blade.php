@@ -1,7 +1,9 @@
 <x-negotiation-layout>
-	<div class="max-w-6xl mx-auto dark:bg-gray-800 mt-5 flex items-center gap-2 text-sm mb-4">
+	<div class="max-w-6xl mx-auto dark:bg-gray-900 mt-5 flex items-center gap-2 text-sm mb-4">
 		<x-heroicons::micro.solid.arrow-left class="w-4 h-4 dark-light-text" />
-		<a href="{{ route('negotiation.room', $associate->room->id) }}">Back To Negotiation</a>
+		<a
+				class="dark-light-text"
+				href="{{ route('negotiation.room', $associate->room->id) }}">Back To Negotiation</a>
 	</div>
 	<div class="max-w-6xl mx-auto p-8 bg-white dark:bg-gray-800">
 		<div class="px-4 sm:px-0 \">

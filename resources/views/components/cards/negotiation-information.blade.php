@@ -8,14 +8,14 @@
 				<button
 						@click="tab = 'hostages'"
 						class="group inline-flex items-center border-b-2 px-1 py-2 text-sm font-medium"
-						:class="tab === 'hostages' ? 'border-indigo-500 border-b-2 text-indigo-600' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'">
+						:class="tab === 'hostages' ? 'border-indigo-500 border-b-2 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500' : 'border-transparent dark-light-text hover:border-gray-300 dark:hover:text-gray-400 hover:text-gray-700'">
 					<x-heroicons::micro.solid.identification class="w-5 h-5 mr-2" />
 					<span>Hostages</span>
 				</button>
 				<button
 						@click="tab = 'negotiation'"
 						class="group inline-flex items-center border-b-2 px-1 py-2 text-sm font-medium"
-						:class="tab === 'negotiation' ? 'border-indigo-500 border-b-2 text-indigo-600' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'">
+						:class="tab === 'negotiation' ? 'border-indigo-500 border-b-2 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500' : 'border-transparent dark-light-text hover:border-gray-300 dark:hover:text-gray-400 hover:text-gray-700'">
 					<x-heroicons::micro.solid.identification class="w-5 h-5 mr-2" />
 					<span>Negotiation</span>
 				</button>
