@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\associate;
+use App\Models\Associate;
 use App\Models\CallLog;
 use App\Models\Demand;
 use App\Models\Hook;
