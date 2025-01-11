@@ -94,6 +94,11 @@ class Subject extends Model
         return $this->hasMany(SubjectImages::class);
     }
 
+    public function temporaryImageUrl(): string
+    {
+        return 'https://api.dicebear.com/9.x/initials/svg?seed='.$this->name;
+    }
+
     protected function casts(): array
     {
         return [

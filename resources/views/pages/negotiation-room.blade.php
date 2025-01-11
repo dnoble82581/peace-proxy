@@ -1,7 +1,10 @@
 <x-negotiation-layout>
 	<div class="max-w-full w-full mx-auto sm:grid sm:grid-cols-12 sm:gap-3 pt-4 overflow-hidden pb-8 px-4">
 		<livewire:negotiations.negotiation-subject :room="$room" />
-		<x-cards.negotiation-information :negotiation="$room->negotiation" />
+		<x-cards.negotiation-information
+				:negotiation="$room->negotiation"
+				:hostages="$room->subject->associates->where('relationship_to_subject', 'Hostage')" />
+
 		<div class="sm:col-span-3">
 			<div class="bg-white dark:bg-gray-800 rounded-t p-4">
 				<h3 class="text-gray-400 mb-2 text-xl pb-4">Live Chat</h3>

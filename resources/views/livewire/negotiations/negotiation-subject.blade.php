@@ -50,148 +50,112 @@
 	}
 
 ?>
-
-<div class="rounded-lg bg-white dark:bg-gray-800 col-span-6 relative">
-	<div class="flex items-center gap-4 h-12">
-		@if($subject->weapons === 'Yes')
-			<span class="relative flex h-3 w-3 mt-2 ml-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
-		</span>
-			<button
-					type="button"
-					class="text-sm flex items-center mt-2 text-red-400 hover:cursor-pointer">Weapons Alert
-				<x-heroicons::micro.solid.arrow-right class="ml-2" />
-			</button>
-		@endif
-	</div>
-
-	<div class="rounded-lg shadow dark:bg-gray-700">
-		<div class="px-4 py-5 sm:p-6 relative">
-			<div class="flex gap-5 justify-evenly">
-				<div class="absolute top-2 right-2">
-					<x-dropdown.dropdown>
-						<x-slot:trigger>
-							<button>
-								<x-heroicons::mini.solid.ellipsis-vertical class="w-6 h-6 text-gray-400" />
-							</button>
-						</x-slot:trigger>
-						<x-slot:content>
-							<div>
-								<x-dropdown.dropdown-button wire:click="addWarrant">Add Warrant
-								</x-dropdown.dropdown-button>
-								<x-dropdown.dropdown-button wire:click="editSubject">
-									Edit
-								</x-dropdown.dropdown-button>
-								<x-dropdown.dropdown-link href="{{ route('show.subject', ['room' => $this->room, 'subject' => $this->subject]) }}">
-									View
-								</x-dropdown.dropdown-link>
-							</div>
-						</x-slot:content>
-					</x-dropdown.dropdown>
-				</div>
-				<div class="">
-					@if($subject->images()->count())
-						@php
-							$image = $subject->images()->first()->image;
-						@endphp
-						<img
-								src="{{ $subject->imageUrl($image) }}"
-								class="w-24 h-24 rounded"
-								alt="">
-					@else
-						<x-svg-images.image-placeholder
-								class="w-24 h-24 rounded shadow" />
-					@endif
-
-				</div>
-				<div class="text-sm dark-light-text">
-					<strong class="block">{{ $subject->name }}</strong>
-					<span class="block">{{ $subject->address ?? 'No Address' }}</span>
-					<span class="block">{{ $subject->phone() }}</span>
-				</div>
-				<div class="text-sm dark-light-text max-w-36">
-					<strong class="block">Deadline</strong>
-					<span class="block truncate">{{ $subject->demands->count() ? $subject->demands()->latest('created_at')->first()->title : 'none' }}</span>
-					<span class="block">{{ $subject->demands->count() ? $subject->demands()->latest('created_at')->first()->deadline->diffForHumans() : 'none' }}</span>
-				</div>
-
-				<div
-						wire:poll
-						class="text-sm dark-light-text">
-					<strong class="block">Mood</strong>
-					<span class="block">{{ $subject->moodLogs()->count() ? $subject->moodLogs()->latest('created_at')->first()->name : 'No recent log' }}</span>
-					<span class="block">{{ $subject->moodLogs()->count() ? $subject->moodlogs()->latest('created_at')->first()->created_at->diffForHumans() : '' }}</span>
-				</div>
+<div
+		x-data="{ card: 'general'}"
+		class="rounded-lg bg-white dark:bg-gray-800 col-span-6 relative">
+	<div class="px-4">
+		<div class="">
+			<div class="grid grid-cols-1 sm:hidden">
+				<!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
+				<select
+						aria-label="Select a tab"
+						class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-2 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
+					<option>Subject</option>
+					<option>Negotiation</option>
+					<option>Weapons</option>
+					<option>Mental Health</option>
+				</select>
 			</div>
-			<div class="grid grid-cols-8 gap-5 items-center">
-				<div class="p-4 flex gap-5 col-span-3">
-					@if(isset($subject->facebook_url))
-						<a href="{{ $subject->facebook_url }}">
-							<x-svg-images.social.facebook-icon class="w-6 h-6" />
-						</a>
-					@endif
-					@if(isset($subject->instagram_url))
-						<a href="{{ $subject->instagram_url }}">
-							<x-svg-images.social.instagram-icon class="w-6 h-6" />
-						</a>
-					@endif
-					@if(isset($subject->snapchat_url))
-						<a href="{{ $subject->snapchat_url }}">
-							<x-svg-images.social.snapchat-icon class="w-6 h-6" />
-						</a>
-					@endif
-					@if(isset($subject->x_url))
-						<a href="{{ $subject->x_url }}">
-							<x-svg-images.social.x-icon class="w-6 h-6" />
-						</a>
-					@endif
-					@if(isset($subject->youtube_url))
-						<a href="{{ $subject->youtube_url }}">
-							<x-svg-images.social.youtube-icon class="w-6 h-6" />
-						</a>
-					@endif
-				</div>
-				<div
-						x-cloak
-						class="col-span-5 relative"
-						x-data="{warnings: false}">
-					<div class="flex items-center gap-2">
-						@if($subject->warrants()->count())
-							<button
-									wire:click="showWarrants"
-									type="button"
-									class="rounded bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-								Warrants({{ $subject->warrants->count() }})
-							</button>
-						@endif
-						@if($subject->warnings()->count())
-							<div
-									x-transition:enter="transition ease-out duration-200"
-									x-transition:enter-start="opacity-0 scale-95"
-									x-transition:enter-end="opacity-100 scale-100"
-									x-transition:leave="transition ease-in duration-75"
-									x-transition:leave-start="opacity-100 scale-100"
-									x-transition:leave-end="opacity-0 scale-95"
-									x-show="warnings"
-									class="absolute top-8 right-52">
-								<ul class="list-disc list-inside bg-red-50 text-sm text-red-500 p-3 rounded">
-									@foreach($subject->warnings as $warning)
-										<li>{{ $warning->warning }}</li>
-									@endforeach
-								</ul>
-							</div>
-							<button
-									@click="warnings = !warnings"
-									@click.away="warnings = false"
-									type="button"
-									class="rounded bg-rose-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600">
-								Alerts ({{ $subject->warnings()->count() }})
-							</button>
-						@endif
-					</div>
+			<div class="hidden sm:block">
+				<div class="border-b border-gray-200">
+					<nav
+							class="-mb-px flex space-x-8"
+							aria-label="Tabs">
+						<!-- Current: "border-indigo-500 text-indigo-600", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
+						<button
+								@click="card = 'general'"
+								type="button"
+								class="group inline-flex items-center border-b-2 px-1 py-2 text-sm font-medium"
+								:class="card === 'general' ? 'border-indigo-500 border-b-2 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500' : 'border-transparent dark-light-text hover:border-gray-300 dark:hover:text-gray-400 hover:text-gray-700'"
+						>
+
+							<!-- Current: "text-indigo-500", Default: "text-gray-400 group-hover:text-gray-500" -->
+							<svg
+									:class="card === 'general' ? 'border-indigo-500 border-b-2 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500' : 'border-transparent dark-light-text hover:border-gray-300 dark:hover:text-gray-400 hover:text-gray-700'"
+									class="-ml-0.5 mr-2 size-5 text-gray-400 group-hover:text-gray-500"
+									viewBox="0 0 20 20"
+									fill="currentColor"
+									aria-hidden="true"
+									data-slot="icon">
+								<path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
+							</svg>
+							<span>Subject</span>
+						</button>
+						<button
+								@click="card = 'warrants'"
+								type="button"
+								class="group inline-flex items-center border-b-2 px-1 py-2 text-sm font-medium"
+								:class="card === 'warrants' ? 'border-indigo-500 border-b-2 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500' : 'border-transparent dark-light-text hover:border-gray-300 dark:hover:text-gray-400 hover:text-gray-700'">
+							<x-heroicons::micro.solid.exclamation-circle class="h-5 w-5" />
+							<span class="dark-light-text">Warrants({{ $subject->warrants->count() }})</span>
+						</button>
+						<button
+								@click="card = 'warnings'"
+								type="button"
+								class="group inline-flex items-center border-b-2 px-1 py-2 text-sm font-medium"
+								:class="card === 'warnings' ? 'border-indigo-500 border-b-2 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500' : 'border-transparent dark-light-text hover:border-gray-300 dark:hover:text-gray-400 hover:text-gray-700'">
+							<x-heroicons::micro.solid.shield-exclamation class="h-5 w-5" />
+							<span class="dark-light-text">Warnings({{ $subject->warnings->count() }})</span>
+						</button>
+						<button
+								@click="card = 'documents'"
+								type="button"
+								class="group inline-flex items-center border-b-2 px-1 py-2 text-sm font-medium"
+								:class="card === 'documents' ? 'border-indigo-500 border-b-2 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500' : 'border-transparent dark-light-text hover:border-gray-300 dark:hover:text-gray-400 hover:text-gray-700'">
+							<x-heroicons::micro.solid.paper-clip class="h-5 w-5" />
+							<span class="dark-light-text">Documents({{ $subject->documents->count() }})</span>
+						</button>
+						<button
+								@click="card = 'social-media'"
+								type="button"
+								class="group inline-flex items-center border-b-2 px-1 py-2 text-sm font-medium"
+								:class="card === 'social-media' ? 'border-indigo-500 border-b-2 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500' : 'border-transparent dark-light-text hover:border-gray-300 dark:hover:text-gray-400 hover:text-gray-700'">
+							<x-heroicons::micro.solid.code-bracket-square class="h-5 w-5" />
+							<span class="">Social({{ $subject->documents->count() }})</span>
+						</button>
+					</nav>
 				</div>
 			</div>
 		</div>
 	</div>
+	<div
+			x-show="card === 'general'"
+			class="rounded-lg dark:bg-gray-800">
+		<div class="py-5 sm:p-6 relative">
+			<x-cards.subject.general-subject-card :subject="$subject" />
+		</div>
+	</div>
+	{{--	Warrants--}}
+	<div
+			x-show="card === 'warrants'"
+			class="rounded-lg dark:bg-gray-800 overflow-y-auto">
+		<x-cards.subject.warrants-subject-card :subject="$subject" />
+	</div>
+	{{--	Warnings--}}
+	<div
+			x-show="card === 'warnings'">
+		<x-cards.subject.warnings-subject-card :subject="$subject" />
+	</div>
+	{{--	Documents--}}
+	<div
+			x-show="card === 'documents'">
+		<x-cards.subject.documents-subject-card />
+	</div>
+	{{--	Social--}}
+	<div
+			x-show="card === 'social-media'">
+		<x-cards.subject.social-subject-card :subject="$subject" />
+	</div>
+
 </div>
+
