@@ -42,7 +42,7 @@ class Subject extends Model
 
     public function associates(): HasMany
     {
-        return $this->hasMany(associate::class);
+        return $this->hasMany(Associate::class);
     }
 
     public function demands(): HasMany
