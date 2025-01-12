@@ -40,7 +40,7 @@
 			));
 		}
 
-		public function showAssociate(Associate $associate)
+		public function showAssociate(Associate $associate):Redirector
 		{
 			return redirect(route('show.associate', ['associate' => $associate, 'room' => $associate->room]));
 		}

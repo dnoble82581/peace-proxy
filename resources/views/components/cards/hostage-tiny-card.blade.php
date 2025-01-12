@@ -59,8 +59,8 @@
 			</div>
 		@endif
 	</div>
-	<div class="">
-		<x-dropdown.dropdown class="">
+	<div>
+		<x-dropdown.dropdown>
 			<x-slot:trigger>
 				<x-heroicons::mini.solid.ellipsis-vertical class="w-5 h-5 text-gray-400 hover:text-gray-500 dark:text-gray-400 dark-light-text" />
 			</x-slot:trigger>
@@ -68,7 +68,13 @@
 				<x-dropdown.dropdown-link>
 					View
 				</x-dropdown.dropdown-link>
-				<x-dropdown.dropdown-link>
+				<x-dropdown.dropdown-link
+						href="{{ route('edit.associate',
+				[
+					'room' => $hostage->room->id,
+					'associate' => $hostage
+				]
+			) }}">
 					Edit
 				</x-dropdown.dropdown-link>
 			</x-slot:content>
