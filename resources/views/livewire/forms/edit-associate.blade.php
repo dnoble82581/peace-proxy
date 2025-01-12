@@ -1,6 +1,6 @@
 <?php
 
-	use App\Events\associateEditedEvent;
+	use App\Events\AssociateEditedEvent;
 	use App\Livewire\Forms\AssociateForm;
 	use App\Models\Associate;
 	use App\Models\AssociateImage;
