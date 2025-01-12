@@ -4,7 +4,7 @@
 		@if($hostage->images()->count())
 			<img
 					class="size-10 rounded-full"
-					src="{{ $hostage->imageUrl() }}"
+					src="{{ $hostage->imageUrl($hostage->images()->first()->image) }}"
 					alt="Hostage Image">
 		@else
 			<img
