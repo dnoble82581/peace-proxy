@@ -37,7 +37,7 @@
 					</div>
 					<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500 dark:text-slate-300">
 						<p class="whitespace-nowrap dark-light-text">Last Contact:
-							{{ $associate->last_contacted_at->diffForHumans() }}
+							{{ $associate->last_contacted_at ? $associate->last_contacted_at->diffForHumans() : '' }}
 						</p>
 					</div>
 				</div>

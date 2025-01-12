@@ -7,7 +7,7 @@
 	</div>
 	<div class="max-w-6xl mx-auto p-8 bg-white dark:bg-gray-800">
 		<div class="px-4 sm:px-0 \">
-			<h3 class="text-base/7 font-semibold text-gray-900 dark-light-text">Subject Information</h3>
+			<h3 class="text-base/7 font-semibold text-gray-900 dark-light-text">Associate Information</h3>
 			<p class="mt-1 max-w-2xl text-sm/6 text-gray-500 dark-light-text">Personal details and application.</p>
 		</div>
 		<div class="mt-6">
@@ -87,6 +87,9 @@
 				<x-list-elements.data-tag
 						:label="__('Mental Health History')"
 						:value="$associate->mental_health_history" />
+				<x-list-elements.data-tag
+						:label="__('Last Contacted At')"
+						:value="$associate->last_contacted_at" />
 				<x-list-elements.data-tag
 						:label="__('Physical Description')"
 						:value="$associate->physical_description"

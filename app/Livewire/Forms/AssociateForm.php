@@ -92,7 +92,7 @@ class AssociateForm extends Form
     public $substance_abuse = '';
 
     #[Validate(['nullable', 'date'])]
-    public $last_contacted_at = '';
+    public $last_contacted_at = null;
 
     public function update()
     {
