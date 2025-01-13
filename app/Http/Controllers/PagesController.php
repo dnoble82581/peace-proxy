@@ -49,6 +49,7 @@ class PagesController extends Controller
             'subject.callLogs',
             'subject.warnings:id,subject_id,user_id,tenant_id,room_id,warning_type,warning',
             'subject.associates',
+            'subject.documents:id,filename,size,updated_at,extension',
         ])->findOrFail($roomId);
 
         // Perform authorization check directly on the retrieved instance

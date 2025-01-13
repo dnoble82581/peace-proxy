@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('negotiations', function (Blueprint $table) {
             $table->id();
+            $table->string('type')->default('live');
             $table->string('title');
             $table->string('address')->nullable();
             $table->string('city');

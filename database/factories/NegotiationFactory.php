@@ -14,6 +14,7 @@ class NegotiationFactory extends Factory
     public function definition(): array
     {
         return [
+            'type' => $this->faker->randomElement(['Live', 'Practice']),
             'title' => $this->faker->word(),
             'address' => $this->faker->address(),
             'city' => $this->faker->city(),

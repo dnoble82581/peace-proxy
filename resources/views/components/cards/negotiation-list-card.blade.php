@@ -7,7 +7,7 @@
 						class="capitalize"
 						href="#">
 					{{ $negotiation->title }}
-					<span class="text-xs text-gray-500">({{ $negotiation->rooms()->count() }})</span>
+					<span class="text-xs text-gray-500">({{ $negotiation->rooms()->count() }}) ({{ $negotiation->type }})</span>
 				</a>
 			</p>
 			<p class="mt-1 flex text-xs/5 text-gray-500">

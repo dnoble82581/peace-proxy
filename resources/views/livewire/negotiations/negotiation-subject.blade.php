@@ -155,7 +155,7 @@
 	<div
 			x-show="card === 'documents'">
 		<div class="py-5 sm:p-6 h-52">
-			<x-cards.subject.documents-subject-card />
+			<x-cards.subject.documents-subject-card :subject="$subject" />
 		</div>
 	</div>
 	{{--	Social--}}

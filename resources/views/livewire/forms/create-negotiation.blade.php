@@ -1,17 +1,17 @@
 <?php
 
-use App\Livewire\Forms\NegotiationForm;
-use Livewire\Volt\Component;
+	use App\Livewire\Forms\NegotiationForm;
+	use Livewire\Volt\Component;
 
-new class extends Component {
-    public NegotiationForm $form;
+	new class extends Component {
+		public NegotiationForm $form;
 
-    public function create()
-    {
-        $this->form->save();
-        return redirect(route('dashboard'));
-    }
-}
+		public function create()
+		{
+			$this->form->save();
+			return redirect(route('dashboard'));
+		}
+	}
 
 ?>
 
@@ -23,6 +23,14 @@ new class extends Component {
 	<div class="grid grid-cols-1 sm:grid-cols-6 gap-4">
 
 		<x-dividers.form-divider>Negotiation Information</x-dividers.form-divider>
+
+		<x-select
+				wire:model="form.type"
+				class="col-span-1 sm:col-span-2"
+				description="Required"
+				label="Type"
+				placeholder="Negotiation Type"
+				:options="['Live', 'Practice']" />
 
 		<x-input
 				class="col-span-1 sm:col-span-2"

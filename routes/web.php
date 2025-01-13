@@ -18,7 +18,8 @@ Route::middleware(['auth'])->group(function () {
     Route::view('create-user', 'pages.create-user')->name('create.user');
     Route::get('edit-user/{id}', [UserController::class, 'update'])->name('edit.user');
 
-    Route::get('/documents/{user}/{filename}', [DocumentController::class, 'show']);
+    Route::get('/documents/user/{user}/{filename}', [DocumentController::class, 'showUserDocument']);
+    Route::get('/documents/subject/{subject}/{filename}', [DocumentController::class, 'showSubjectDocument']);
 
     Route::view('/create-negotiation', 'pages.create-negotiation')->name('create.negotiation');
     Route::get('/negotiation/room/{room}', [RoomController::class, 'index'])->name('negotiation.room');

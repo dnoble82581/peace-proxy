@@ -80,7 +80,7 @@ class User extends Authenticatable
     public function applicationUrl(): string
     {
         if ($this->application()) {
-            return url('/documents/'.$this->id.'/'.$this->application()->filename);
+            return url('/documents/user/'.$this->id.'/'.$this->application()->filename);
         }
 
         return '#';

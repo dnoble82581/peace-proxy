@@ -29,6 +29,11 @@ class Negotiation extends Model
         return $this->hasMany(Room::class);
     }
 
+    public function objectives(): HasMany
+    {
+        return $this->hasMany(Objective::class);
+    }
+
     protected function casts(): array
     {
         return [

@@ -25,7 +25,6 @@
 										class="w-32 h-32 object-cover rounded-md">
 							</button>
 						@endforeach
-
 					</div>
 				</div>
 				<x-list-elements.data-tag
@@ -40,7 +39,6 @@
 						:label="'Email Address'"
 						:value="$associate->email"
 						class="col-span-4 sm:col-span-1" />
-
 				<x-list-elements.data-tag
 						:label="'Phone'"
 						:value="$associate->phone()"

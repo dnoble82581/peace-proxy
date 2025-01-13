@@ -26,10 +26,9 @@ class Document extends Model
     public function privateUrl(): string
     {
         if ($this->subject_id) {
-            return url('/documents/'.$this->subject_id.'/'.$this->filename);
+            return url('/documents/subject/'.$this->subject_id.'/'.$this->filename);
         }
 
-        return url('/documents/'.$this->user_id.'/'.$this->filename);
-
+        return url('/documents/user/'.$this->user_id.'/'.$this->filename);
     }
 }

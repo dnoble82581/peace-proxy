@@ -1,7 +1,7 @@
 @props(['negotiation', 'hostages'])
 <div
 		x-data="{tab: 'hostages'}"
-		class="overflow-hidden rounded-lg bg-white shadow col-span-6 dark:bg-gray-800 relative">
+		class="overflow-y-scroll rounded-lg bg-white shadow col-span-6 dark:bg-gray-800 relative">
 	<div class="px-4">
 		<x-navigation.card-navigation :labels="['General', 'Test']">
 			<x-slot:content>
@@ -30,7 +30,7 @@
 		</x-navigation.card-navigation>
 	</div>
 	<div
-			class="overflow-scroll"
+			class="overflow-visible"
 			x-show="tab === 'hostages'">
 		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-3 px-2 pb-4">
 			@foreach($hostages as $hostage)
@@ -42,6 +42,21 @@
 		<x-cards.negotiations.general-negotiation-card :negotiation="$negotiation" />
 	</div>
 	<div x-show="tab === 'objectives'">
-		Objectives
+		<div class="flex justify-end px-4 mt-2">
+			<button onclick="Livewire.dispatch('modal.open', {component: 'modals.create-objective-form', arguments: {negotiationId: {{$negotiation->id}}}})">
+				<x-heroicons::micro.solid.plus class="w-5 h-5 hover:text-gray-500 text-gray-400 cursor-pointer" />
+			</button>
+		</div>
+		@if($hostage->negotiation->objectives()->count())
+			<div class="px-6">
+				<ol class="list-decimal px-4">
+					@foreach($hostage->negotiation->objectives->sortBy('priority') as $objective)
+						<li class="">{{ $objective->objective }}
+							<span class="text-sm text-gray-400">({{ $objective->getPriorityString($objective->priority) }})</span>
+						</li>
+					@endforeach
+				</ol>
+			</div>
+		@endif
 	</div>
 </div>
