@@ -33,7 +33,7 @@
 			class="overflow-visible"
 			x-show="tab === 'hostages'">
 		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-3 px-2 pb-4">
-			@if($hostages)
+			@if(!is_null($hostages))
 				@foreach($hostages as $hostage)
 					<x-cards.hostage-tiny-card :hostage="$hostage" />
 				@endforeach
