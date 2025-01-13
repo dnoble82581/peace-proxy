@@ -1,4 +1,4 @@
-@props(['negotiation', 'hostages'])
+@props(['negotiation', 'hostages' => null])
 <div
 		x-data="{tab: 'hostages'}"
 		class="overflow-y-scroll rounded-lg bg-white shadow col-span-6 dark:bg-gray-800 relative">
@@ -33,9 +33,11 @@
 			class="overflow-visible"
 			x-show="tab === 'hostages'">
 		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-3 px-2 pb-4">
-			@foreach($hostages as $hostage)
-				<x-cards.hostage-tiny-card :hostage="$hostage" />
-			@endforeach
+			@if($hostages)
+				@foreach($hostages as $hostage)
+					<x-cards.hostage-tiny-card :hostage="$hostage" />
+				@endforeach
+			@endif
 		</div>
 	</div>
 	<div x-show="tab === 'negotiation'">
