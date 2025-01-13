@@ -131,7 +131,7 @@
 	<div
 			x-show="card === 'general'"
 			class="rounded-lg dark:bg-gray-800">
-		<div class="py-5 sm:p-6 h-52">
+		<div class="py-5 sm:p-6 h-48">
 			<x-cards.subject.general-subject-card :subject="$subject" />
 		</div>
 	</div>
@@ -139,7 +139,7 @@
 	<div
 			x-show="card === 'warrants'"
 			class="rounded-lg dark:bg-gray-800 overflow-y-auto">
-		<div class="py-5 sm:p-6 h-52">
+		<div class="py-5 sm:p-6 h-48">
 			<x-cards.subject.warrants-subject-card
 					:subject="$subject" />
 		</div>
@@ -147,21 +147,22 @@
 	{{--	Warnings--}}
 	<div
 			x-show="card === 'warnings'">
-		<div class="py-5 sm:p-6 h-52">
+		<div class="py-5 sm:p-6 h-48">
 			<x-cards.subject.warnings-subject-card :subject="$subject" />
 		</div>
 	</div>
 	{{--	Documents--}}
 	<div
 			x-show="card === 'documents'">
-		<div class="py-5 sm:p-6 h-52">
+		<div class="py-5 sm:p-6 h-48">
 			<x-cards.subject.documents-subject-card :subject="$subject" />
 		</div>
 	</div>
 	{{--	Social--}}
 	<div
+			class=""
 			x-show="card === 'social-media'">
-		<div class="py-5 sm:p-6 h-52">
+		<div class="py-5 sm:p-6 h-48">
 			<x-cards.subject.social-subject-card :subject="$subject" />
 		</div>
 	</div>

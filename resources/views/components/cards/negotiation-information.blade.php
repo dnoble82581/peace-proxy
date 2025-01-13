@@ -33,10 +33,14 @@
 			class="overflow-visible"
 			x-show="tab === 'hostages'">
 		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-3 px-2 pb-4">
-			@if(!is_null($hostages))
+			@if($hostages->count())
 				@foreach($hostages as $hostage)
 					<x-cards.hostage-tiny-card :hostage="$hostage" />
 				@endforeach
+			@else
+				<div class="col-span-2">
+					<h3 class="text-7xl text-gray-200 uppercase text-center mt-8">No Hostages</h3>
+				</div>
 			@endif
 		</div>
 	</div>
@@ -49,15 +53,19 @@
 				<x-heroicons::micro.solid.plus class="w-5 h-5 hover:text-gray-500 text-gray-400 cursor-pointer" />
 			</button>
 		</div>
-		@if($hostage->negotiation->objectives()->count())
-			<div class="px-6">
+		@if($negotiation->objectives()->count())
+			<div class="px-6 h-48">
 				<ol class="list-decimal px-4">
-					@foreach($hostage->negotiation->objectives->sortBy('priority') as $objective)
+					@foreach($negotiation->objectives->sortBy('priority') as $objective)
 						<li class="">{{ $objective->objective }}
 							<span class="text-sm text-gray-400">({{ $objective->getPriorityString($objective->priority) }})</span>
 						</li>
 					@endforeach
 				</ol>
+			</div>
+		@else
+			<div class="col-span-2">
+				<h3 class="text-7xl text-gray-200 uppercase text-center mt-8">No Objectives</h3>
 			</div>
 		@endif
 	</div>
