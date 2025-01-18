@@ -91,15 +91,5 @@
 			<span class="block">{{ $subject->moodLogs()->count() ? $subject->moodlogs()->latest('created_at')->first()->created_at->diffForHumans() : '' }}</span>
 		</div>
 	</div>
-	<div class="mt-5 px-8 flex items-center gap-4">
-		<livewire:twilio.make-call-button
-				:subjectId="$this->subject->id"
-				class="w-5 h-5" />
-		<a
-				href="#"
-				class="">
-			<x-heroicons::outline.chat-bubble-bottom-center-text class="w-5 h-5 text-emerald-400" />
-		</a>
-	</div>
 </div>
 
