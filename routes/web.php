@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\AssociateController;
-use App\Http\Controllers\CallController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\PagesController;
@@ -39,8 +38,6 @@ Route::middleware(['auth'])->group(function () {
         [AssociateController::class, 'store'])->name('create.associate');
     Route::get('/negotiation/room/{room}/show-associate/{associate}',
         [AssociateController::class, 'show'])->name('show.associate');
-
-    Route::get('sms/send', [CallController::class, 'makeCall'])->name('make.call');
 
 });
 
