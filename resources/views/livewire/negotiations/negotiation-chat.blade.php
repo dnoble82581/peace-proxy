@@ -179,7 +179,7 @@
 ?>
 
 <div
-		class="bg-white dark:bg-gray-800 shadow-lg">
+		class="bg-white dark:bg-gray-800 shadow-lg col-span-3">
 	<div
 			x-data
 			x-init="$nextTick(() => $el.scrollTop = $el.scrollHeight)"
