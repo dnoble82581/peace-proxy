@@ -3,12 +3,15 @@
 namespace App\Livewire\Forms;
 
 use App\Models\Subject;
+use App\Models\Warrant;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
 
 class WarrantForm extends Form
 {
     public ?Subject $subject;
+
+    public ?Warrant $warrant;
 
     #[Validate(['required'])]
     public $offense = '';
@@ -34,7 +37,24 @@ class WarrantForm extends Form
     #[Validate(['required'])]
     public $confirmed = '';
 
-    public function setForm($warrant) {}
+    public function setForm($warrant)
+    {
+        $this->subject = $warrant->subject;
+        $this->offense = $warrant->offense;
+        $this->originating_agency = $warrant->originating_agency;
+        $this->originating_county = $warrant->originating_county;
+        $this->originating_state = $warrant->originating_state;
+        $this->extraditable = $warrant->extraditable;
+        $this->entered_on = $warrant->entered_on;
+        $this->notes = $warrant->notes;
+        $this->confirmed = $warrant->confirmed;
+    }
+
+    public function update($warrant)
+    {
+        $this->validate();
+        $warrant->update($this->all());
+    }
 
     public function createWarrant($subject): void
     {

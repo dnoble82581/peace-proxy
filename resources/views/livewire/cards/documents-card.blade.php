@@ -1,5 +1,26 @@
-@props(['subject'])
-<div class="px-4 sm:px-6 lg:px-8">
+<?php
+
+	use App\Models\Subject;
+	use Livewire\Volt\Component;
+	use function Livewire\Volt\{state};
+
+	new class extends Component {
+		public Subject $subject;
+
+		public function mount($subject)
+		{
+			$this->subject = $subject;
+		}
+	}
+
+?>
+
+<div class="px-2">
+	<div class="flex justify-end p-4">
+		<button wire:click="addWarning">
+			<x-heroicons::micro.solid.plus class="w-5 h-5 hover:text-gray-500 text-gray-400 cursor-pointer" />
+		</button>
+	</div>
 	<div class="mt-3 flow-root">
 		<div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
 			<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -22,7 +43,7 @@
 					</div>
 				@else
 					<div class="h-full">
-						<h3 class="text-7xl text-gray-200 uppercase text-center mt-8">No Documents</h3>
+						<h3 class="text-7xl text-gray-200 uppercase text-center mt-2">No Documents</h3>
 					</div>
 				@endif
 			</div>

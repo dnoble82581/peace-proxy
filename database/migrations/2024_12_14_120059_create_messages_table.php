@@ -13,7 +13,10 @@ return new class extends Migration
             $table->foreignId('user_id');
             $table->foreignId('tenant_id');
             $table->foreignId('room_id');
-            $table->string('type')->default('normal');
+            $table->boolean('emergency')->default(false);
+            $table->boolean('important')->default(false);
+            $table->boolean('to_primary')->default(false);
+            $table->boolean('to_tactical')->default(false);
             $table->longText('message');
             $table->timestamps();
         });

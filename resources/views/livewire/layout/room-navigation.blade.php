@@ -39,7 +39,7 @@
 					<span class="text-sm dark-light-text capitalize"> {{ auth()->user()->getRoleName() }}</span>
 				</div>
 				<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex sm:items-center">
-					<span class="text-sm dark-light-text capitalize">{{ auth()->user()->tenant->name }}</span>
+					<span class="text-sm dark-light-text capitalize">{{ auth()->user()->tenant ? auth()->user()->tenant->name : '' }}</span>
 				</div>
 			</div>
 
@@ -55,7 +55,6 @@
 									x-data="{{ json_encode(['name' => auth()->user()->name]) }}"
 									x-text="name"
 									x-on:profile-updated.window="name = $event.detail.name"></div>
-
 							<div class="ms-1">
 								<svg
 										class="fill-current h-4 w-4"

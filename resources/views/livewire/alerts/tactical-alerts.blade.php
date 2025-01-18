@@ -1,67 +1,67 @@
 <?php
 
-use App\Events\NewMessageEvent;
-use App\Models\Message;
-use App\Models\MessageResponse;
-use App\Models\Room;
-use Livewire\Volt\Component;
-use Symfony\Component\Mailer\Event\MessageEvent;
+	use App\Events\NewMessageEvent;
+	use App\Models\Message;
+	use App\Models\MessageResponse;
+	use App\Models\Room;
+	use Livewire\Volt\Component;
+	use Symfony\Component\Mailer\Event\MessageEvent;
 
-new class extends Component {
-    public Room $room;
-    public $messages;
-    public Message $emergencyMessage;
+	new class extends Component {
+		public Room $room;
+		public $messages;
+		public Message $emergencyMessage;
 
-    public function mount($room):void
-    {
-        $this->room = $room;
-        $this->messages = $this->getMessages();
-    }
+		public function mount($room):void
+		{
+			$this->room = $room;
+			$this->messages = $this->getMessages();
+		}
 
-    protected function getMessages()
-    {
-        return $this->room->messages->where('type', 'emergency');
-    }
+		protected function getMessages()
+		{
+			return $this->room->messages->where('emergency', true);
+		}
 
-    public function dismiss(int $messageId):void
-    {
-        $this->emergencyMessage = $this->getMessage($messageId);
-        $this->updateMessage();
-        broadcast(new NewMessageEvent($this->emergencyMessage));
-    }
+		public function dismiss(int $messageId):void
+		{
+			$this->emergencyMessage = $this->getMessage($messageId);
+			$this->updateMessage();
+			broadcast(new NewMessageEvent($this->emergencyMessage));
+		}
 
-    private function getMessage($messageId):Message
-    {
-        return Message::findOrFail($messageId);
-    }
+		private function getMessage($messageId):Message
+		{
+			return Message::findOrFail($messageId);
+		}
 
-    public function respond($messageId):void
-    {
+		public function respond($messageId):void
+		{
 
-        $this->dispatch('modal.open', component: 'modals.tactical-alert-response',
-            arguments: ['messageId' => $messageId, 'roomId' => $this->room->id]);
-    }
+			$this->dispatch('modal.open', component: 'modals.tactical-alert-response',
+				arguments: ['messageId' => $messageId, 'roomId' => $this->room->id]);
+		}
 
-    private function updateMessage():void
-    {
-        $this->emergencyMessage->update([
-            'type' => 'normal',
-            'updated_at' => now(),
-        ]);
-    }
+		private function updateMessage():void
+		{
+			$this->emergencyMessage->update([
+				'emergency' => false,
+				'updated_at' => now(),
+			]);
+		}
 
-    public function getListeners():array
-    {
-        return [
-            "echo-presence:chat.{$this->room->id},NewMessageEvent" => 'refresh'
-        ];
-    }
+		public function getListeners():array
+		{
+			return [
+				"echo-presence:chat.{$this->room->id},NewMessageEvent" => 'refresh'
+			];
+		}
 
-    public function refresh():void
-    {
-        $this->messages = $this->getMessages();
-    }
-}
+		public function refresh():void
+		{
+			$this->messages = $this->getMessages();
+		}
+	}
 
 ?>
 <div>

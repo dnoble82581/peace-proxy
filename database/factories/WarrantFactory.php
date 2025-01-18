@@ -19,10 +19,10 @@ class WarrantFactory extends Factory
             'originating_agency' => $this->faker->word(),
             'originating_county' => $this->faker->word(),
             'originating_state' => $this->faker->word(),
-            'extraditable' => $this->faker->randomElement(['yes', 'no']),
+            'extraditable' => $this->faker->randomElement(['Yes', 'No', 'Unknown']),
             'entered_on' => $this->faker->date(),
             'notes' => $this->faker->text(),
-            'confirmed' => $this->faker->randomElement(['yes', 'no', 'unknown']),
+            'confirmed' => $this->faker->randomElement(['Yes', 'No', 'Unknown']),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
 

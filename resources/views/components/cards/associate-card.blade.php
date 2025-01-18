@@ -92,7 +92,7 @@
 						</x-dropdown.dropdown-link>
 						<x-dropdown.dropdown-link>
 							<button
-									wire:click="deleteAssociate({{ $associate }})"
+									wire:click="deleteAssociate({{ $associate->id }})"
 									class="block px-3 py-1 text-sm/6 text-gray-900 h-full"
 									role="menuitem"
 									tabindex="-1"

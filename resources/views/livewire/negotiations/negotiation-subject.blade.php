@@ -28,13 +28,6 @@
 			return $this->room->subject;
 		}
 
-		public function editSubject():Redirector
-		{
-			return redirect(route('edit.subject',
-				['room' => $this->room, 'subject' => $this->subject]
-			));
-		}
-
 		public function addWarrant():void
 		{
 			$this->dispatch('modal.open', component: 'modals.add-warrant-form',
@@ -71,15 +64,12 @@
 					<nav
 							class="-mb-px flex space-x-8"
 							aria-label="Tabs">
-						<!-- Current: "border-indigo-500 text-indigo-600", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
 						<button
 								@click="card = 'general'"
 								type="button"
 								class="group inline-flex items-center border-b-2 px-1 py-2 text-sm font-medium"
 								:class="card === 'general' ? 'border-indigo-500 border-b-2 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500' : 'border-transparent dark-light-text hover:border-gray-300 dark:hover:text-gray-400 hover:text-gray-700'"
 						>
-
-							<!-- Current: "text-indigo-500", Default: "text-gray-400 group-hover:text-gray-500" -->
 							<svg
 									:class="card === 'general' ? 'border-indigo-500 border-b-2 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500' : 'border-transparent dark-light-text hover:border-gray-300 dark:hover:text-gray-400 hover:text-gray-700'"
 									class="-ml-0.5 mr-2 size-5 text-gray-400 group-hover:text-gray-500"
@@ -132,30 +122,29 @@
 			x-show="card === 'general'"
 			class="rounded-lg dark:bg-gray-800">
 		<div class="py-5 sm:p-6 h-48">
-			<x-cards.subject.general-subject-card :subject="$subject" />
+			<livewire:cards.subject-card :subject="$subject" />
 		</div>
 	</div>
 	{{--	Warrants--}}
 	<div
 			x-show="card === 'warrants'"
 			class="rounded-lg dark:bg-gray-800 overflow-y-auto">
-		<div class="py-5 sm:p-6 h-48">
-			<x-cards.subject.warrants-subject-card
-					:subject="$subject" />
+		<div class="h-48">
+			<livewire:cards.warrants-card :subject="$subject" />
 		</div>
 	</div>
 	{{--	Warnings--}}
 	<div
 			x-show="card === 'warnings'">
-		<div class="py-5 sm:p-6 h-48">
-			<x-cards.subject.warnings-subject-card :subject="$subject" />
+		<div class="h-48">
+			<livewire:cards.warnings-card :subject="$subject" />
 		</div>
 	</div>
 	{{--	Documents--}}
 	<div
 			x-show="card === 'documents'">
-		<div class="py-5 sm:p-6 h-48">
-			<x-cards.subject.documents-subject-card :subject="$subject" />
+		<div class="h-48">
+			<livewire:cards.documents-card :subject="$subject" />
 		</div>
 	</div>
 	{{--	Social--}}
@@ -163,7 +152,7 @@
 			class=""
 			x-show="card === 'social-media'">
 		<div class="py-5 sm:p-6 h-48">
-			<x-cards.subject.social-subject-card :subject="$subject" />
+			<livewire:cards.social-card :subject="$subject" />
 		</div>
 	</div>
 </div>

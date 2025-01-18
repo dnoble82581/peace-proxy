@@ -7,16 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Warning extends Model
+class Call extends Model
 {
     use BelongsToTenant, HasFactory;
 
     protected $guarded = ['id'];
-
-    public function subject(): BelongsTo
-    {
-        return $this->belongsTo(Subject::class);
-    }
 
     public function user(): BelongsTo
     {
@@ -26,5 +21,18 @@ class Warning extends Model
     public function room(): BelongsTo
     {
         return $this->belongsTo(Room::class);
+    }
+
+    public function subject(): BelongsTo
+    {
+        return $this->belongsTo(Subject::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'start_time' => 'datetime',
+            'end_time' => 'datetime',
+        ];
     }
 }

@@ -1,5 +1,5 @@
 <div>
-	<x-form-layouts.form-layout submit="createObjective">
+	<x-form-layouts.form-layout submit="updateObjective">
 		<x-slot:header>Add Objective</x-slot:header>
 		<x-slot:description>
 			Lorem ipsum dolor sit amet, consectetur adipisicing elit. Delectus dicta, distinctio ducimus eaque enim est,

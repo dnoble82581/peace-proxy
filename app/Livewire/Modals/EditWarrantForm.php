@@ -2,13 +2,16 @@
 
 namespace App\Livewire\Modals;
 
-use App\Models\Subject;
-use Illuminate\View\View;
+use App\Events\WarrantEditedEvent;
+use App\Livewire\Forms\WarrantForm;
+use App\Models\Warrant;
 use WireElements\Pro\Components\Modal\Modal;
 
-class ShowWarrants extends Modal
+class EditWarrantForm extends Modal
 {
-    public Subject $subject;
+    public Warrant $warrant;
+
+    public WarrantForm $form;
 
     public static function behavior(): array
     {
@@ -29,24 +32,30 @@ class ShowWarrants extends Modal
         return [
             // Set the modal size to 2xl, you can choose between:
             // xs, sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl, 6xl, 7xl, fullscreen
-            'size' => '4xl',
+            'size' => '2xl',
         ];
     }
 
-    public function mount($subjectId): void
+    public function mount($warrantId)
     {
-        $this->subject = Subject::find($subjectId);
+        $this->warrant = $this->getWarrant($warrantId);
+        $this->form->setForm($this->warrant);
     }
 
-    public function render(): View
+    private function getWarrant($warrantId)
     {
-        return view('livewire.modals.show-warrants');
+        return Warrant::findOrFail($warrantId);
     }
 
-    private function getSubject($subjectId)
+    public function editWarrant()
     {
-        return Subject::query()
-            ->with('warrants')
-            ->findOrFail($subjectId);
+        $this->form->update($this->warrant);
+        event(new WarrantEditedEvent($this->warrant->subject->room_id));
+        $this->close();
+    }
+
+    public function render()
+    {
+        return view('livewire.modals.edit-warrant-form');
     }
 }

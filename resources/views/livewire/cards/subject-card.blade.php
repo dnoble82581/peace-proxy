@@ -1,4 +1,37 @@
-@props(['subject'])
+<?php
+
+	use App\Models\Room;
+	use App\Models\Subject;
+	use Livewire\Features\SupportRedirects\Redirector;
+	use Livewire\Volt\Component;
+	use function Livewire\Volt\{state};
+
+	new class extends Component {
+		public Subject $subject;
+		public Room $room;
+
+		public function mount($subject):void
+		{
+			$this->subject = $subject;
+			$this->room = $this->subject->room;
+		}
+
+		public function editSubject():Redirector
+		{
+			return redirect(route('edit.subject',
+				['room' => $this->room, 'subject' => $this->subject]
+			));
+		}
+
+		public function getListeners():array
+		{
+			return [
+				"echo-presence:subject.{$this->room->id},SubjectUpdatedEvent" => 'refresh',
+			];
+		}
+	}
+?>
+
 <div>
 	<div class="flex gap-5 justify-between items-center px-8">
 		<div class="absolute top-2 right-2">
@@ -15,7 +48,7 @@
 						<x-dropdown.dropdown-button wire:click="editSubject">
 							Edit
 						</x-dropdown.dropdown-button>
-						<x-dropdown.dropdown-link href="{{ route('show.subject', ['room' => $this->room, 'subject' => $this->subject]) }}">
+						<x-dropdown.dropdown-link href="{{ route('show.subject', ['room' => $this->subject->room_id, 'subject' => $this->subject]) }}">
 							View
 						</x-dropdown.dropdown-link>
 					</div>
@@ -69,3 +102,4 @@
 		</a>
 	</div>
 </div>
+

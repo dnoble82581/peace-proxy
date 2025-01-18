@@ -2,23 +2,22 @@
 
 namespace App\Livewire\Modals;
 
-use App\Events\ObjectiveCreatedEvent;
-use App\Models\Negotiation;
+use App\Events\ObjectiveEditedEvent;
 use App\Models\Objective;
 use Livewire\Attributes\Validate;
 use WireElements\Pro\Components\Modal\Modal;
 
-class CreateObjectiveForm extends Modal
+class EditObjectiveForm extends Modal
 {
-    public Negotiation $negotiation;
+    public Objective $objectiveToEdit;
 
     public int $roomId;
 
     #[Validate('string|min:2|max:255')]
     public string $objective = '';
 
-    #[Validate('string')]
-    public string $priority = '';
+    #[Validate('integer|min:0|max:3')]
+    public int $priority;
 
     public static function behavior(): array
     {
@@ -34,6 +33,11 @@ class CreateObjectiveForm extends Modal
         ];
     }
 
+    /**
+     * Define the modal's visual attributes.
+     *
+     * @return array Key-value pairs of modal attributes.
+     */
     public static function attributes(): array
     {
         return [
@@ -43,33 +47,37 @@ class CreateObjectiveForm extends Modal
         ];
     }
 
-    public function createObjective(): void
+    public function mount($objectiveId, $roomId)
+    {
+        $this->objectiveToEdit = $this->getObjective($objectiveId);
+        $this->roomId = $roomId;
+        $this->setForm();
+    }
+
+    public function getObjective($objectiveId)
+    {
+        return Objective::findOrFail($objectiveId);
+    }
+
+    public function setForm()
+    {
+        $this->objective = $this->objectiveToEdit->objective;
+        $this->priority = $this->objectiveToEdit->priority;
+    }
+
+    public function updateObjective()
     {
         $this->validate();
-        $newObjective = Objective::create([
-            'negotiation_id' => $this->negotiation->id,
-            'tenant_id' => $this->negotiation->tenant_id,
+        $this->objectiveToEdit->update([
             'objective' => $this->objective,
             'priority' => $this->priority,
         ]);
-        event(new ObjectiveCreatedEvent($newObjective->id, $this->roomId));
-
+        event(new ObjectiveEditedEvent($this->objectiveToEdit->id, $this->roomId));
         $this->close();
-    }
-
-    public function mount($negotiationId, $roomId): void
-    {
-        $this->negotiation = $this->getNegotiation($negotiationId);
-        $this->roomId = $roomId;
-    }
-
-    private function getNegotiation($negotiationId): Negotiation
-    {
-        return Negotiation::findorFail($negotiationId);
     }
 
     public function render()
     {
-        return view('livewire.modals.create-objective-form');
+        return view('livewire.modals.edit-objective-form');
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+	use App\Events\SubjectUpdatedEvent;
 	use App\Livewire\Forms\SubjectForm;
 	use App\Models\Document;
 	use Illuminate\Support\Collection;
@@ -18,7 +19,7 @@
 		public SubjectForm $form;
 		public Room $room;
 		public Subject $subject;
-		
+
 		public function mount($roomId):void
 		{
 			$this->room = $this->getRoom($roomId);
@@ -43,7 +44,7 @@
 			return Room::findOrFail($roomId);
 		}
 
-		public function deleteDocument($documentId)
+		public function deleteDocument($documentId):void
 		{
 
 			$documentToDelete = Document::findOrFail($documentId);

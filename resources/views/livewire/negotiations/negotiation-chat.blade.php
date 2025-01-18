@@ -32,7 +32,10 @@
 		 */
 		public Room $room;
 
-		public bool $alert = false;
+		public bool $emergency = false;
+		public bool $important = false;
+		public bool $toPrimary = false;
+		public bool $toTactical = false;
 
 		/**
 		 * The authenticated user.
@@ -40,6 +43,7 @@
 		 * @var User
 		 */
 		public User $user;
+
 
 		/**
 		 * Mount the component.
@@ -75,7 +79,7 @@
 			$this->broadcastMessage($message);
 
 			$this->reset('newMessage');
-			$this->reset('alert');
+			$this->reset('emergency');
 		}
 
 		/**
@@ -88,7 +92,7 @@
 			return Message::create([
 				'user_id' => $this->user->id,
 				'tenant_id' => $this->user->tenant_id,
-				'type' => $this->alert? 'emergency' : 'normal',
+				'emergency' => $this->emergency,
 				'room_id' => $this->room->id,
 				'message' => $this->newMessage,
 			]);
@@ -188,7 +192,7 @@
 				@foreach($this->room->messages as $message)
 					@php
 						$isOwnMessage = auth()->id() === $message->user_id;
-						$isEmergent = $message->type === 'emergency';
+						$isEmergent = $message->emergency;
 					@endphp
 					<x-chat-elements.chat-message
 							:message="$message"
@@ -199,21 +203,19 @@
 		</div>
 	</div>
 	<hr>
-
 	<form
 			wire:submit.prevent="sendMessage">
 		<label
 				for="chat-input"
 				class="sr-only">Your message</label>
 		<div
-				x-data="{alert: @entangle('alert')}"
-				class="bg-gray-50 dark:bg-gray-700 pl-2">
+				x-data="{emergency: @entangle('emergency'), important: @entangle('important'), toPrimary: @entangle('toPrimary'), toTactical: @entangle('toTactical')}"
+				class="bg-gray-50 dark:bg-gray-700 pl-6 flex items-center gap-4 pt-2">
 			<button
 
-					x-on:click="alert = !alert"
+					x-on:click="emergency = !emergency"
 					type="button"
-					class="inline-flex justify-center p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
-
+					class="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
 				<svg
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"
@@ -221,14 +223,72 @@
 						stroke-width="1.5"
 						stroke="currentColor"
 						class="size-5"
-						:class="alert ? 'text-red-400' : ''">
+						:class="emergency ? 'text-red-400' : ''">
 					<path
 							stroke-linecap="round"
 							stroke-linejoin="round"
 							d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5" />
 				</svg>
 
+				<span class="sr-only">Mark Message Urgent</span>
+			</button>
+			<button
+					@click="important = !important"
+					class="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+				<svg
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+						class="size-6"
+						:class="important ? 'text-yellow-600' : ''">
+					<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+				</svg>
+
 				<span class="sr-only">Mark Message Important</span>
+
+			</button>
+			<button
+					@click="toPrimary = !toPrimary"
+					class="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+				<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+						class="size-6"
+						:class="toPrimary ? 'text-blue-400' : ''">
+					<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+				</svg>
+
+				<span class="sr-only">Mark Message for primary negotiator</span>
+
+			</button>
+			<button
+					@click="toTactical = !toTactical"
+					class="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+				<svg
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+						class="size-6"
+						:class="toTactical ? 'text-green-400' : ''">
+					<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+				</svg>
+
+				<span class="sr-only">Mark Message for tactical team</span>
+
 			</button>
 
 		</div>

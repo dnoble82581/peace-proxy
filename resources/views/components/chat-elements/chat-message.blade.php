@@ -46,6 +46,7 @@ Render an individual chat message.
 
 		<div
 				@php
+
 					if ($isEmergent){
 						$messageClasses = 'bg-rose-200 border border-rose-500';
 					}elseif($isOwnMessage){
