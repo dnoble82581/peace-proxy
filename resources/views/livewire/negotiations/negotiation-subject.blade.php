@@ -122,7 +122,7 @@
 		<div
 				x-show="card === 'general'"
 				class="rounded-lg dark:bg-gray-800">
-			{{--			<livewire:cards.subject-card :subject="$subject" />--}}
+			<livewire:cards.subject-card :subject="$subject" />
 		</div>
 		<div
 				x-show="card === 'warrants'"
