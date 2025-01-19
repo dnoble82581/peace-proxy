@@ -51,5 +51,4 @@
 			</div>
 		@endforeach
 	</ul>
-	{{--	{{ $negotiations->links() }}--}}
 </div>

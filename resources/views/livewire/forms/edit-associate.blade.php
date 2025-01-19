@@ -117,13 +117,13 @@
 			<x-select
 					class="sm:col-span-2"
 					wire:model="form.gender"
-					label="associate Gender"
+					label="Associate Gender"
 					:options="['Male', 'Female', 'Transgender', 'Unknown']" />
 			<x-select
 					class="sm:col-span-2"
 					wire:model="form.race"
-					label="associate Race"
-					placeholder="associate Race"
+					label="Associate Race"
+					placeholder="Associate Race"
 					:options="[
 					['name' => 'White', 'id' => 'White', 'description' => '(Europe, Middle East, North Africa)'],
 					['name' => 'Mongoloid', 'id' => 'Mongoloid', 'description' => '(East Asia, Central Asia, Indigenous peoples of the Americas)'],

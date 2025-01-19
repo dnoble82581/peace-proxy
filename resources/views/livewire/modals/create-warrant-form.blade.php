@@ -1,5 +1,5 @@
 <x-form-layouts.form-layout
-		submit="editWarrant"
+		submit="addWarrant"
 		class="">
 	<x-slot:header>
 		Edit Warrant

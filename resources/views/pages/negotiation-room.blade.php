@@ -1,5 +1,4 @@
 <x-negotiation-layout>
-
 	<div class="pt-4 overflow-hidden pb-8 px-4">
 		<div class="flex items-center gap-3">
 			<div class="flex-1">
@@ -38,9 +37,6 @@
 
 			<!-- Right-side charts -->
 			<div class="col-span-3 max-h-[680px] overflow-hidden">
-				<x-select
-						class="mb-3"
-						:options="['Mood Log', 'Call Log']" />
 				<div>
 					<livewire:charts.mood-log-chart :room="$room" />
 				</div>

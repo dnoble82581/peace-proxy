@@ -16,6 +16,13 @@
 			$this->dispatch('modal.open', component: 'modals.create-warning-form',
 				arguments: ['roomId' => $this->subject->room_id]);
 		}
+
+		public function getTagLetters($warning)
+		{
+			$str = $warning->warning_type;
+			$pos = strpos($str, ' ');
+			return strtoupper($str[0].$str[$pos + 1]);
+		}
 	}
 ?>
 
@@ -25,53 +32,29 @@
 			<x-heroicons::micro.solid.plus class="w-5 h-5 hover:text-gray-500 text-gray-400 cursor-pointer" />
 		</button>
 	</div>
-	<div class="px-4 sm:px-6 lg:px-8">
-		<div class="mt-3 flow-root">
-			<div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-				<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-					@if($subject->warnings->count())
-						<ul
-								role="list"
-								class="divide-y divide-gray-200 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-							@foreach($subject->warnings as $warning)
-								<li class="col-span-1 sm:col-span-2 flex rounded-md shadow-sm">
-									<div class="flex w-16 shrink-0 items-center justify-center rounded-l-md bg-pink-600 text-sm font-medium text-white">
-										MH
-									</div>
-									<div class="flex flex-1 items-center justify-between truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white">
-										<div class="flex-1 truncate px-4 py-2 text-sm">
-											<a
-													href="#"
-													class="font-medium text-gray-900 hover:text-gray-600">Mental
-											                                                              Health</a>
-											<p class="text-gray-500">Subject Is Bi-Polar</p>
-										</div>
-										<div class="shrink-0 pr-2">
-											<button
-													type="button"
-													class="inline-flex size-8 items-center justify-center rounded-full bg-transparent bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-												<span class="sr-only">Open options</span>
-												<svg
-														class="size-5"
-														viewBox="0 0 20 20"
-														fill="currentColor"
-														aria-hidden="true"
-														data-slot="icon">
-													<path d="M10 3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 8.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM11.5 15.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z" />
-												</svg>
-											</button>
-										</div>
-									</div>
-								</li>
-							@endforeach
-						</ul>
-					@else
-						<div class="">
-							<h3 class="text-7xl text-gray-200 uppercase text-center mt-8">No Warnings</h3>
-						</div>
-					@endif
+	<div class="grid grid-cols-1 gap-4 sm:grid-cols-3 mt-2">
+		@foreach($subject->warnings as $warning)
+			<div class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm hover:border-gray-400">
+				<div class="shrink-0 bg-rose-500 text-white p-2">
+					{{ $this->getTagLetters($warning) }}
 				</div>
+				<div class="min-w-0 flex-1">
+					<p class="text-sm font-medium text-gray-900">{{ $warning->warning }}</p>
+					<p class="truncate text-sm text-gray-500">{{ $warning->warning_type }}</p>
+				</div>
+				<x-dropdown.dropdown>
+					<x-slot:trigger>
+						<button>
+							<x-heroicons::mini.solid.ellipsis-vertical class="w-5 h-5 hover:text-gray-500 text-gray-400 cursor-pointer" />
+						</button>
+					</x-slot:trigger>
+					<x-slot:content>
+						<x-dropdown.dropdown-button>Edit</x-dropdown.dropdown-button>
+						<x-dropdown.dropdown-button>Delete</x-dropdown.dropdown-button>
+						<x-dropdown.dropdown-button>View</x-dropdown.dropdown-button>
+					</x-slot:content>
+				</x-dropdown.dropdown>
 			</div>
-		</div>
+		@endforeach
 	</div>
 </div>

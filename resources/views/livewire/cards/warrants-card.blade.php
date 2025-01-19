@@ -1,5 +1,6 @@
 <?php
 
+	use App\Events\WarrantDeletedEvent;
 	use App\Livewire\Forms\WarrantForm;
 	use App\Models\Subject;
 	use App\Models\Warrant;
@@ -24,6 +25,7 @@
 		{
 			$this->warrant = $this->getWarrant($warrantId);
 			$this->warrant->delete();
+			event(new WarrantDeletedEvent($this->subject->id));
 		}
 
 		public function editWarrant($warrantId):void
@@ -34,7 +36,8 @@
 
 		public function addWarrant()
 		{
-			dd('made it');
+			$this->dispatch('modal.open', component: 'modals.create-warrant-form',
+				arguments: [$this->subject->id]);
 		}
 
 		private function getWarrant($warrantId):Warrant
@@ -46,6 +49,8 @@
 		{
 			return [
 				"echo-presence:warrant.{$this->subject->room_id},WarrantEditedEvent" => 'refresh',
+				"echo-presence:warrant.{$this->subject->room_id},WarrantCreatedEvent" => 'refresh',
+				"echo-presence:warrant.{$this->subject->room_id},WarrantDeletedEvent" => 'refresh',
 			];
 		}
 

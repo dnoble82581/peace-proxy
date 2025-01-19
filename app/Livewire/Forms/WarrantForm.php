@@ -70,6 +70,7 @@ class WarrantForm extends Form
             'notes' => $this->notes,
             'created_at' => now(),
             'updated_at' => now(),
+            'tenant_id' => $subject->tenant_id,
         ]);
     }
 }
