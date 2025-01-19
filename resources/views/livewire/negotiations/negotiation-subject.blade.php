@@ -132,7 +132,7 @@
 		<div
 				x-show="card === 'warnings'">
 			<div class="h-48">
-				{{--				<livewire:cards.warnings-card :subject="$subject" />--}}
+				<livewire:cards.warnings-card :subject="$subject" />
 			</div>
 		</div>
 		<div
