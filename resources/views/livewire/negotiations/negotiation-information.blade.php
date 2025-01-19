@@ -27,7 +27,7 @@
 
 <div
 		x-data="{tab: 'hostages'}"
-		class="overflow-y-scroll rounded-lg bg-white shadow dark:bg-gray-800 relative">
+		class="overflow-y-scroll rounded-lg bg-white shadow dark:bg-gray-800 relative flex-1">
 	<div class="px-4">
 		<x-navigation.card-navigation :labels="['General', 'Test']">
 			<x-slot:content>

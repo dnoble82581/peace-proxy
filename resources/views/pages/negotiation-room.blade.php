@@ -1,14 +1,9 @@
 <x-negotiation-layout>
-	<div class="p-4">
-		<div class="flex flex-row items-center gap-4">
-			<div class="flex-1">
-				<livewire:negotiations.negotiation-subject
-						:room="$room" />
-			</div>
-			<div class="flex-1">
-				<livewire:negotiations.negotiation-information
-						:room="$room" />
-			</div>
+	<div>
+		<div class="flex gap-4 p-4">
+			<livewire:negotiations.negotiation-subject
+					:room="$room" />
+			<livewire:negotiations.negotiation-information :room="$room" />
 		</div>
 	</div>
 	{{--	<div class="pt-4 overflow-hidden pb-8 px-4">--}}

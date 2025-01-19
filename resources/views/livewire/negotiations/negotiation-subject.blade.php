@@ -41,11 +41,11 @@
 			];
 		}
 	}
-
 ?>
+
 <div
 		x-data="{ card: 'general'}"
-		class="rounded-lg bg-white dark:bg-gray-800 relative">
+		class="rounded-lg bg-white dark:bg-gray-800 relative flex-1">
 	<div class="px-4">
 		<div class="">
 			<div class="grid grid-cols-1 sm:hidden">
