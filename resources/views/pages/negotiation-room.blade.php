@@ -1,6 +1,6 @@
 <x-negotiation-layout>
 	<div class="p-4">
-		<div class="flex items-center gap-4">
+		<div class="flex flex-row items-center gap-4">
 			<div class="flex-1">
 				<livewire:negotiations.negotiation-subject
 						:room="$room" />
