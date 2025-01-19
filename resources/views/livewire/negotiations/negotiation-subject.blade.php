@@ -146,7 +146,7 @@
 				class=""
 				x-show="card === 'social-media'">
 			<div class="py-5 sm:p-6 h-48">
-				{{--				<livewire:cards.social-card :subject="$subject" />--}}
+				<livewire:cards.social-card :subject="$subject" />
 			</div>
 		</div>
 	</div>
