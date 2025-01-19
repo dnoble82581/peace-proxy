@@ -115,5 +115,6 @@
 				</x-dropdown.dropdown>
 			</div>
 		</div>
+	@endif
 </div>
-@endif
+
