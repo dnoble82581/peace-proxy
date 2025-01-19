@@ -1,11 +1,11 @@
 <x-negotiation-layout>
-	<div class="grid grid-cols-12 gap-3 pt-4 overflow-hidden pb-8 px-4">
-		<div class="col-span-6">
+	<div class="pt-4 overflow-hidden pb-8 px-4">
+		<div class="">
 			<livewire:negotiations.negotiation-subject
 					:room="$room" />
 		</div>
 
-		<div class="col-span-6">
+		<div class="">
 			<livewire:negotiations.negotiation-information
 					:room="$room" />
 		</div>
