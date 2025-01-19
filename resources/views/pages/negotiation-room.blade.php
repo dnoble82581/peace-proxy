@@ -1,16 +1,18 @@
 <x-negotiation-layout>
-	<div>
-		<div class="grid grid-cols-12 gap-3 pt-4 overflow-hidden pb-8 px-4">
-			<div class="col-span-6">
+	<div class="pt-4 overflow-hidden pb-8 px-4">
+		<div class="flex items-center gap-3">
+			<div class="flex-1">
 				<livewire:negotiations.negotiation-subject
 						:room="$room" />
 			</div>
 
-			<div class="col-span-6">
+			<div class="flex-1">
 				<livewire:negotiations.negotiation-information
 						:room="$room" />
 			</div>
+		</div>
 
+		<div class="grid grid-cols-12 gap-4 mt-4">
 			<div class="sm:col-span-3">
 				<div class="bg-white dark:bg-gray-800 rounded-t p-4">
 					<h3 class="text-gray-400 mb-2 text-xl pb-4">Live Chat</h3>
@@ -46,6 +48,7 @@
 				</div>
 			</div>
 		</div>
+
 	</div>
 </x-negotiation-layout>
 
