@@ -122,23 +122,23 @@
 		<div
 				x-show="card === 'general'"
 				class="rounded-lg dark:bg-gray-800">
-			<livewire:cards.subject-card :subject="$subject" />
+			{{--			<livewire:cards.subject-card :subject="$subject" />--}}
 		</div>
 		<div
 				x-show="card === 'warrants'"
 				class="rounded-lg dark:bg-gray-800">
-			<livewire:cards.warrants-card :subject="$subject" />
+			{{--			<livewire:cards.warrants-card :subject="$subject" />--}}
 		</div>
 		<div
 				x-show="card === 'warnings'">
 			<div class="h-48">
-				<livewire:cards.warnings-card :subject="$subject" />
+				{{--				<livewire:cards.warnings-card :subject="$subject" />--}}
 			</div>
 		</div>
 		<div
 				x-show="card === 'documents'">
 			<div class="h-48">
-				<livewire:cards.documents-card :subject="$subject" />
+				{{--				<livewire:cards.documents-card :subject="$subject" />--}}
 			</div>
 		</div>
 		{{--	Social--}}
@@ -146,7 +146,7 @@
 				class=""
 				x-show="card === 'social-media'">
 			<div class="py-5 sm:p-6 h-48">
-				<livewire:cards.social-card :subject="$subject" />
+				{{--				<livewire:cards.social-card :subject="$subject" />--}}
 			</div>
 		</div>
 	</div>
