@@ -138,7 +138,7 @@
 		<div
 				x-show="card === 'documents'">
 			<div class="h-48">
-				{{--				<livewire:cards.documents-card :subject="$subject" />--}}
+				<livewire:cards.documents-card :subject="$subject" />
 			</div>
 		</div>
 		{{--	Social--}}
