@@ -141,7 +141,6 @@
 				<livewire:cards.documents-card :subject="$subject" />
 			</div>
 		</div>
-		{{--	Social--}}
 		<div
 				class=""
 				x-show="card === 'social-media'">
