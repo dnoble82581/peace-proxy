@@ -1,5 +1,5 @@
 <x-negotiation-layout>
-	<div class="max-w-full w-full mx-auto sm:grid sm:grid-cols-12 sm:gap-3 pt-4 overflow-hidden pb-8 px-4">
+	<div class="max-w-full w-full mx-auto grid grid-cols-12 gap-3 pt-4 overflow-hidden pb-8 px-4">
 		<div class="col-span-6">
 			<livewire:negotiations.negotiation-subject
 					:room="$room" />
