@@ -32,7 +32,7 @@
 	}
 ?>
 
-<div>
+<div class="pt-3">
 	<div class="flex gap-5 justify-between items-center px-8">
 		<div class="absolute top-2 right-2">
 			<x-dropdown.dropdown>

@@ -1,13 +1,14 @@
 <?php
 
+	use App\Livewire\Forms\WarrantForm;
 	use App\Models\Subject;
 	use App\Models\Warrant;
 	use Livewire\Volt\Component;
-	use function Livewire\Volt\{state};
 
 	new class extends Component {
 		public Subject $subject;
 		public Warrant $warrant;
+		public WarrantForm $form;
 
 		public function mount(Subject $subject):void
 		{
@@ -25,10 +26,15 @@
 			$this->warrant->delete();
 		}
 
-		public function editWarrant($warrantID)
+		public function editWarrant($warrantId):void
 		{
 			$this->dispatch('modal.open', component: 'modals.edit-warrant-form',
-				arguments: [$warrantID]);
+				arguments: [$warrantId]);
+		}
+
+		public function addWarrant()
+		{
+			dd('made it');
 		}
 
 		private function getWarrant($warrantId):Warrant
@@ -47,14 +53,14 @@
 
 ?>
 
-<div class="px-4 sm:px-6 lg:px-8">
-	<div class="flex justify-end px-4 mt-2">
-		<button wire:click="addWarning">
+<div class="px-2">
+	<div class="flex justify-end px-4">
+		<button wire:click="addWarrant()">
 			<x-heroicons::micro.solid.plus class="w-5 h-5 hover:text-gray-500 text-gray-400 cursor-pointer" />
 		</button>
 	</div>
-	<div class="mt-3 flow-root">
-		<div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+	<div class="flow-root">
+		<div class="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
 			<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
 				@if($subject->warrants->count())
 					<x-table-elements.subject-card-table-layout

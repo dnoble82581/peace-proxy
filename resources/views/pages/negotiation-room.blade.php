@@ -1,9 +1,15 @@
 <x-negotiation-layout>
 	<div class="max-w-full w-full mx-auto sm:grid sm:grid-cols-12 sm:gap-3 pt-4 overflow-hidden pb-8 px-4">
-		<livewire:negotiations.negotiation-subject
-				:room="$room" />
-		<livewire:negotiations.negotiation-information
-				:room="$room" />
+		<div class="col-span-6">
+			<livewire:negotiations.negotiation-subject
+					:room="$room" />
+		</div>
+
+		<div class="col-span-6">
+			<livewire:negotiations.negotiation-information
+					:room="$room" />
+		</div>
+
 		<div class="sm:col-span-3">
 			<div class="bg-white dark:bg-gray-800 rounded-t p-4">
 				<h3 class="text-gray-400 mb-2 text-xl pb-4">Live Chat</h3>

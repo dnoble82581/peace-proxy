@@ -45,7 +45,7 @@
 ?>
 <div
 		x-data="{ card: 'general'}"
-		class="rounded-lg bg-white dark:bg-gray-800 col-span-6 relative">
+		class="rounded-lg bg-white dark:bg-gray-800 relative">
 	<div class="px-4">
 		<div class="">
 			<div class="grid grid-cols-1 sm:hidden">
@@ -118,41 +118,36 @@
 			</div>
 		</div>
 	</div>
-	<div
-			x-show="card === 'general'"
-			class="rounded-lg dark:bg-gray-800">
-		<div class="py-5 sm:p-6 h-48">
+	<div class="h-48 p-2 overflow-y-auto overflow-x-hidden">
+		<div
+				x-show="card === 'general'"
+				class="rounded-lg dark:bg-gray-800">
 			<livewire:cards.subject-card :subject="$subject" />
 		</div>
-	</div>
-	{{--	Warrants--}}
-	<div
-			x-show="card === 'warrants'"
-			class="rounded-lg dark:bg-gray-800 overflow-y-auto">
-		<div class="h-48">
+		<div
+				x-show="card === 'warrants'"
+				class="rounded-lg dark:bg-gray-800">
 			<livewire:cards.warrants-card :subject="$subject" />
 		</div>
-	</div>
-	{{--	Warnings--}}
-	<div
-			x-show="card === 'warnings'">
-		<div class="h-48">
-			<livewire:cards.warnings-card :subject="$subject" />
+		<div
+				x-show="card === 'warnings'">
+			<div class="h-48">
+				<livewire:cards.warnings-card :subject="$subject" />
+			</div>
 		</div>
-	</div>
-	{{--	Documents--}}
-	<div
-			x-show="card === 'documents'">
-		<div class="h-48">
-			<livewire:cards.documents-card :subject="$subject" />
+		<div
+				x-show="card === 'documents'">
+			<div class="h-48">
+				<livewire:cards.documents-card :subject="$subject" />
+			</div>
 		</div>
-	</div>
-	{{--	Social--}}
-	<div
-			class=""
-			x-show="card === 'social-media'">
-		<div class="py-5 sm:p-6 h-48">
-			<livewire:cards.social-card :subject="$subject" />
+		{{--	Social--}}
+		<div
+				class=""
+				x-show="card === 'social-media'">
+			<div class="py-5 sm:p-6 h-48">
+				<livewire:cards.social-card :subject="$subject" />
+			</div>
 		</div>
 	</div>
 </div>

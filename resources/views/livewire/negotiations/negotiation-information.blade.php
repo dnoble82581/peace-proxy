@@ -27,7 +27,7 @@
 
 <div
 		x-data="{tab: 'hostages'}"
-		class="overflow-y-scroll rounded-lg bg-white shadow col-span-6 dark:bg-gray-800 relative">
+		class="overflow-y-scroll rounded-lg bg-white shadow dark:bg-gray-800 relative">
 	<div class="px-4">
 		<x-navigation.card-navigation :labels="['General', 'Test']">
 			<x-slot:content>
@@ -55,19 +55,21 @@
 			</x-slot:content>
 		</x-navigation.card-navigation>
 	</div>
-	<div
-			class="overflow-visible"
-			x-show="tab === 'hostages'">
-		<livewire:cards.hostages-card
-				:negotiationId="$negotiation->id"
-				:roomId="$this->room->id" />
-	</div>
-	<div x-show="tab === 'negotiation'">
-		<x-cards.negotiations.general-negotiation-card :negotiation="$negotiation" />
-	</div>
-	<div x-show="tab === 'objectives'">
-		<livewire:cards.objectives-card
-				:negotiationId="$negotiation->id"
-				:roomId="$this->room->id" />
+	<div class="h-48 p-2">
+		<div
+				class="overflow-visible"
+				x-show="tab === 'hostages'">
+			<livewire:cards.hostages-card
+					:negotiationId="$negotiation->id"
+					:roomId="$this->room->id" />
+		</div>
+		<div x-show="tab === 'negotiation'">
+			<x-cards.negotiations.general-negotiation-card :negotiation="$negotiation" />
+		</div>
+		<div x-show="tab === 'objectives'">
+			<livewire:cards.objectives-card
+					:negotiationId="$negotiation->id"
+					:roomId="$this->room->id" />
+		</div>
 	</div>
 </div>
