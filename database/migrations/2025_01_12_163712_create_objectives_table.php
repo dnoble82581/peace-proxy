@@ -12,7 +12,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tenant_id');
             $table->foreignId('negotiation_id');
+            $table->foreignId('user_id');
             $table->integer('priority');
+            $table->string('status')->default('In Progress');
             $table->string('objective');
             $table->timestamps();
         });

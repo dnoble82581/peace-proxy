@@ -43,8 +43,6 @@
 				</x-slot:trigger>
 				<x-slot:content>
 					<div>
-						<x-dropdown.dropdown-button wire:click="addWarrant">Add Warrant
-						</x-dropdown.dropdown-button>
 						<x-dropdown.dropdown-button wire:click="editSubject">
 							Edit
 						</x-dropdown.dropdown-button>

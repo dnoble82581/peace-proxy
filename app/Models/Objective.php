@@ -18,6 +18,11 @@ class Objective extends Model
         return $this->belongsTo(Negotiation::class);
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function getPriorityString($priority): string
     {
         return match ($priority) {

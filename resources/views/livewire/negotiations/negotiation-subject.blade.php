@@ -38,6 +38,10 @@
 		{
 			return [
 				"echo-presence:chart.{$this->room->id},ChartUpdatedEvent" => 'refresh',
+				"echo-presence:warning.{$this->room->id},WarningUpdatedEvent" => 'refresh',
+				"echo-presence:warning.{$this->room->id},WarningCreatedEvent" => 'refresh',
+				"echo-presence:warrant.{$this->room->id},WarrantCreatedEvent" => 'refresh',
+				"echo-presence:warrant.{$this->room->id},WarrantDeletedEvent" => 'refresh',
 			];
 		}
 	}
@@ -47,7 +51,7 @@
 		x-data="{ card: 'general'}"
 		class="rounded-lg bg-white dark:bg-gray-800 relative flex-1">
 	<div class="px-4">
-		<div class="">
+		<div>
 			<div class="grid grid-cols-1 sm:hidden">
 				<!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
 				<select

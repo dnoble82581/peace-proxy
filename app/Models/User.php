@@ -108,6 +108,11 @@ class User extends Authenticatable
         return $this->hasMany(Negotiation::class);
     }
 
+    public function objectives(): HasMany
+    {
+        return $this->hasMany(Objective::class);
+    }
+
     public function getRoleName()
     {
         $role = $this->getRoleNames()->first();

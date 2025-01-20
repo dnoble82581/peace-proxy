@@ -49,6 +49,7 @@ class CreateObjectiveForm extends Modal
         $newObjective = Objective::create([
             'negotiation_id' => $this->negotiation->id,
             'tenant_id' => $this->negotiation->tenant_id,
+            'user_id' => auth()->user()->id,
             'objective' => $this->objective,
             'priority' => $this->priority,
         ]);

@@ -2,17 +2,17 @@
 
 namespace App\Livewire\Modals;
 
-use App\Events\WarningCreatedEvent;
-use App\Models\Room;
+use App\Events\WarningUpdatedEvent;
+use App\Models\Warning;
 use Livewire\Attributes\Validate;
 use WireElements\Pro\Components\Modal\Modal;
 
-class CreateWarningForm extends Modal
+class EditWarningForm extends Modal
 {
-    public Room $room;
+    public Warning $warning;
 
     #[Validate('string|required|min:2|max:255')]
-    public string $warning;
+    public string $warningText;
 
     #[Validate('required')]
     public string $warning_type;
@@ -40,33 +40,35 @@ class CreateWarningForm extends Modal
         ];
     }
 
-    public function mount($roomId): void
+    public function mount($warningId)
     {
-        $this->room = $this->getRoom($roomId);
+        $this->warning = $this->getWarning($warningId);
+        $this->setForm();
     }
 
-    private function getRoom($roomId): Room
+    private function getWarning($warningId)
     {
-        return Room::findOrFail($roomId);
+        return Warning::findOrFail($warningId);
     }
 
-    public function createWarning()
+    private function setForm()
     {
-        $this->validate();
-        $this->room->subject->warnings()->create([
-            'warning' => $this->warning,
+        $this->warningText = $this->warning->warning;
+        $this->warning_type = $this->warning->warning_type;
+    }
+
+    public function editWarning(): void
+    {
+        $this->warning->update([
+            'warning' => $this->warningText,
             'warning_type' => $this->warning_type,
-            'tenant_id' => $this->room->tenant_id,
-            'subject_id' => $this->room->subject_id,
-            'room_id' => $this->room->id,
-            'user_id' => auth()->user()->id,
         ]);
-        event(new WarningCreatedEvent($this->room->id));
+        event(new WarningUpdatedEvent($this->warning->subject->room_id));
         $this->close();
     }
 
     public function render()
     {
-        return view('livewire.modals.create-warning-form');
+        return view('livewire.modals.edit-warning-form');
     }
 }
