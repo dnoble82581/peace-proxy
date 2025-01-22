@@ -1,5 +1,6 @@
 <?php
 
+	use App\Events\ObjectiveDeletedEvent;
 	use App\Events\ObjectiveEditedEvent;
 	use App\Models\Negotiation;
 	use App\Models\Objective;
@@ -8,6 +9,7 @@
 
 	new class extends Component {
 		public Negotiation $negotiation;
+		public Collection $objectives;
 		public int $roomId;
 
 
@@ -15,6 +17,7 @@
 		{
 			$this->negotiation = $this->getNegotiation($negotiationId);
 			$this->roomId = $roomId;
+			$this->objectives = $this->getObjectives();
 		}
 
 		private function getNegotiation($negotiationId)
@@ -22,6 +25,11 @@
 			return Negotiation::query()
 				->with('objectives')
 				->findOrFail($negotiationId);
+		}
+
+		private function getObjectives()
+		{
+			return $this->negotiation->objectives->sortBy('priority');
 		}
 
 		public function createObjective():void
@@ -39,9 +47,21 @@
 		public function getListeners():array
 		{
 			return [
-				"echo-presence:objective.{$this->roomId},ObjectiveCreatedEvent" => 'refresh',
-				"echo-presence:objective.{$this->roomId},ObjectiveEditedEvent" => 'refresh',
+				"echo-presence:objective.{$this->roomId},ObjectiveCreatedEvent" => 'refreshObjectives',
+				"echo-presence:objective.{$this->roomId},ObjectiveEditedEvent" => 'refreshObjectives',
+				"echo-presence:objective.{$this->roomId},ObjectiveDeletedEvent" => 'refresh',
 			];
+		}
+
+		public function deleteObjective(Objective $objective)
+		{
+			$objective->delete();
+			event(new ObjectiveDeletedEvent($this->roomId));
+		}
+
+		public function refreshObjectives()
+		{
+			$this->objectives = $this->negotiation->objectives->sortBy('priority');
 		}
 
 		public function toggleComplete(Objective $objective):void
@@ -72,8 +92,8 @@
 	@if($negotiation->objectives()->count())
 		<ul
 				role="list"
-				class="divide-y divide-gray-100">
-			@foreach($negotiation->objectives as $objective)
+				class="divide-y divide-gray-100 space-y-4">
+			@foreach($this->objectives as $objective)
 				<li class="flex items-center justify-between gap-x-6 px-10 py-2">
 					<div class="min-w-0">
 						<div class="flex items-start gap-x-3">
@@ -121,6 +141,7 @@
 							<x-heroicons::mini.solid.check />
 						</button>
 						<button
+								wire:click="deleteObjective({{ $objective->id }})"
 								class="text-red-400">
 							<x-heroicons::outline.trash class="w-5 h-5" />
 						</button>

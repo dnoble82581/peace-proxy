@@ -82,10 +82,21 @@
 				click-action="addAssociate"
 				class="bg-violet-400 dark:bg-violet-600 border-gray-300"
 				value="Associates">
+			<x-slot:search>
+				<label
+						class="sr-only"
+						for="search">Search</label>
+				<input
+						id="search"
+						type="text"
+						placeholder="Search"
+						class="h-6 focus:ring-0 rounded-lg text-sm">
+			</x-slot:search>
 			<x-slot:actions>
 				<button @click="showList = !showList">
 					<x-heroicons::mini.solid.chevron-up-down class="w-5 h-5 text-slate-700 dark:text-slate-300" />
 				</button>
+
 				<span
 						x-transition:enter="transition ease-out duration-200"
 						x-transition:enter-start="opacity-0 scale-95"

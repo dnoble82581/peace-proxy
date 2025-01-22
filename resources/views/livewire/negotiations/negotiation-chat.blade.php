@@ -4,6 +4,7 @@
 	use App\Models\Message;
 	use App\Models\Room;
 	use App\Models\User;
+	use Illuminate\Support\Collection;
 	use Livewire\Attributes\Validate;
 	use Livewire\Volt\Component;
 
@@ -23,7 +24,9 @@
 		 *
 		 * @var string
 		 */
+		#[Validate('string|required|min:3|max:255')]
 		public string $newMessage = '';
+
 
 		/**
 		 * Instance of the chat room.
@@ -43,7 +46,6 @@
 		 * @var User
 		 */
 		public User $user;
-
 
 		/**
 		 * Mount the component.
@@ -71,9 +73,7 @@
 		 */
 		public function sendMessage():void
 		{
-			$this->validate([
-				'newMessage' => 'required|string|max:255',
-			]);
+			$this->validate();
 
 			$message = $this->createMessage();
 			$this->broadcastMessage($message);
@@ -89,11 +89,13 @@
 		 */
 		private function createMessage():Message
 		{
-			return Message::create([
+			return $this->room->messages()->create([
 				'user_id' => $this->user->id,
 				'tenant_id' => $this->user->tenant_id,
 				'emergency' => $this->emergency,
-				'room_id' => $this->room->id,
+				'to_primary' => $this->toPrimary,
+				'to_tactical' => $this->toTactical,
+				'important' => $this->important,
 				'message' => $this->newMessage,
 			]);
 		}
@@ -175,11 +177,11 @@
 		 */
 		public function handleUserLeaving($user):void {}
 
-	};
+	}
 ?>
 
 <div
-		class="bg-white dark:bg-gray-800 shadow-lg col-span-3">
+		class="bg-white dark:bg-gray-800 shadow-lg">
 	<div
 			x-data
 			x-init="$nextTick(() => $el.scrollTop = $el.scrollHeight)"
@@ -233,6 +235,7 @@
 				<span class="sr-only">Mark Message Urgent</span>
 			</button>
 			<button
+					type="button"
 					@click="important = !important"
 					class="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
 				<svg
@@ -252,6 +255,7 @@
 
 			</button>
 			<button
+					type="button"
 					@click="toPrimary = !toPrimary"
 					class="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
 				<svg
@@ -272,6 +276,7 @@
 
 			</button>
 			<button
+					type="button"
 					@click="toTactical = !toTactical"
 					class="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
 				<svg

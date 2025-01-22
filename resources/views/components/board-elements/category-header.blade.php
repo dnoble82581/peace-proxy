@@ -1,11 +1,14 @@
-@props(['value' => null, 'clickAction' => null, 'actions' => null])
+@props(['value' => null, 'clickAction' => null, 'actions' => null, 'search' => null])
 <div {{ $attributes->merge(['class' => 'rounded-lg p-2 shadow-md']) }}>
 	<div class="flex items-center justify-between">
 		<div class="flex items-center space-x-2">
 			<p class="font-semibold block w-20 text-gray-600 dark:text-slate-300">{{ $value ?: $slot }}</p>
 			{{ $actions }}
 		</div>
-		<div>
+		<div class="flex items-center gap-5">
+			<span class="">
+				{{ $search }}
+			</span>
 			<button
 					wire:click="{{ $clickAction }}"
 					class="flex items-center">

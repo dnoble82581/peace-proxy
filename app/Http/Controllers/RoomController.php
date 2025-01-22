@@ -12,7 +12,8 @@ class RoomController extends Controller
     public function index($roomId): View
     {
         $room = Room::with([
-            'messages:id,message,created_at,room_id,user_id,updated_at', // Fetch necessary columns
+            'messages:id,message,created_at,room_id,user_id,updated_at,to_primary,to_tactical,emergency,important',
+            // Fetch necessary columns
             'messages.user:id,name', // Fetch user data for each message
             'subject:id,name,address,city,state,zip,phone,tenant_id,room_id,facebook_url,x_url,instagram_url,snapchat_url,youtube_url,weapons,weapons_details',
             'subject.demands:id,subject_id,tenant_id,type,deadline,description,title,status,notes',
