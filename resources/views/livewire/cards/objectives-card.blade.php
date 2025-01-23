@@ -59,7 +59,7 @@
 			event(new ObjectiveDeletedEvent($this->roomId));
 		}
 
-		public function refreshObjectives()
+		public function refreshObjectives():void
 		{
 			$this->objectives = $this->negotiation->objectives->sortBy('priority');
 		}
@@ -94,7 +94,8 @@
 				role="list"
 				class="divide-y divide-gray-100 space-y-4">
 			@foreach($this->objectives as $objective)
-				<li class="flex items-center justify-between gap-x-6 px-10 py-2">
+				<li
+						class="flex items-center justify-between gap-x-6 px-10 py-2">
 					<div class="min-w-0">
 						<div class="flex items-start gap-x-3">
 							<p class="text-sm/6 font-semibold text-gray-900">{{ $objective->objective }}</p>
