@@ -3,11 +3,16 @@
 		<div>
 			<livewire:alerts.tactical-alerts :room="$room" />
 		</div>
-		<div class="max-w-full w-full mx-auto sm:grid sm:grid-cols-12 sm:gap-3 pt-4 overflow-hidden pb-8">
-			<livewire:negotiations.negotiation-subject :room="$room" />
-			<x-cards.negotiation-information
-					:negotiation="$room->negotiation"
-					:hostages="$room->subject->associates->where('relationship_to_subject', 'Hostage')" />
+		<div class="flex items-center gap-3">
+			<div class="flex-1">
+				<livewire:negotiations.negotiation-subject
+						:room="$room" />
+			</div>
+
+			<div class="flex-1">
+				<livewire:negotiations.negotiation-information
+						:room="$room" />
+			</div>
 		</div>
 
 		<div class="mb-5 flex gap-5">
