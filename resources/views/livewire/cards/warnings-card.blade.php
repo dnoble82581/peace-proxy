@@ -56,10 +56,10 @@
 			<x-heroicons::micro.solid.plus class="w-5 h-5 hover:text-gray-500 text-gray-400 cursor-pointer" />
 		</button>
 	</div>
-	<div class="grid grid-cols-1 gap-4 sm:grid-cols-3 mt-2">
+	<div class="grid grid-cols-1 gap-4 sm:grid-cols-4 mt-2">
 		@if($subject->warnings->count())
 			@foreach($subject->warnings as $warning)
-				<div class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm hover:border-gray-400">
+				<div class="relative flex items-center space-x-3 col-span-2 rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm hover:border-gray-400">
 					<div class="shrink-0 bg-rose-500 text-white p-2">
 						{{ $this->getTagLetters($warning) }}
 					</div>

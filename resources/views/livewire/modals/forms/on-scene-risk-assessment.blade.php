@@ -8,7 +8,10 @@
 		</x-slot:description>
 		<x-slot:actions>
 			<x-buttons.primary-button type="submit">Create Form</x-buttons.primary-button>
-			<x-buttons.secondary-button>Cancel</x-buttons.secondary-button>
+			<x-buttons.secondary-button
+					type="button"
+					wire:modal="close">Cancel
+			</x-buttons.secondary-button>
 		</x-slot:actions>
 		@foreach ($questions as $question)
 			<div class="flex items-center justify-between px-4 pb-2 border-b border-gray-200">

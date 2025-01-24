@@ -47,6 +47,7 @@ class PagesController extends Controller
             'subject.demands:id,subject_id,tenant_id,type,deadline,description,title,status,notes',
             'subject.moodLogs:id,subject_id,tenant_id,mood,name,created_at',
             'subject.callLogs',
+            'subject.warrants:id,subject_id,tenant_id,offense,originating_county,originating_agency,originating_state,extraditable,entered_on,notes',
             'subject.warnings:id,subject_id,user_id,tenant_id,room_id,warning_type,warning',
             'subject.associates',
             'subject.documents:id,filename,size,updated_at,extension',

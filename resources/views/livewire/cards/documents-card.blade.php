@@ -17,68 +17,69 @@
 			$this->dispatch('modal.open', component: 'modals.forms.on-scene-risk-assessment',
 				arguments: ['subjectId' => $this->subject->id]);
 		}
+
+		public function deleteDocument($documentId)
+		{
+			dd($documentId);
+		}
 	}
 
 ?>
 
 <div class="px-2">
 	<div class="flex justify-end px-4">
-		<button wire:click="createForm">
-			<x-heroicons::micro.solid.plus class="w-5 h-5 hover:text-gray-500 text-gray-400 cursor-pointer" />
-		</button>
+		<x-dropdown.dropdown>
+			<x-slot:trigger>
+				<button type="button">
+					<x-heroicons::micro.solid.plus class="w-5 h-5 hover:text-gray-500 text-gray-400 cursor-pointer" />
+				</button>
+			</x-slot:trigger>
+			<x-slot:content>
+				<x-dropdown.dropdown-button wire:click="createForm">
+					Risk Assessment
+				</x-dropdown.dropdown-button>
+			</x-slot:content>
+		</x-dropdown.dropdown>
+
 	</div>
 	<ul
 			role="list"
 			class="divide-y divide-gray-100">
-		@foreach($this->subject->documents as $document)
-			<li class="flex justify-between gap-x-6 py-5">
-				<div class="flex min-w-0 gap-x-4">
-					<x-svg-images.documents.pdf class="w-10 h-10" />
-					<div class="min-w-0 flex-auto">
-						<p class="text-sm/6 font-semibold text-gray-900">
-							<a
-									href="{{ $document->privateUrl() }}"
-									target="_blank"
-									class="hover:underline text-sm">{{ $document->filename }}</a>
-						</p>
-						<p class="mt-1 flex text-xs/5 text-gray-500">
-							<apan
-									class="truncate hover:underline">{{ round($document->size/1000) }}KB
-							</apan>
-						</p>
-					</div>
-				</div>
-				<div class="flex shrink-0 items-center gap-x-6">
-					<div class="hidden sm:flex sm:flex-col sm:items-end">
-						<p class="text-sm/6 text-gray-900"> {{ $document->type }}</p>
-						<p class="mt-1 text-xs/5 text-gray-500">Created
-							<time datetime="2023-01-23T13:23Z">{{ $document->updated_at->diffForHumans() }}</time>
-						</p>
-					</div>
-					<div
-							class="relative flex-none">
-						<x-dropdown.dropdown>
-							<x-slot:trigger>
+		@if($subject->documents->count())
+			<x-table-elements.subject-card-table-layout :labels="['File Name', 'Type', 'Size', 'Created At', 'Actions' ]">
+				<x-slot:content>
+					@foreach($subject->documents as $document)
+						<tr class="even:bg-gray-50">
+							<td class="py-2 pr-3 pl-4 text-xs font-medium whitespace-nowrap text-gray-900 sm:pl-3">
+								{{ $document->filename }}
+							</td>
+							<td class="px-3 py-2 text-xs whitespace-nowrap text-gray-500">{{ $document->type }}</td>
+							<td class="px-3 py-2 text-xs whitespace-nowrap text-gray-500">{{ round($document->size/1000) }}
+								kb
+							</td>
+							<td class="px-3 py-2 text-xs whitespace-nowrap text-gray-500">{{ $document->created_at->diffForHumans() }}
+							</td>
+							<td class="relative py-2 space-x-2 pr-4 pl-3 text-left text-xs font-medium whitespace-nowrap sm:pr-3 flex">
+								<a
+										href="{{ $document->privateUrl() }}"
+										target="_blank">
+									<x-heroicons::outline.envelope-open class="w-4 h-4 hover:text-indigo-500 text-indigo-400 cursor-pointer" />
+								</a>
 								<button
-										@click="show = !show"
 										type="button"
-										class="-m-2.5 block p-2.5 text-gray-500 hover:text-gray-900"
-										id="options-menu-0-button"
-										aria-expanded="false"
-										aria-haspopup="true">
-									<span class="sr-only">Open options</span>
-									<x-heroicons::solid.ellipsis-vertical class="w-5 h-5" />
+										wire:click="deleteDocument({{ $document->id }})">
+									<x-heroicons::outline.trash class="w-4 h-4 hover:text-red-500 text-red-400 cursor-pointer" />
 								</button>
-							</x-slot:trigger>
-							<x-slot:content>
-								<x-dropdown.dropdown-button>
-									Delete
-								</x-dropdown.dropdown-button>
-							</x-slot:content>
-						</x-dropdown.dropdown>
-					</div>
-				</div>
-			</li>
-		@endforeach
+							</td>
+						</tr>
+					@endforeach
+				</x-slot:content>
+
+			</x-table-elements.subject-card-table-layout>
+		@else
+			<div class="h-full">
+				<h3 class="text-7xl text-gray-200 uppercase text-center mt-8">No Documents</h3>
+			</div>
+		@endif
 	</ul>
 </div>

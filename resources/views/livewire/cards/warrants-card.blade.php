@@ -13,7 +13,7 @@
 
 		public function mount(Subject $subject):void
 		{
-			$this->subject = $subject;
+			$this->subject = $subject->load('warrants');
 		}
 
 		private function getSubject($subjectId):Subject
@@ -40,6 +40,12 @@
 				arguments: [$this->subject->id]);
 		}
 
+		public function showWarrant($warrantId)
+		{
+			$this->dispatch('modal.open', component: 'modals.show-warrant',
+				arguments: [$warrantId]);
+		}
+
 		private function getWarrant($warrantId):Warrant
 		{
 			return Warrant::findOrFail($warrantId);
@@ -60,27 +66,47 @@
 
 <div class="px-2">
 	<div class="flex justify-end px-4">
-		<button wire:click="addWarrant()">
+		<button
+				type="button"
+				wire:click="addWarrant()">
 			<x-heroicons::micro.solid.plus class="w-5 h-5 hover:text-gray-500 text-gray-400 cursor-pointer" />
 		</button>
 	</div>
 	<div class="flow-root">
 		<div class="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
 			<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-				@if($subject->warrants->count())
-					<x-table-elements.subject-card-table-layout
-							:labels="['Offense', 'Originating County', 'Originating State', 'Extraditable', 'Action']">
-						@foreach($subject->warrants as $warrant)
-							<a href="#">
-								<x-table-elements.subject-warrants-row :warrant="$warrant" />
-							</a>
+				<x-table-elements.subject-card-table-layout :labels="['Offense', 'Agency', 'Extraditable','Confirmed','Actions']">
+					<x-slot:content>
+						@foreach ($this->subject->warrants as $warrant)
+							<tr class="even:bg-gray-50">
+								<td class="py-2 pr-3 pl-4 text-xs font-medium whitespace-nowrap text-gray-900 sm:pl-3">
+									{{ $warrant->offense }}
+								</td>
+								<td class="px-3 py-2 text-xs whitespace-nowrap text-gray-500">{{ $warrant->originating_agency }}</td>
+								<td class="px-3 py-2 text-xs whitespace-nowrap text-gray-500">{{ $warrant->extraditable }}
+								<td class="px-3 py-2 text-xs whitespace-nowrap text-gray-500">{{ $warrant->confirmed }}
+								</td>
+								<td class="relative py-2 space-x-2 pr-4 pl-3 text-left text-xs font-medium whitespace-nowrap sm:pr-3">
+									<button
+											type="button"
+											wire:click="showWarrant({{ $warrant->id }})">
+										<x-heroicons::outline.envelope-open class="w-4 h-4 hover:text-indigo-500 text-indigo-400 cursor-pointer" />
+									</button>
+									<button
+											type="button"
+											wire:click="editWarrant({{ $warrant->id }})">
+										<x-heroicons::mini.solid.pencil-square class="w-4 h-4 hover:text-blue-500 text-blue-400 cursor-pointer" />
+									</button>
+									<button
+											type="button"
+											wire:click="deleteWarrant({{ $warrant->id }})">
+										<x-heroicons::outline.trash class="w-4 h-4 hover:text-red-500 text-red-400 cursor-pointer" />
+									</button>
+								</td>
+							</tr>
 						@endforeach
-					</x-table-elements.subject-card-table-layout>
-				@else
-					<div class="h-full">
-						<h3 class="text-7xl text-gray-200 uppercase text-center mt-8">No Warrants</h3>
-					</div>
-				@endif
+					</x-slot:content>
+				</x-table-elements.subject-card-table-layout>
 			</div>
 		</div>
 	</div>

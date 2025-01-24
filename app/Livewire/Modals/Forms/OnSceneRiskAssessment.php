@@ -89,6 +89,7 @@ class OnSceneRiskAssessment extends Modal
         $this->reset('responses'); // Clear all responses
 
         $this->subject->update(['risk_assessment' => true]);
+        $this->close();
 
         // Allow the user to download the PDF directly
         //        return response()->streamDownload(fn () => print ($pdf->output()), $filename);

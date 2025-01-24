@@ -20,7 +20,7 @@ class RoomController extends Controller
             'subject.moodLogs:id,subject_id,tenant_id,mood,name,created_at',
             'subject.callLogs',
             'subject.warnings:id,subject_id,user_id,tenant_id,room_id,warning_type,warning',
-            'subject.documents:id,documentable_id,filename,size,updated_at,extension,type',
+            'subject.documents:id,documentable_id,filename,size,updated_at,extension,type,created_at',
         ])->findOrFail($roomId);
 
         // Perform authorization check directly on the retrieved instance

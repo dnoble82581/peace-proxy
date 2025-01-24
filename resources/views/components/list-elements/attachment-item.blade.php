@@ -13,7 +13,7 @@
 					href="{{ $document->privateUrl() }}"
 					target="_blank"
 					class="font-medium text-indigo-600 hover:text-indigo-500 dark:text-white dark:bg-indigo-500 dark:px-2 rounded-md dark:py-1 dark:hover:bg-indigo-600">
-				Download
+				View
 			</a>
 		@else
 			<button
