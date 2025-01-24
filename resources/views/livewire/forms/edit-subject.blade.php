@@ -46,7 +46,6 @@
 
 		public function deleteDocument($documentId):void
 		{
-
 			$documentToDelete = Document::findOrFail($documentId);
 			Storage::disk('s3')->delete('/documents/'.$this->subject->id.'/'.$documentToDelete->filename);
 			$documentToDelete->delete();
@@ -277,7 +276,7 @@
 				<div class="h-20 grid grid-cols-6 gap-4">
 					@foreach($this->subject->documents as $document)
 						<div>
-							<x-svg-images.paper-clip class="w-12 h-12" />
+							<x-heroicons::outline.paper-clip class="w-8 h-8" />
 							<p class="truncate text-gray-600 text-sm">{{ $document->filename }}</p>
 							<button
 									type="button"

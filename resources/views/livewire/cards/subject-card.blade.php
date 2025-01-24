@@ -68,7 +68,6 @@
 						class="w-24 h-24 rounded"
 						alt="Temporary Subject Image">
 			@endif
-
 		</div>
 		<div class="text-sm dark-light-text">
 			<strong class="block">{{ $subject->name }}</strong>

@@ -12,11 +12,11 @@ return new class extends Migration
             $table->id();
             $table->string('type');
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('subject_id')->nullable();
+            $table->unsignedBigInteger('tenant_id');
+            $table->morphs('documentable');
             $table->string('filename');
             $table->string('extension');
             $table->integer('size');
-            $table->unsignedBigInteger('tenant_id');
             $table->timestamps();
         });
     }

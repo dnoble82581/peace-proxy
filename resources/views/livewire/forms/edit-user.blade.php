@@ -224,6 +224,7 @@
 						{{-- File input for application upload --}}
 						<x-form-elements.file-input
 								wire-to="form.application"
+								multiple
 								type="file"
 								accept="application/pdf"
 								class="mt-1" />

@@ -3,6 +3,7 @@
 namespace App\Livewire\Forms;
 
 use App\Models\Subject;
+use App\Services\DocumentProcessor;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
@@ -146,20 +147,8 @@ class SubjectForm extends Form
 
     private function processDocuments(): void
     {
-        foreach ($this->documentsToUpload as $document) {
-            $filename = pathinfo($document->getClientOriginalName(), PATHINFO_FILENAME)
-                .'_'.now()->timestamp.'.'.$document->getClientOriginalExtension();
-
-            $document->storeAs('/documents/'.$this->subject->id.'/', $filename, 's3');
-
-            $this->subject->documents()->create([
-                'type' => 'form',
-                'user_id' => auth()->user()->id,
-                'filename' => $filename,
-                'extension' => $document->getClientOriginalExtension(),
-                'size' => $document->getSize(),
-            ]);
-        }
+        $documentProcessor = new DocumentProcessor;
+        $documentProcessor->processDocuments($this->documentsToUpload, $this->subject, auth()->user()->id);
     }
 
     public function deleteImage($imageId): void

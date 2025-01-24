@@ -8,6 +8,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
@@ -77,23 +78,23 @@ class User extends Authenticatable
         return $this->hasMany(Warning::class);
     }
 
-    public function applicationUrl(): string
-    {
-        if ($this->application()) {
-            return url('/documents/user/'.$this->id.'/'.$this->application()->filename);
-        }
-
-        return '#';
-    }
+    //    public function applicationUrl(): string
+    //    {
+    //        if ($this->application()) {
+    //            return url('/documents/user/'.$this->id.'/'.$this->application()->filename);
+    //        }
+    //
+    //        return '#';
+    //    }
 
     public function application()
     {
         return $this->documents()->where('type', 'application')->first();
     }
 
-    public function documents(): HasMany
+    public function documents(): MorphMany
     {
-        return $this->hasMany(Document::class);
+        return $this->morphMany(Document::class, 'documentable');
     }
 
     public function rooms(): BelongsToMany

@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Document extends Model
 {
@@ -13,22 +13,17 @@ class Document extends Model
 
     protected $guarded = ['id'];
 
-    public function user(): BelongsTo
+    public function documentable(): MorphTo
     {
-        return $this->belongsTo(User::class);
-    }
-
-    public function subject(): BelongsTo
-    {
-        return $this->belongsTo(Subject::class);
+        return $this->morphTo();
     }
 
     public function privateUrl(): string
     {
-        if ($this->subject_id) {
-            return url('/documents/subject/'.$this->subject_id.'/'.$this->filename);
+        if ($this->documentable_type === 'App\Models\User') {
+            return url('/documents/user/'.$this->documentable_id.'/'.$this->filename);
+        } else {
+            return url('/documents/subject/'.$this->documentable_id.'/'.$this->filename);
         }
-
-        return url('/documents/user/'.$this->user_id.'/'.$this->filename);
     }
 }

@@ -23,9 +23,9 @@ class PagesController extends Controller
         return view('pages.subject.edit-subject')->with('roomId', $roomId);
     }
 
-    public function command()
+    public function shell()
     {
-        return view('pages.command');
+        return view('pages.shell.index');
     }
 
     public function tacticalRoom()
@@ -50,6 +50,7 @@ class PagesController extends Controller
             'subject.warnings:id,subject_id,user_id,tenant_id,room_id,warning_type,warning',
             'subject.associates',
             'subject.documents:id,filename,size,updated_at,extension',
+            'subject.riskAssessment:id,subject_id,tenant_id,created_at',
         ])->findOrFail($roomId);
 
         // Perform authorization check directly on the retrieved instance

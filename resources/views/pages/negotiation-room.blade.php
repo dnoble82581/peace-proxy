@@ -37,7 +37,7 @@
 					container-class="sm:col-span-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg"
 					:tabs="[
                     ['key' => 'board', 'label' => 'Board'],
-                    ['key' => 'objectives', 'label' => 'Objectives('.$room->negotiation->objectives->count().')'],
+                    ['key' => 'objectives', 'label' => 'Objectives'],
                 ]"
 					:default-tab="'board'">
 

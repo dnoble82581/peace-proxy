@@ -24,7 +24,7 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/create-negotiation', 'pages.create-negotiation')->name('create.negotiation');
     Route::get('/negotiation/room/{room}', [RoomController::class, 'index'])->name('negotiation.room');
 
-    //    Volt::route('/negotiation/room/{room}', 'pages.negotiation-room')->name('negotiation.room');
+    Route::get('/shell', [PagesController::class, 'shell'])->name('shell');
 
     Route::get('/negotiation/tactical/{room}',
         [PagesController::class, 'tacticalRoom'])->name('tactical.room');
@@ -40,6 +40,10 @@ Route::middleware(['auth'])->group(function () {
         [AssociateController::class, 'store'])->name('create.associate');
     Route::get('/negotiation/room/{room}/show-associate/{associate}',
         [AssociateController::class, 'show'])->name('show.associate');
+
+    Route::get('/risk-assessment', function () {
+        return view('pdfs.on-scene-risk-assessment');
+    })->name('risk.assessment');
 
 });
 

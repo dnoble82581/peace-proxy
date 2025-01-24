@@ -3,6 +3,7 @@
 namespace App\Livewire\Forms;
 
 use App\Models\User;
+use App\Services\DocumentProcessor;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
@@ -91,7 +92,7 @@ class UserForm extends Form
     #[Validate(['boolean'])]
     public $status = false;
 
-    #[Validate(['file', 'max:10000', 'mimes:pdf', 'nullable'])]
+    //    #[Validate(['file', 'max:10000', 'mimes:pdf', 'nullable'])]
     public $application;
 
     /**
@@ -151,19 +152,8 @@ class UserForm extends Form
      */
     private function handleFileUploads(User $user): void
     {
-        if ($this->application) {
-            $filename = pathinfo($this->application->getClientOriginalName(), PATHINFO_FILENAME)
-                .'_'.now()->timestamp.'.'.$this->application->getClientOriginalExtension();
-
-            $this->application->storeAs('/documents/'.$user->id.'/', $filename, 's3');
-
-            $user->documents()->create([
-                'type' => 'application',
-                'filename' => $filename,
-                'extension' => $this->application->getClientOriginalExtension(),
-                'size' => $this->application->getSize(),
-            ]);
-        }
+        $documentProcessor = new DocumentProcessor;
+        $documentProcessor->processDocuments($this->application, $user, auth()->user()->id);
     }
 
     /**

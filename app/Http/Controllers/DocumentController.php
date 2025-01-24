@@ -21,11 +21,16 @@ class DocumentController extends Controller
 
     public function showUserDocument(User $user, $filename)
     {
-        return $this->showDocument($user, $filename, 'user');
+        return $this->showDocument($user, $filename);
     }
 
-    private function showDocument($entity, $filename, $type)
+    public function showDocument($entity, $filename)
     {
+
+        if (! ($entity instanceof User || $entity instanceof Subject)) {
+            abort(400, 'Invalid entity type.');
+        }
+
         // find the document from db
         $document = $entity->documents()->where('filename', $filename)->first();
         if (! $document) {
@@ -33,12 +38,16 @@ class DocumentController extends Controller
         }
 
         // authorize the user making request
-        if (! request()->user()->isAdmin()) {
-            abort(403);
+        if (! request()->user()->can('view', $document)) {
+            abort(403, 'You are not authorized to view this document.');
         }
 
+        if (class_basename($entity) === 'User') {
+            $filePath = '/documents/user/'.$entity->id.'/'.$filename;
+        } else {
+            $filePath = '/documents/subject/'.$entity->id.'/'.$filename;
+        }
         // build the file path based on entity type
-        $filePath = '/documents/'.$entity->id.'/'.$filename;
 
         // stream the file to the browser
         if ($document->extension === 'pdf') {
@@ -51,6 +60,6 @@ class DocumentController extends Controller
 
     public function showSubjectDocument(Subject $subject, $filename)
     {
-        return $this->showDocument($subject, $filename, 'subject');
+        return $this->showDocument($subject, $filename);
     }
 }

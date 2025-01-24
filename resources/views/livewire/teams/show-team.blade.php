@@ -185,7 +185,7 @@
 				<td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
 					<div class="flex justify-center">
 						{{-- Check for associated application and display a link --}}
-						@if($application = $user->documents->firstWhere('type', 'application'))
+						@if($application = $user->documents->firstWhere('type', 'form'))
 							<a
 									href="{{$application->privateUrl()}}"
 									target="_blank">

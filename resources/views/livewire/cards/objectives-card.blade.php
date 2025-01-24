@@ -53,7 +53,7 @@
 			];
 		}
 
-		public function deleteObjective(Objective $objective)
+		public function deleteObjective(Objective $objective):void
 		{
 			$objective->delete();
 			event(new ObjectiveDeletedEvent($this->roomId));

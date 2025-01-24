@@ -12,7 +12,10 @@ class DocumentPolicy
 
     public function viewAny(User $user): bool {}
 
-    public function view(User $user, Document $document): bool {}
+    public function view(User $user, Document $document): bool
+    {
+        return $user->role === 'admin' && $document->tenant_id === $user->tenant_id;
+    }
 
     public function create(User $user): bool {}
 
