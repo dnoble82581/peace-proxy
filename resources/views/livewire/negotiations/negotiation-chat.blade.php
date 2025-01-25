@@ -310,7 +310,6 @@
 				<button
 						type="button"
 						@click="toPrimary = !toPrimary"
-						:class="toPrimary ? 'hidden' : ''"
 						class="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
 					<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -332,7 +331,6 @@
 				<button
 						type="button"
 						@click="toTactical = !toTactical"
-						:class="toTactical ? 'hidden' : ''"
 						class="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
 					<svg
 							fill="none"
