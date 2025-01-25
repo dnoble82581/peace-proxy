@@ -23,13 +23,22 @@
 					:default-tab="'public'">
 
 				<div x-show="tab === 'public'">
-					<livewire:negotiations.negotiation-chat :room="$room" />
+					<livewire:negotiations.negotiation-chat
+							:room="$room"
+							:toTactical="false"
+							:isPrivate="false" />
 				</div>
 				<div x-show="tab === 'private'">
-					Private Content
+					<livewire:negotiations.negotiation-chat
+							:room="$room"
+							:toTactical="false"
+							:isPrivate="true" />
 				</div>
 				<div x-show="tab === 'tactical'">
-					Tactical Content
+					<livewire:negotiations.negotiation-chat
+							:room="$room"
+							:toTactical="true"
+							:isPrivate="false" />
 				</div>
 			</x-navigation.tab-navigation>
 

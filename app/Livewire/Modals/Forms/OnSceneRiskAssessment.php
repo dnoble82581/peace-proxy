@@ -59,7 +59,7 @@ class OnSceneRiskAssessment extends Modal
     /**
      * @throws Exception
      */
-    public function submit()
+    public function submit(): void
     {
         $this->validate(['responses.*' => 'required']);
 

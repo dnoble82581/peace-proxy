@@ -21,6 +21,7 @@
 		public function deleteDocument($documentId)
 		{
 			dd($documentId);
+//			Delete record from database and from amazon s3
 		}
 	}
 
@@ -49,17 +50,17 @@
 			<x-table-elements.subject-card-table-layout :labels="['File Name', 'Type', 'Size', 'Created At', 'Actions' ]">
 				<x-slot:content>
 					@foreach($subject->documents as $document)
-						<tr class="even:bg-gray-50">
-							<td class="py-2 pr-3 pl-4 text-xs font-medium whitespace-nowrap text-gray-900 sm:pl-3">
+						<tr class="even:bg-gray-50 dark:even:bg-slate-900">
+							<td class="py-2 pr-3 pl-4 text-xs font-medium whitespace-nowrap dark-light-text sm:pl-3">
 								{{ $document->filename }}
 							</td>
-							<td class="px-3 py-2 text-xs whitespace-nowrap text-gray-500">{{ $document->type }}</td>
-							<td class="px-3 py-2 text-xs whitespace-nowrap text-gray-500">{{ round($document->size/1000) }}
+							<td class="px-3 py-2 text-xs whitespace-nowrap dark-light-text">{{ $document->type }}</td>
+							<td class="px-3 py-2 text-xs whitespace-nowrap dark-light-text">{{ round($document->size/1000) }}
 								kb
 							</td>
-							<td class="px-3 py-2 text-xs whitespace-nowrap text-gray-500">{{ $document->created_at->diffForHumans() }}
+							<td class="px-3 py-2 text-xs whitespace-nowrap dark-light-text">{{ $document->created_at->diffForHumans() }}
 							</td>
-							<td class="relative py-2 space-x-2 pr-4 pl-3 text-left text-xs font-medium whitespace-nowrap sm:pr-3 flex">
+							<td class="relative py-2 gap-3 pr-4 pl-3 text-left text-xs font-medium whitespace-nowrap sm:pr-3 flex">
 								<a
 										href="{{ $document->privateUrl() }}"
 										target="_blank">
@@ -69,6 +70,11 @@
 										type="button"
 										wire:click="deleteDocument({{ $document->id }})">
 									<x-heroicons::outline.trash class="w-4 h-4 hover:text-red-500 text-red-400 cursor-pointer" />
+								</button>
+								<button
+										type="button"
+										wire:click="deleteDocument({{ $document->id }})">
+									<x-heroicons::outline.arrow-down-tray class="w-4 h-4 hover:text-slate-500 text-slate-400 cursor-pointer" />
 								</button>
 							</td>
 						</tr>

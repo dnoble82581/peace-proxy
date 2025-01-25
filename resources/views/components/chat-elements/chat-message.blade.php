@@ -1,4 +1,4 @@
-@props(['message', 'isOwnMessage', 'isEmergent', 'hasResponse', 'id' => ''])
+@props(['message' => null, 'isOwnMessage' => false, 'isEmergent' => false])
 
 <!--
 Render an individual chat message.
@@ -8,7 +8,6 @@ Render an individual chat message.
 -->
 
 <div
-		id="{{ $id }}"
 		class="flex items-start {{ $isOwnMessage ? 'justify-start' : 'justify-end' }} gap-2.5">
 	<!--
 	Wrapper div to position the message content.
@@ -46,7 +45,6 @@ Render an individual chat message.
 
 		<div
 				@php
-
 					if ($isEmergent){
 						$messageClasses = 'bg-rose-200 border border-rose-500';
 					}elseif($isOwnMessage){

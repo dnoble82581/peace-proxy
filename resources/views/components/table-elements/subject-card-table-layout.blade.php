@@ -10,22 +10,22 @@
 							@if($loop->first)
 								<th
 										scope="col"
-										class="py-1.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 sm:pl-3">{{ $label }}
+										class="py-1.5 pr-3 pl-4 text-left text-sm font-semibold dark-light-text sm:pl-3">{{ $label }}
 								</th>
 							@else
 								<th
 										scope="col"
-										class="px-3 py-1.5 text-left text-sm font-semibold text-gray-900">{{ $label }}
+										class="px-3 py-1.5 text-left text-sm font-semibold dark-light-text">{{ $label }}
 								</th>
 							@endif
 						@endforeach
 					</tr>
 					</thead>
 
-					<tbody class="bg-white">
+					<tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200">
 
 					{{ $content }}
-					
+
 					</tbody>
 				</table>
 			</div>

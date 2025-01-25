@@ -78,13 +78,13 @@
 				<x-table-elements.subject-card-table-layout :labels="['Offense', 'Agency', 'Extraditable','Confirmed','Actions']">
 					<x-slot:content>
 						@foreach ($this->subject->warrants as $warrant)
-							<tr class="even:bg-gray-50">
-								<td class="py-2 pr-3 pl-4 text-xs font-medium whitespace-nowrap text-gray-900 sm:pl-3">
+							<tr class="even:bg-gray-50 dark:even:bg-slate-900">
+								<td class="py-2 pr-3 pl-4 text-xs font-medium whitespace-nowrap dark-light-text sm:pl-3">
 									{{ $warrant->offense }}
 								</td>
-								<td class="px-3 py-2 text-xs whitespace-nowrap text-gray-500">{{ $warrant->originating_agency }}</td>
-								<td class="px-3 py-2 text-xs whitespace-nowrap text-gray-500">{{ $warrant->extraditable }}
-								<td class="px-3 py-2 text-xs whitespace-nowrap text-gray-500">{{ $warrant->confirmed }}
+								<td class="px-3 py-2 text-xs whitespace-nowrap dark-light-text">{{ $warrant->originating_agency }}</td>
+								<td class="px-3 py-2 text-xs whitespace-nowrap dark-light-text">{{ $warrant->extraditable }}
+								<td class="px-3 py-2 text-xs whitespace-nowrap dark-light-text">{{ $warrant->confirmed }}
 								</td>
 								<td class="relative py-2 space-x-2 pr-4 pl-3 text-left text-xs font-medium whitespace-nowrap sm:pr-3">
 									<button

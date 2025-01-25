@@ -68,6 +68,14 @@
 						class="w-24 h-24 rounded"
 						alt="Temporary Subject Image">
 			@endif
+			<div class="mt-3 flex justify-between gap-2 px-1">
+				<button>
+					<x-heroicons::micro.solid.phone-arrow-up-right class="w-6 h-6 text-teal-500" />
+				</button>
+				<button>
+					<x-heroicons::outline.chat-bubble-left-ellipsis class="w-6 h-6 text-teal-500" />
+				</button>
+			</div>
 		</div>
 		<div class="text-sm dark-light-text">
 			<strong class="block">{{ $subject->name }}</strong>
