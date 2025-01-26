@@ -134,11 +134,15 @@
 				]"
 					option-label="name"
 					option-value="id" />
-			<x-input
-					label="Relation to Subject"
-					class="sm:col-span-2"
+			<x-select
 					wire:model="form.relationship_to_subject"
-					placeholder="Relation to Subject" />
+					class="col-span-2"
+					label="Search Relationships"
+					placeholder="Select Relationship"
+					:async-data="route('api.relationships.index')"
+					option-label="relationship"
+					option-value="relationship"
+					option-description="description" />
 			<x-select
 					wire:model="form.children"
 					class="sm:col-span-2"

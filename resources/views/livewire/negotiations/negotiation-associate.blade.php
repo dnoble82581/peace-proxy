@@ -1,15 +1,18 @@
 <?php
 
-
 	use App\Events\AssociateDeletedEvent;
 	use App\Models\Associate;
 	use App\Models\Room;
+	use App\Traits\Searchable;
 	use Illuminate\Support\Collection;
 	use Livewire\Features\SupportRedirects\Redirector;
 	use Livewire\Volt\Component;
 	use function Livewire\Volt\{state};
+	use Illuminate\Support\Facades\Storage;
 
 	new class extends Component {
+		use Searchable;
+
 		public Room $room;
 		public Collection $associates;
 		public Associate $associate;
@@ -17,12 +20,7 @@
 		public function mount($room):void
 		{
 			$this->room = $room;
-			$this->associates = $this->getAssociates();
-		}
-
-		private function getAssociates():Collection
-		{
-			return $this->room->associates;
+			$this->refreshAssociates();
 		}
 
 		private function getAssociate($associateId):Associate
@@ -30,24 +28,38 @@
 			return Associate::findOrFail($associateId);
 		}
 
+		public function updatedSearch():void
+		{
+			// Refresh associates dynamically based on the current search query
+			$this->refreshAssociates();
+		}
+
+		public function refreshAssociates():void
+		{
+			$this->associates = $this->applySearch($this->room->associates(), ['name', 'email']);
+		}
+
 		public function editAssociate($associate):Redirector
 		{
-			return redirect(route('edit.associate',
-				[
-					'room' => $this->room,
-					'associate' => $associate
-				]
-			));
+			return redirect(route('edit.associate', [
+				'room' => $this->room,
+				'associate' => $associate,
+			]));
 		}
 
 		public function showAssociate(Associate $associate):Redirector
 		{
-			return redirect(route('show.associate', ['associate' => $associate, 'room' => $associate->room]));
+			return redirect(route('show.associate', [
+				'associate' => $associate,
+				'room' => $associate->room,
+			]));
 		}
 
 		public function deleteAssociate($associateId):void
 		{
-			$this->associate = $this->getassociate($associateId);
+			$this->associate = $this->getAssociate($associateId);
+
+			// Delete associated images, if any
 			if ($this->associate->images()->count()) {
 				foreach ($this->associate->images as $image) {
 					if (Storage::disk('s3-public')->exists($image->image)) {
@@ -56,7 +68,9 @@
 				}
 			}
 			$this->associate->delete();
+
 			event(new AssociateDeletedEvent($this->room->id));
+			$this->refreshAssociates(); // Refresh the list immediately after deletion
 		}
 
 		public function addAssociate():Redirector
@@ -72,7 +86,7 @@
 				"echo-presence:associate.{$this->room->id},AssociateDeletedEvent" => 'refresh',
 			];
 		}
-	}
+	};
 
 ?>
 
@@ -81,48 +95,41 @@
 		<x-board-elements.category-header
 				click-action="addAssociate"
 				class="bg-violet-400 dark:bg-violet-600 border-gray-300"
-				value="Associates">
-			<x-slot:search>
-				<label
-						class="sr-only"
-						for="search">Search</label>
-				<input
-						id="search"
-						type="text"
-						placeholder="Search"
-						class="h-6 focus:ring-0 rounded-lg text-sm">
-			</x-slot:search>
-			<x-slot:actions>
+				label="Associates">
+
+			<x-slot:leftActions>
 				<button @click="showList = !showList">
 					<x-heroicons::mini.solid.chevron-up-down class="w-5 h-5 text-slate-700 dark:text-slate-300" />
 				</button>
-
 				<span
-						x-transition:enter="transition ease-out duration-200"
-						x-transition:enter-start="opacity-0 scale-95"
-						x-transition:enter-end="opacity-100 scale-100"
-						x-transition:leave="transition ease-in duration-75"
-						x-transition:leave-start="opacity-100 scale-100"
-						x-transition:leave-end="opacity-0 scale-95"
 						x-show="!showList"
-						class="text-sm text-slate-700 dark:text-slate-300">{{ $associates->count() }}items hidden</span>
-			</x-slot:actions>
+						class="text-sm text-slate-700 dark:text-slate-300 reusable-transition">
+                    {{ $this->room->associates->count() }} items hidden
+                </span>
+			</x-slot:leftActions>
+
+			<x-slot:rightActions>
+				<x-form-elements.comoponent-search field="search" />
+				<button
+						wire:click="addAssociate"
+						class="flex items-center">
+					<x-heroicons::mini.solid.plus class="w-5 h-5 text-slate-700 dark:text-slate-300" />
+				</button>
+			</x-slot:rightActions>
+
+
 		</x-board-elements.category-header>
 	</div>
+
+	<!-- List of associates -->
 	<div
-			x-transition:enter="transition ease-out duration-200"
-			x-transition:enter-start="opacity-0 scale-95"
-			x-transition:enter-end="opacity-100 scale-100"
-			x-transition:leave="transition ease-in duration-75"
-			x-transition:leave-start="opacity-100 scale-100"
-			x-transition:leave-end="opacity-0 scale-95"
-			class="px-4"
-			x-show="showList">
+			x-show="showList"
+			class="px-4 reusable-transition">
 		<ul
 				role="list"
 				class="divide-y divide-gray-100 space-y-4 my-4">
-			@foreach($room->associates as $associate)
-				<x-cards.associate-card :associate="$associate" />
+			@foreach($associates as $associate)
+				<x-cards.associate-card :associate="$this->getAssociate($associate['id'])" />
 			@endforeach
 		</ul>
 	</div>

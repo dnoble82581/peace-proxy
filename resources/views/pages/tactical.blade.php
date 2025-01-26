@@ -154,7 +154,8 @@
                 ]"
 								:default-tab="'tactical'">
 
-							<div x-show="tab === 'public'">
+							<div
+									x-show="tab === 'public'">
 								<livewire:negotiations.negotiation-chat
 										:room="$room"
 										:toTactical="false"

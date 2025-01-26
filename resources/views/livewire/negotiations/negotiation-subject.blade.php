@@ -49,7 +49,7 @@
 
 <div
 		x-data="{ card: 'general'}"
-		class="rounded-lg bg-white dark:bg-gray-800 relative flex-1">
+		class="rounded-lg bg-white shadow dark:bg-gray-800 relative flex-1">
 	<div class="px-4">
 		<div>
 			<div class="grid grid-cols-1 sm:hidden">

@@ -20,6 +20,11 @@ class Associate extends Model
         return $this->belongsTo(Negotiation::class);
     }
 
+    public function socialMedia(): HasMany
+    {
+        return $this->hasMany(SocialMediaService::class);
+    }
+
     public function subject(): BelongsTo
     {
         return $this->belongsTo(Subject::class);

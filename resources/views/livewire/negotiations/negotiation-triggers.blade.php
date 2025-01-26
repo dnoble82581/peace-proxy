@@ -4,33 +4,50 @@
 	use App\Models\Room;
 	use App\Models\Trigger;
 	use App\Models\User;
+	use App\Traits\Searchable;
+	use Illuminate\Support\Collection;
 	use Livewire\Volt\Component;
 
 	new class extends Component {
+		use Searchable;
+
 		public Room $room;
 		public User $user;
 		public Trigger $trigger;
+		public Collection $triggers;
 
 
-		public function mount($room)
+		public function mount($room):void
 		{
-			$this->$room = $room;
+			$this->room = $room;
 			$this->user = $this->getUser();
+			$this->refreshTriggers();
 		}
 
-		private function getUser()
+		public function updatedSearch():void
+		{
+			// Refresh associates dynamically based on the current search query
+			$this->refreshTriggers();
+		}
+
+		public function refreshTriggers():void
+		{
+			$this->triggers = $this->applySearch($this->room->subject->triggers(), ['title']);
+		}
+
+		private function getUser():User
 		{
 			return auth()->user();
 		}
 
-		public function createTrigger()
+		public function createTrigger():void
 		{
 			$this->dispatch('modal.open', component: 'modals.create-trigger-form', arguments: [
 				'roomId' => $this->room->id
 			]);
 		}
 
-		public function getListeners()
+		public function getListeners():array
 		{
 			return [
 				"echo-presence:trigger.{$this->room->id},TriggerCreatedEvent" => 'refresh',
@@ -39,14 +56,14 @@
 			];
 		}
 
-		public function deleteTrigger($triggerId)
+		public function deleteTrigger($triggerId):void
 		{
 			$triggerToDelete = Trigger::findOrFail($triggerId);
 			$triggerToDelete->delete();
 			event(new TriggerDeletedEvent($triggerId, $this->room->id));
 		}
 
-		public function editTrigger($triggerId)
+		public function editTrigger($triggerId):void
 		{
 			$this->dispatch('modal.open', component: 'modals.edit-trigger-form', arguments: [
 				'roomId' => $this->room->id, 'triggerId' => $triggerId
@@ -60,35 +77,33 @@
 	<div class="px-3">
 		<x-board-elements.category-header
 				class="bg-rose-400 dark:bg-rose-500 dark:text-slate-300"
-				value="Triggers"
-				click-action="createTrigger()">
-			<x-slot:actions>
+				label="Triggers">
+			<x-slot:leftActions>
 				<button @click="showList = !showList">
 					<x-heroicons::mini.solid.chevron-up-down class="w-5 h-5 text-slate-700 dark:text-slate-300" />
 				</button>
 				<span
-						x-transition:enter="transition ease-out duration-200"
-						x-transition:enter-start="opacity-0 scale-95"
-						x-transition:enter-end="opacity-100 scale-100"
-						x-transition:leave="transition ease-in duration-75"
-						x-transition:leave-start="opacity-100 scale-100"
-						x-transition:leave-end="opacity-0 scale-95"
-						class="text-sm text-slate-700 dark:text-slate-300"
+						class="text-sm text-slate-700 dark:text-slate-300 reuse-transition"
 						x-show="!showList">{{ $room->subject->triggers->count() }} items hidden</span>
-			</x-slot:actions>
+			</x-slot:leftActions>
+
+			<x-slot:rightActions>
+				<x-form-elements.comoponent-search field="search" />
+				<button
+						wire:click="createTrigger()"
+						class="flex items-center">
+					<x-heroicons::mini.solid.plus class="w-5 h-5 text-slate-700 dark:text-slate-300" />
+				</button>
+			</x-slot:rightActions>
+
 		</x-board-elements.category-header>
 	</div>
 
 	<div
-			x-transition:enter="transition ease-out duration-200"
-			x-transition:enter-start="opacity-0 scale-95"
-			x-transition:enter-end="opacity-100 scale-100"
-			x-transition:leave="transition ease-in duration-75"
-			x-transition:leave-start="opacity-100 scale-100"
-			x-transition:leave-end="opacity-0 scale-95"
+
 			x-show="showList"
-			class="mt-3 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
-		@foreach($this->room->subject->triggers as $trigger)
+			class="mt-3 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6 reuse-transition">
+		@foreach($this->triggers as $trigger)
 			<div
 					x-data="{open:true}"
 					class="col-span-3">
@@ -109,10 +124,10 @@
 						<x-mini-button
 								class="mr-2"
 								wire:click="deleteTrigger({{ $trigger->id }})"
+								gray
+								flat
 								rounded
 								icon="trash"
-								flat
-								gray
 								interaction="negative"
 						/>
 

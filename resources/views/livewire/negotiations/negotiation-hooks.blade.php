@@ -4,8 +4,10 @@
 	use App\Models\Hook;
 	use App\Models\Room;
 	use App\Models\User;
+	use App\Traits\Searchable;
 	use Illuminate\Auth\Access\AuthorizationException;
 	use Illuminate\Database\Eloquent\ModelNotFoundException;
+	use Illuminate\Support\Collection;
 	use Livewire\Volt\Component;
 	use App\Policies\HookPolicy;
 
@@ -15,6 +17,8 @@
 	 * and listens for related events via broadcasting.
 	 */
 	new class extends Component {
+		use Searchable;
+
 		/**
 		 * The current room associated with the hooks.
 		 *
@@ -29,6 +33,8 @@
 		 */
 		public User $user;
 
+		public Collection $hooks;
+
 		/**
 		 * Initialize the component with the provided room and authenticated user data.
 		 *
@@ -38,6 +44,7 @@
 		{
 			$this->room = $room;
 			$this->user = auth()->user();
+			$this->refreshHooks();
 		}
 
 		/**
@@ -56,6 +63,17 @@
 				// Listens for HookEditedEvent and refreshes the component
 				"echo-presence:hook.{$this->room->id},HookEditedEvent" => 'refresh',
 			];
+		}
+
+		public function updatedSearch():void
+		{
+			// Refresh associates dynamically based on the current search query
+			$this->refreshHooks();
+		}
+
+		public function refreshHooks():void
+		{
+			$this->hooks = $this->applySearch($this->room->subject->hooks(), ['title']);
 		}
 
 		/**
@@ -136,36 +154,34 @@
 				class="border-gray-300 dark:bg-blue-500 bg-blue-400"
 				@click="open = !open"
 				click-action="addHook"
-				value="Hooks">
-			<x-slot:actions>
+				label="Hooks">
+			<x-slot:leftActions>
 				<button @click="showList = !showList">
 					<x-heroicons::mini.solid.chevron-up-down class="w-5 h-5 text-slate-700 dark:text-slate-300" />
 				</button>
 				<span
-						x-transition:enter="transition ease-out duration-200"
-						x-transition:enter-start="opacity-0 scale-95"
-						x-transition:enter-end="opacity-100 scale-100"
-						x-transition:leave="transition ease-in duration-75"
-						x-transition:leave-start="opacity-100 scale-100"
-						x-transition:leave-end="opacity-0 scale-95"
 						x-show="!showList"
-						class="text-sm text-slate-700 dark:text-slate-300">{{ $room->subject->hooks->count() }} items hidden</span>
-			</x-slot:actions>
+						class="text-sm text-slate-700 reusable-transition dark:text-slate-300">{{ $room->subject->hooks->count() }} items hidden</span>
+			</x-slot:leftActions>
+
+			<x-slot:rightActions>
+				<x-form-elements.comoponent-search field="search" />
+				<button
+						wire:click="addHook"
+						class="flex items-center">
+					<x-heroicons::mini.solid.plus class="w-5 h-5 text-slate-700 dark:text-slate-300" />
+				</button>
+			</x-slot:rightActions>
 		</x-board-elements.category-header>
 	</div>
 
 
 	<!-- Render all hooks in the current room -->
 	<div
-			x-transition:enter="transition ease-out duration-200"
-			x-transition:enter-start="opacity-0 scale-95"
-			x-transition:enter-end="opacity-100 scale-100"
-			x-transition:leave="transition ease-in duration-75"
-			x-transition:leave-start="opacity-100 scale-100"
-			x-transition:leave-end="opacity-0 scale-95"
+
 			x-show="showList"
-			class="mt-3 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
-		@foreach($this->room->subject->hooks as $hook)
+			class="mt-3 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6 reusable-transition">
+		@foreach($hooks as $hook)
 			<div
 					x-data="{open:true}"
 					class="col-span-3">

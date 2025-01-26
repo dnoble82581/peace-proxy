@@ -32,6 +32,7 @@
 		{
 			$this->form->create($this->room);
 			event(new AssociateCreatedEvent($this->room->id));
+			$this->redirect(route('negotiation.room', $this->room->id));
 		}
 	}
 
@@ -100,14 +101,15 @@
 
 			<x-select
 					class="sm:col-span-2"
+					placeholder="Gender"
 					wire:model="form.gender"
-					label="associate Gender"
+					label="Associate Gender"
 					:options="['Male', 'Female', 'Transgender', 'Unknown']" />
 			<x-select
 					class="sm:col-span-2"
 					wire:model="form.race"
-					label="associate Race"
-					placeholder="associate Race"
+					label="Associate Race"
+					placeholder="Associate Race"
 					:options="[
 					['name' => 'White', 'id' => 'White', 'description' => '(Europe, Middle East, North Africa)'],
 					['name' => 'Mongoloid', 'id' => 'Mongoloid', 'description' => '(East Asia, Central Asia, Indigenous peoples of the Americas)'],
@@ -118,13 +120,21 @@
 				]"
 					option-label="name"
 					option-value="id" />
-			<x-input
-					label="Relation to Subject"
-					class="sm:col-span-2"
+
+			<x-select
 					wire:model="form.relationship_to_subject"
-					placeholder="Relation to Subject" />
+					class="col-span-2"
+					label="Search Relationships"
+					placeholder="Select Relationship"
+					:async-data="route('api.relationships.index')"
+					option-label="relationship"
+					option-value="relationship"
+					option-description="description"
+			/>
+
 			<x-select
 					wire:model="form.children"
+					placeholder="Children"
 					class="sm:col-span-2"
 					label="Children"
 					:options="[1,2,3,4,5,6,7,8,9,10]" />

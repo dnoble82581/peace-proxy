@@ -65,7 +65,7 @@
 				<x-heroicons::mini.solid.ellipsis-vertical class="w-5 h-5 text-gray-400 hover:text-gray-500 dark:text-gray-400 dark-light-text" />
 			</x-slot:trigger>
 			<x-slot:content>
-				<x-dropdown.dropdown-link>
+				<x-dropdown.dropdown-link href="{{ route('show.associate', ['associate' => $hostage, 'room' => $hostage->room->id]) }}">
 					View
 				</x-dropdown.dropdown-link>
 				<x-dropdown.dropdown-link

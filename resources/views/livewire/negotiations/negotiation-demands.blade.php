@@ -5,18 +5,24 @@
 	use App\Models\Demand;
 	use App\Models\Room;
 	use App\Models\User;
+	use App\Traits\Searchable;
 	use Illuminate\Auth\Access\AuthorizationException;
+	use Illuminate\Support\Collection;
 	use Livewire\Volt\Component;
 
 	new class extends Component {
+		use Searchable;
+
 		public Room $room;
 		public Demand $demand;
+		public Collection $demands;
 		public User $user;
 
 		public function mount($room):void
 		{
 			$this->room = $room;
 			$this->user = auth()->user();
+			$this->refreshDemands();
 		}
 
 		public function getListeners():array
@@ -26,6 +32,17 @@
 				"echo-presence:demand.{$this->room->id},DemandCreatedEvent" => 'refresh',
 				"echo-presence:demand.{$this->room->id},DemandUpdatedEvent" => 'refresh',
 			];
+		}
+
+		public function updatedSearch():void
+		{
+			// Refresh associates dynamically based on the current search query
+			$this->refreshDemands();
+		}
+
+		public function refreshDemands():void
+		{
+			$this->demands = $this->applySearch($this->room->subject->demands(), ['title', 'type', 'description']);
 		}
 
 		public function addDemand():void
@@ -87,43 +104,40 @@
 	<div class="px-3">
 		<x-board-elements.category-header
 				class="bg-teal-400 dark:bg-teal-600"
-				value="Demands"
-				click-action="addDemand()">
-			<x-slot:actions>
+				click-action=""
+				label="Demands">
+
+			<x-slot:leftActions>
 				<button
 						@click="showList = !showList"
 						class="">
 					<x-heroicons::mini.solid.chevron-up-down class="w-5 h-5 text-slate-700 dark:text-slate-300" />
 				</button>
 				<span
-						x-transition:enter="transition ease-out duration-200"
-						x-transition:enter-start="opacity-0 scale-95"
-						x-transition:enter-end="opacity-100 scale-100"
-						x-transition:leave="transition ease-in duration-75"
-						x-transition:leave-start="opacity-100 scale-100"
-						x-transition:leave-end="opacity-0 scale-95"
-						class="text-sm text-slate-700 dark:text-slate-300"
+						class="text-sm text-slate-700 dark:text-slate-300 reusable-transition"
 						x-show="!showList"> {{ $room->subject->demands->count() }} items hidden</span>
-			</x-slot:actions>
+			</x-slot:leftActions>
+
+			<x-slot:rightActions>
+				<x-form-elements.comoponent-search field="search" />
+				<button
+						wire:click="addDemand()"
+						class="flex items-center">
+					<x-heroicons::mini.solid.plus class="w-5 h-5 text-slate-700 dark:text-slate-300" />
+				</button>
+			</x-slot:rightActions>
 		</x-board-elements.category-header>
 	</div>
 
 	<ul
-			x-transition:enter="transition ease-out duration-200"
-			x-transition:enter-start="opacity-0 scale-95"
-			x-transition:enter-end="opacity-100 scale-100"
-			x-transition:leave="transition ease-in duration-75"
-			x-transition:leave-start="opacity-100 scale-100"
-			x-transition:leave-end="opacity-0 scale-95"
-			class="text-sm text-slate-700 dark:text-slate-300"
+			class="text-sm text-slate-700 dark:text-slate-300 reusable-transition divide-y divide-gray-100 mt-3 dark:divide-gray-700"
 			x-show="showList"
-			role="list"
-			class="divide-y divide-gray-100 mt-3 dark:divide-gray-700">
+			role="list">
 
 		@if($room->subject->demands->count() == 0)
 			<div class="ml-8 sr-only">No current Demands</div>
 		@else
-			@foreach($room->subject->demands as $demand)
+			@foreach($demands as $demand)
 				<div class="px-6 mt-4">
 					<x-cards.demand-card
 							wire:key="demand-card-{{$demand->id}}"

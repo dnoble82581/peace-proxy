@@ -75,7 +75,7 @@
 						<x-dropdown.dropdown-link>
 							<button
 									wire:click="editAssociate({{ $associate->id }})"
-									class="block px-3 py-1 text-sm/6 text-gray-900 h-full"
+									class="block px-3 py-1 text-sm/6 dark-light-text h-full"
 									role="menuitem"
 									tabindex="-1"
 									id="options-menu-0-item-1">Edit<span class="sr-only">, Edit Associate</span>
@@ -84,7 +84,7 @@
 						<x-dropdown.dropdown-link>
 							<button
 									wire:click="showAssociate({{ $associate->id }})"
-									class="block px-3 py-1 text-sm/6 text-gray-900 h-full"
+									class="block px-3 py-1 text-sm/6 dark-light-text h-full"
 									role="menuitem"
 									tabindex="-1"
 									id="options-menu-0-item-1">View<span class="sr-only">, View Associate</span>
@@ -93,7 +93,7 @@
 						<x-dropdown.dropdown-link>
 							<button
 									wire:click="deleteAssociate({{ $associate->id }})"
-									class="block px-3 py-1 text-sm/6 text-gray-900 h-full"
+									class="block px-3 py-1 text-sm/6 dark-light-text h-full"
 									role="menuitem"
 									tabindex="-1"
 									id="options-menu-0-item-1">Delete<span class="sr-only">, Delete Associate</span>

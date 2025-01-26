@@ -22,6 +22,11 @@ class Subject extends Model
         return $this->hasMany(Hook::class);
     }
 
+    public function socialMedia(): HasMany
+    {
+        return $this->hasMany(SocialMediaService::class);
+    }
+
     public function triggers(): HasMany
     {
         return $this->hasMany(Trigger::class);
