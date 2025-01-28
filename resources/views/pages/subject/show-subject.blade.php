@@ -68,7 +68,8 @@
 						class="col-span-4 sm:col-span-1" />
 				<x-list-elements.data-tag
 						:label="__('Age')"
-						:value="$subject->getAge()"
+						test
+						:value="$subject->getAge($subject->date_of_birth)"
 						class="col-span-4 sm:col-span-1" />
 				<x-list-elements.data-tag
 						:label="'Children'"

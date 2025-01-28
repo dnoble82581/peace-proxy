@@ -78,15 +78,6 @@ class User extends Authenticatable
         return $this->hasMany(Warning::class);
     }
 
-    //    public function applicationUrl(): string
-    //    {
-    //        if ($this->application()) {
-    //            return url('/documents/user/'.$this->id.'/'.$this->application()->filename);
-    //        }
-    //
-    //        return '#';
-    //    }
-
     public function application()
     {
         return $this->documents()->where('type', 'application')->first();
@@ -120,6 +111,11 @@ class User extends Authenticatable
         str_replace('-', ' ', $role);
 
         return $role;
+    }
+
+    public function requests(): HasMany
+    {
+        return $this->hasMany(SubjectRequest::class);
     }
 
     public function responses(): HasMany

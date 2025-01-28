@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class Subject extends Model
@@ -17,14 +18,13 @@ class Subject extends Model
 
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'date_of_birth' => 'date',
+    ];
+
     public function hooks(): HasMany
     {
         return $this->hasMany(Hook::class);
-    }
-
-    public function socialMedia(): HasMany
-    {
-        return $this->hasMany(SocialMediaService::class);
     }
 
     public function triggers(): HasMany
@@ -62,7 +62,7 @@ class Subject extends Model
         return $this->morphMany(Document::class, 'documentable');
     }
 
-    public function riskAssessment(): HasONe
+    public function riskAssessment(): HasOne
     {
         return $this->hasOne(RiskAssessmentResponses::class);
     }
@@ -77,23 +77,19 @@ class Subject extends Model
         return $this->hasMany(Warrant::class);
     }
 
-    public function phone(): array|string|null
+    public function getPhoneAttribute($value): ?string
     {
-        return preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '($1) $2-$3', $this->phone);
+        return $value ? preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '($1) $2-$3', $value) : null;
     }
 
-    public function getAge()
+    public function getAge($date = null)
     {
-        $birthDate = explode('-', $this->date_of_birth);
+        if (! $date) {
+            return 0;
+        }
+        $subjectAge = Carbon::parse($date);
 
-        $birth_date = $this->date_of_birth;
-        $current_date = date('Y-m-d');
-        $birth_timestamp = strtotime($birth_date);
-        $current_timestamp = strtotime($current_date);
-        $diff_seconds = $current_timestamp - $birth_timestamp;
-        $age_years = $diff_seconds / (60 * 60 * 24 * 365.25);
-
-        return round($age_years);
+        return $subjectAge->age;
     }
 
     public function imageUrl($image): string
@@ -109,12 +105,5 @@ class Subject extends Model
     public function temporaryImageUrl(): string
     {
         return 'https://api.dicebear.com/9.x/initials/svg?seed='.$this->name;
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'date_of_birth' => 'date',
-        ];
     }
 }

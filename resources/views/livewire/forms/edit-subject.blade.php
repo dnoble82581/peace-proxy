@@ -3,6 +3,7 @@
 	use App\Events\SubjectUpdatedEvent;
 	use App\Livewire\Forms\SubjectForm;
 	use App\Models\Document;
+	use Illuminate\Support\Carbon;
 	use Illuminate\Support\Collection;
 	use Illuminate\Support\Facades\Storage;
 	use App\Models\Room;
@@ -19,6 +20,8 @@
 		public SubjectForm $form;
 		public Room $room;
 		public Subject $subject;
+
+		public $dob;
 
 		public function mount($roomId):void
 		{
@@ -43,6 +46,13 @@
 		{
 			return Room::findOrFail($roomId);
 		}
+
+//		ToDo: Fix this to auto update date of birth
+		public function updatedDateOfBirth()
+		{
+			dd('here');
+		}
+
 
 		public function deleteDocument($documentId):void
 		{
@@ -138,10 +148,13 @@
 
 		<div class="flex flex-col sm:flex-row items-center gap-4">
 			<x-datetime-picker
-					label="Date of Birth"
 					wire:model="form.date_of_birth"
-					:max="now()"
-					without-time="true" />
+					label="Date of Birth"
+					placeholder="Appointment Date"
+					without-timezone
+					without-time="true"
+					requires-confirmation
+			/>
 			<x-input
 					wire:model="form.age"
 					label="Age"

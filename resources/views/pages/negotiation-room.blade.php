@@ -48,9 +48,11 @@
                     ['key' => 'board', 'label' => 'Board'],
                     ['key' => 'objectives', 'label' => 'Objectives'],
                     ['key' => 'charts', 'label' => 'Charts'],
+                    ['key' => 'requests', 'label' => 'Requests']
                 ]"
-					:default-tab="'board'">
+					:default-tab="'requests'">
 
+				{{--Board--}}
 				<div x-show="tab === 'board'">
 					<div class="space-y-4 max-h-[610px] overflow-y-auto sticky top-0 overflow-x-hidden">
 						<livewire:negotiations.negotiation-hooks :room="$room" />
@@ -59,11 +61,15 @@
 						<livewire:negotiations.negotiation-associate :room="$room" />
 					</div>
 				</div>
+
+				{{--Objectives--}}
 				<div x-show="tab === 'objectives'">
 					<livewire:cards.objectives-card
 							:negotiationId="$room->negotiation->id"
 							:roomId="$room->id" />
 				</div>
+
+				{{--Charts--}}
 
 				<div
 						x-show="tab === 'charts'"
@@ -87,7 +93,6 @@
 	                            Call Log
                             </button>
 						</span>
-
 					</div>
 					<div
 							class="mt-4 px-8"
@@ -99,6 +104,10 @@
 							class="mt-4 px-8">
 						<livewire:charts.call-log-chart :room="$room" />
 					</div>
+				</div>
+
+				<div x-show="tab === 'requests'">
+					<livewire:cards.request-card :room="$room" />
 				</div>
 			</x-navigation.tab-navigation>
 		</div>

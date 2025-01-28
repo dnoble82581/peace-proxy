@@ -80,7 +80,7 @@
 		<div class="text-sm dark-light-text">
 			<strong class="block">{{ $subject->name }}</strong>
 			<span class="block">{{ $subject->address ?? 'No Address' }}</span>
-			<span class="block">{{ $subject->phone() }}</span>
+			<span class="block">{{ $subject->phone }}</span>
 		</div>
 		<div class="text-sm dark-light-text max-w-36">
 			<strong class="block">Deadline</strong>

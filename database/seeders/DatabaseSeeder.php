@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             NegotiationSeeder::class,
             RiskAssessmentQuestionSeeder::class,
             RelationShipSeeder::class,
+            SocialMediaProviderSeeder::class,
         ]);
     }
 }
