@@ -3,7 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Services\UserAvatarService;
 use App\Traits\BelongsToTenant;
+use App\Traits\UserRoleTrait;
+use App\Traits\UserScopesTrait;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -11,13 +14,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use BelongsToTenant, HasFactory, HasRoles, Notifiable;
+    use BelongsToTenant, HasFactory, HasRoles, Notifiable, UserRoleTrait, UserScopesTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -47,20 +49,9 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    public static function search($query)
-    {
-        return empty($query) ? static::query()
-            : static::where('name', 'like', '%'.$query.'%')
-                ->orWhere('email', 'like', '%'.$query.'%');
-    }
-
     public function avatarUrl(): string
     {
-        if ($this->avatar) {
-            return Storage::disk('s3-public')->url($this->avatar);
-        }
-
-        return 'https://api.dicebear.com/9.x/initials/svg?seed='.$this->name;
+        return (new UserAvatarService)->getAvatarUrl($this);
     }
 
     public function isAdmin(): bool
@@ -105,14 +96,6 @@ class User extends Authenticatable
         return $this->hasMany(Objective::class);
     }
 
-    public function getRoleName()
-    {
-        $role = $this->getRoleNames()->first();
-        str_replace('-', ' ', $role);
-
-        return $role;
-    }
-
     public function requests(): HasMany
     {
         return $this->hasMany(SubjectRequest::class);
@@ -126,16 +109,6 @@ class User extends Authenticatable
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class);
-    }
-
-    public function canJoinRoom(int $roomId): bool
-    {
-        $room = room::findorfail($roomId);
-        if ($this->tenant_id == $room->tenant_id) {
-            return true;
-        }
-
-        return false;
     }
 
     /**

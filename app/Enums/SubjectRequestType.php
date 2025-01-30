@@ -2,17 +2,27 @@
 
 namespace App\Enums;
 
+use Illuminate\Support\Str;
+
 enum SubjectRequestType: string
 {
-    case MaterialOrFinancial = 'Material or Financial Demands';
+    case MaterialOrFinancial = 'Material or Financial';
     case EscapeOrSafePassage = 'Escape or Safe Passage';
     case ReleaseOfIndividuals = 'Release of Individuals';
-    case PoliticalOrIdeological = 'Political or Ideological Demands';
+    case PoliticalOrIdeological = 'Political or Ideological';
     case WeaponsOrTacticalEquipment = 'Weapons or Tactical Equipment';
     case NegotiationDriven = 'Negotiation-Driven Requests';
     case PsychologicalOrEmotional = 'Psychological or Emotional Requests';
     case SafetyGuarantees = 'Safety Guarantees';
     case Miscellaneous = 'Miscellaneous';
+
+    /**
+     * Get the formatted name for display purposes.
+     */
+    public function displayName(): string
+    {
+        return Str::headline($this->name); // Convert to a human-readable format
+    }
 
     /**
      * Get a description of the enum case.

@@ -1,6 +1,6 @@
 @php use App\Enums\SubjectRequestType; @endphp
 <div>
-	<x-form-layouts.form-layout submit="saveRequest">
+	<x-form-layouts.form-layout submit="editRequest">
 		<x-slot:header>Create Request</x-slot:header>
 		<x-slot:description>When creating a subject request, use clear and direct language to
 		                    state what you are asking for, ensuring there is no ambiguity. Keep the message concise.

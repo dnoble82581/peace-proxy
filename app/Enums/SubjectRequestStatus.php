@@ -6,7 +6,7 @@ enum SubjectRequestStatus: string
 {
     case Pending = 'pending';
     case Approved = 'approved';
-    case Rejected = 'denied';
+    case Rejected = 'rejected';
     case Cancelled = 'cancelled';
     case Delivered = 'delivered';
 

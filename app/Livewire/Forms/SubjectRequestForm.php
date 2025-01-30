@@ -11,6 +11,8 @@ class SubjectRequestForm extends Form
 {
     public ?Room $room;
 
+    public ?SubjectRequest $subjectRequest;
+
     #[Validate(['required'])]
     public $subject_request = '';
 
@@ -35,24 +37,25 @@ class SubjectRequestForm extends Form
     public function createSubjectRequest($room)
     {
         $this->validate();
-        $request = SubjectRequest::create([
+        SubjectRequest::create([
             'user_id' => auth()->user()->id,
             'tenant_id' => $room->tenant_id,
             'room_id' => $room->id,
-            'subject_request' => [
-                'request' => $this->subject_request,
-            ],
+            'subject_request' => $this->subject_request,
+            'type' => $this->type,
             'details' => $this->details,
             'rationale' => $this->rationale,
             'status' => $this->status,
-            'request_history' => [
-                ['timestamp' => now()->todatetimestring(), 'message' => 'Request created by '.auth()->user()->name],
-            ],
             'priority_level' => $this->priority_level,
-            'approval_comments' => $this->approval_comments,
             'time_requested' => now(),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+    }
+
+    public function updateSubjectRequest($request)
+    {
+        $this->validate();
+        $request->update($this->all());
     }
 }

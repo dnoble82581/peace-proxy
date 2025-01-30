@@ -2,9 +2,9 @@
 
 namespace App\Enums;
 
-enum PriorityLevel: string
+enum PriorityLevel: int
 {
-    case Low = 'low';
-    case Medium = 'medium';
-    case High = 'high';
+    case Low = 1;
+    case Medium = 2;
+    case High = 3;
 }

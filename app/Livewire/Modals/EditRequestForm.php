@@ -7,12 +7,13 @@ use App\Enums\SubjectRequestStatus;
 use App\Enums\SubjectRequestType;
 use App\Events\RequestEditedEvent;
 use App\Livewire\Forms\SubjectRequestForm;
-use App\Models\Room;
-use Illuminate\View\View;
+use App\Models\SubjectRequest;
 use WireElements\Pro\Components\Modal\Modal;
 
-class CreateRequestModal extends Modal
+class EditRequestForm extends Modal
 {
+    public SubjectRequest $subjectRequest;
+
     public SubjectRequestForm $form;
 
     public array $statuses = [];
@@ -20,8 +21,6 @@ class CreateRequestModal extends Modal
     public array $priorities = [];
 
     public array $types = [];
-
-    public Room $room;
 
     public static function behavior(): array
     {
@@ -42,32 +41,33 @@ class CreateRequestModal extends Modal
         return [
             // Set the modal size to 2xl, you can choose between:
             // xs, sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl, 6xl, 7xl, fullscreen
-            'size' => '4xl',
+            'size' => '6xl',
         ];
     }
 
-    public function saveRequest()
+    public function mount($requestId)
     {
-        $this->form->createSubjectRequest($this->room);
-        event(new RequestEditedEvent($this->room->id));
-        $this->close();
-    }
-
-    public function mount($roomId)
-    {
-        $this->room = $this->getRoom($roomId);
+        $this->subjectRequest = $this->getRequest($requestId);
+        $this->form->fill($this->subjectRequest);
         $this->statuses = SubjectRequestStatus::cases();
         $this->priorities = PriorityLevel::cases();
         $this->types = SubjectRequestType::cases();
     }
 
-    private function getRoom($roomId): Room
+    public function getRequest($requestId)
     {
-        return Room::findOrFail($roomId);
+        return SubjectRequest::findOrFail($requestId);
     }
 
-    public function render(): View
+    public function editRequest()
     {
-        return view('livewire.modals.create-request-modal');
+        $this->form->updateSubjectRequest($this->subjectRequest);
+        event(new RequestEditedEvent($this->subjectRequest->room_id));
+        $this->close();
+    }
+
+    public function render()
+    {
+        return view('livewire.modals.edit-request-form');
     }
 }
