@@ -110,6 +110,12 @@ class NegotiationSeeder extends Seeder
                 'tenant_id' => $room->tenant_id,
             ]);
 
+            //            SubjectRequest::factory(4)->create([
+            //                'room_id' => $subject->room_id,
+            //                'tenant_id' => $room->tenant_id,
+            //                'user_id' => 3,
+            //            ]);
+
         });
 
         // Create a predefined super admin user

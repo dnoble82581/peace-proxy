@@ -16,13 +16,10 @@ class SubjectRequestFactory extends Factory
     public function definition(): array
     {
         return [
-            'timestamp' => Carbon::now(),
             'subject_request' => $this->faker->words(),
-            'rational' => $this->faker->word(),
-            'status' => $this->faker->word(),
-            'approval_comments' => $this->faker->word(),
-            'priority_level' => $this->faker->randomNumber(),
-            'request_history' => $this->faker->words(),
+            'rationale' => $this->faker->word(),
+            'status' => $this->faker->randomElement(['pending', 'approved', 'rejected', 'cancelled', 'delivered']),
+            'priority_level' => $this->faker->randomelement([1, 2, 3]),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
 

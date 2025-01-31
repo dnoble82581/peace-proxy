@@ -7,6 +7,7 @@ use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class SubjectRequest extends Model
 {
@@ -33,6 +34,11 @@ class SubjectRequest extends Model
             2 => 'Medium',
             3 => 'High',
         };
+    }
+
+    public function responses(): MorphMany
+    {
+        return $this->morphMany(Response::class, 'respondable');
     }
 
     public function badgeColor(): string

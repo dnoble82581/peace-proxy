@@ -5,41 +5,62 @@
 	use App\Livewire\Forms\SubjectRequestForm;
 	use App\Models\Room;
 	use App\Models\SubjectRequest;
+	use App\Policies\ResponsePolicy;
 	use Carbon\Carbon;
 	use Livewire\Volt\Component;
+	use App\Models\Response;
+
 
 	new class extends Component {
 		public SubjectRequestForm $form;
 		public Room $room;
 
-		public function mount($room)
+		public function mount($room):void
 		{
 			$this->room = $room;
 		}
 
-		public function showRequest($requestId)
+		public function showRequest($requestId):void
 		{
-			$this->dispatch('modal.open', component: 'modals.show-subject-request', arguments: [$requestId]);
+			$this->dispatch('modal.open', component: 'modals.show-subject-request',
+				arguments: ['requestId' => $requestId]);
 		}
 
-		public function editRequest($requestId)
+		public function editRequest($requestId):void
 		{
-			$this->dispatch('modal.open', component: 'modals.edit-request-form', arguments: [$requestId]);
+			$this->dispatch('modal.open', component: 'modals.edit-request-form',
+				arguments: ['requestId' => $requestId]);
 		}
 
-		public function addRequest()
+		public function addRequest():void
 		{
-			$this->dispatch('modal.open', component: 'modals.create-request-modal', arguments: [$this->room->id]);
+			$this->dispatch('modal.open', component: 'modals.create-request-modal',
+				arguments: ['roomId' => $this->room->id]);
 		}
 
 		public function getListeners():array
 		{
 			return [
 				"echo-presence:request.{$this->room->id},RequestEditedEvent" => 'refresh',
+				"echo-presence:response.{$this->room->id},ResponseCreatedEvent" => 'refresh',
+				"echo-presence:response.{$this->room->id},ResponseUpdatedEvent" => 'refresh',
 			];
 		}
 
-		public function deleteRequest($requestId)
+		public function respond($requestId):void
+		{
+			$this->dispatch('modal.open', component: 'modals.create-response-form', arguments: [
+				'roomId' => $this->room->id, 'requestId' => $requestId
+			]);
+		}
+
+		public function showResponses($requestId):void
+		{
+			$this->dispatch('modal.open', component: 'modals.show-response-modal',
+				arguments: ['requestId' => $requestId]);
+		}
+
+		public function deleteRequest($requestId):void
 		{
 			$requestToDelete = SubjectRequest::findOrFail($requestId);
 			$requestToDelete->delete();
@@ -69,25 +90,52 @@
 					<td class="px-3 py-2 text-xs whitespace-nowrap dark-light-text">{{ $request->type }}
 					<td class="px-3 py-2 text-xs whitespace-nowrap dark-light-text">{{ $request->getPriorityString($request->priority_level) }}
 					{{--					<td class="px-3 py-2 text-xs whitespace-nowrap dark-light-text">{{ $request->created_at }}--}}
-					<td class="px-3 py-2 text-xs whitespace-nowrap dark-light-text"><a
-								href="#"
-								class="hover:text-indigo-600 text-indigo-500 cursor-pointer">View(2)</a></td>
+					<td class="px-3 py-2 text-xs whitespace-nowrap dark-light-text">
+						@if($request->responses()->where('dismissed', false)->count())
+							<button
+									wire:click="showResponses({{ $request->id }})"
+									type="button"
+									class="hover:text-indigo-600 text-indigo-500 cursor-pointer">
+								View({{$request->responses()->where('dismissed', false)->count()}})
+							</button>
+						@else
+							<button
+									wire:click="showResponses({{ $request->id }})"
+									type="button"
+									disabled
+									class="hover:text-indigo-600 text-indigo-500 cursor-not-allowed">
+								View({{$request->responses()->where('dismissed', false)->count()}})
+							</button>
+						@endif
+
+					</td>
 					<td class="relative py-2 space-x-2 pr-4 pl-3 text-left text-xs font-medium whitespace-nowrap sm:pr-3">
 						<button
 								type="button"
 								wire:click="showRequest({{ $request->id }})">
 							<x-heroicons::outline.envelope-open class="w-4 h-4 hover:text-indigo-500 text-indigo-400 cursor-pointer" />
 						</button>
-						<button
-								type="button"
-								wire:click="editRequest({{ $request->id }})">
-							<x-heroicons::mini.solid.pencil-square class="w-4 h-4 hover:text-blue-500 text-blue-400 cursor-pointer" />
-						</button>
-						<button
-								type="button"
-								wire:click="deleteRequest({{ $request->id }})">
-							<x-heroicons::outline.trash class="w-4 h-4 hover:text-red-500 text-red-400 cursor-pointer" />
-						</button>
+						@can('update', $request)
+							<button
+									type="button"
+									wire:click="editRequest({{ $request->id }})">
+								<x-heroicons::mini.solid.pencil-square class="w-4 h-4 hover:text-blue-500 text-blue-400 cursor-pointer" />
+							</button>
+						@endcan
+						@can('delete', $request)
+							<button
+									type="button"
+									wire:click="deleteRequest({{ $request->id }})">
+								<x-heroicons::outline.trash class="w-5 h-5 hover:text-red-500 text-red-400 cursor-pointer" />
+							</button>
+						@endcan
+						@can('create', App\Models\Response::class)
+							<button
+									type="button"
+									wire:click="respond({{ $request->id }})">
+								<x-heroicons::outline.arrows-right-left class="w-4 h-4 hover:indigo-sky-500 text-sky-400 cursor-pointer" />
+							</button>
+						@endcan
 					</td>
 				</tr>
 			@endforeach

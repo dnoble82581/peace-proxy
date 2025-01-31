@@ -14,11 +14,20 @@ class SubjectRequestPolicy
 
     public function view(User $user, SubjectRequest $subjectRequest): bool {}
 
-    public function create(User $user): bool {}
+    public function create(User $user): bool
+    {
+        return true;
+    }
 
-    public function update(User $user, SubjectRequest $subjectRequest): bool {}
+    public function update(User $user, SubjectRequest $subjectRequest): bool
+    {
+        return $user->id === $subjectRequest->user_id;
+    }
 
-    public function delete(User $user, SubjectRequest $subjectRequest): bool {}
+    public function delete(User $user, SubjectRequest $subjectRequest): bool
+    {
+        return $user->id === $subjectRequest->user_id;
+    }
 
     public function restore(User $user, SubjectRequest $subjectRequest): bool {}
 

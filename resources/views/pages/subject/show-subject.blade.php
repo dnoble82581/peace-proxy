@@ -44,7 +44,7 @@
 
 				<x-list-elements.data-tag
 						:label="'Phone'"
-						:value="$subject->phone()"
+						:value="$subject->phone"
 						class="col-span-4 sm:col-span-1" />
 				<x-list-elements.data-tag
 						:label="'Race'"
