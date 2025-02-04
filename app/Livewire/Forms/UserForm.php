@@ -4,6 +4,7 @@ namespace App\Livewire\Forms;
 
 use App\Models\User;
 use App\Services\DocumentProcessor;
+use Exception;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
@@ -149,6 +150,8 @@ class UserForm extends Form
      * This method saves the uploaded application file, if any, and links it to the user.
      *
      * @param  User  $user  The user instance to associate with the uploaded files.
+     *
+     * @throws Exception
      */
     private function handleFileUploads(User $user): void
     {
