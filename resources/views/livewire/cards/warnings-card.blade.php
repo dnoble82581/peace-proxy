@@ -59,13 +59,13 @@
 	<div class="grid grid-cols-1 gap-4 sm:grid-cols-4 mt-2">
 		@if($subject->warnings->count())
 			@foreach($subject->warnings as $warning)
-				<div class="relative flex items-center space-x-3 col-span-2 rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm hover:border-gray-400">
+				<div class="relative flex items-center space-x-3 col-span-2 rounded-lg border border-gray-300 bg-white dark:bg-gray-700 px-3 py-2 shadow-sm hover:border-gray-400">
 					<div class="shrink-0 bg-rose-500 text-white p-2">
 						{{ $this->getTagLetters($warning) }}
 					</div>
 					<div class="min-w-0 flex-1">
-						<p class="text-sm font-medium text-gray-900">{{ $warning->warning }}</p>
-						<p class="truncate text-sm text-gray-500">{{ $warning->warning_type }}</p>
+						<p class="text-sm font-medium dark-light-text">{{ $warning->warning }}</p>
+						<p class="truncate text-sm dark-light-text">{{ $warning->warning_type }}</p>
 					</div>
 					<x-dropdown.dropdown>
 						<x-slot:trigger>

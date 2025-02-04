@@ -89,7 +89,6 @@
 					</td>
 					<td class="px-3 py-2 text-xs whitespace-nowrap dark-light-text">{{ $request->type }}
 					<td class="px-3 py-2 text-xs whitespace-nowrap dark-light-text">{{ $request->getPriorityString($request->priority_level) }}
-					{{--					<td class="px-3 py-2 text-xs whitespace-nowrap dark-light-text">{{ $request->created_at }}--}}
 					<td class="px-3 py-2 text-xs whitespace-nowrap dark-light-text">
 						@if($request->responses()->where('dismissed', false)->count())
 							<button

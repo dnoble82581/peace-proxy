@@ -2,7 +2,8 @@
 		x-data="{ tab: '{{ $defaultTab }}' }"
 		class="{{ $containerClass }}">
 	<!-- Tabs -->
-	<div class="p-4 border-b border-gray-200 dark:border-gray-700 dark:bg-gray-800">
+	<div class="p-4 border-b bg-white border-gray-200 rounded-t-lg dark:border-gray-700 dark:bg-gray-800">
+
 		<nav
 				class="flex space-x-4"
 				aria-label="Tabs">
@@ -20,7 +21,7 @@
 	</div>
 
 	<!-- Tab Content -->
-	<div class="pt-4 dark:bg-gray-800">
+	<div class="dark:bg-gray-800">
 		{{ $slot }}
 	</div>
 </div>

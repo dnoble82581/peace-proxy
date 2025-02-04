@@ -61,7 +61,7 @@
 				</x-list-elements.data-tag>
 				<x-list-elements.data-tag
 						:label="__('Date of Birth')"
-						:value="$associate->date_of_birth ? $associate->date_of_birth->format('M-d-Y') : 'N/A'"
+						:value="$associate->dob ? $associate->dob->format('M-d-Y') : 'N/A'"
 						class="col-span-4 sm:col-span-1" />
 				<x-list-elements.data-tag
 						:label="__('Age')"

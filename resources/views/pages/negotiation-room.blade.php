@@ -1,5 +1,7 @@
 <x-negotiation-layout>
 	<div class="pt-4 overflow-hidden pb-8 px-4">
+
+		{{--SUBJECT AND INFORMATION SECTION--}}
 		<div class="flex items-center gap-3">
 			<div class="flex-1">
 				<livewire:negotiations.negotiation-subject
@@ -11,10 +13,10 @@
 						:room="$room" />
 			</div>
 		</div>
-		<!-- Chat Menu -->
+		<!-- CHAT SECTION -->
 		<div class="grid grid-cols-12 gap-4 mt-4">
 			<x-navigation.tab-navigation
-					container-class="sm:col-span-4 bg-white"
+					container-class="sm:col-span-4"
 					:tabs="[
                     ['key' => 'public', 'label' => 'Public'],
                     ['key' => 'private', 'label' => 'Private'],
@@ -22,7 +24,9 @@
                 ]"
 					:default-tab="'public'">
 
-				<div x-show="tab === 'public'">
+				<div
+						class=""
+						x-show="tab === 'public'">
 					<livewire:negotiations.negotiation-chat
 							:room="$room"
 							:toTactical="false"
@@ -42,6 +46,7 @@
 				</div>
 			</x-navigation.tab-navigation>
 
+			{{--BOARD SECTION--}}
 			<x-navigation.tab-navigation
 					container-class="sm:col-span-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg"
 					:tabs="[
@@ -50,7 +55,7 @@
                     ['key' => 'charts', 'label' => 'Charts'],
                     ['key' => 'requests', 'label' => 'Requests']
                 ]"
-					:default-tab="'requests'">
+					:default-tab="'board'">
 
 				{{--Board--}}
 				<div x-show="tab === 'board'">
@@ -62,38 +67,28 @@
 					</div>
 				</div>
 
-				{{--Objectives--}}
+				{{--OBJECTIVES SECTION--}}
 				<div x-show="tab === 'objectives'">
 					<livewire:cards.objectives-card
 							:negotiationId="$room->negotiation->id"
 							:roomId="$room->id" />
 				</div>
 
-				{{--Charts--}}
+				{{--CHART SECTION--}}
 
 				<div
+						class="mt-4"
 						x-show="tab === 'charts'"
 						x-data="{ chart: 'mood' }">
-					<div class="ml-8">
-						<span class="isolate inline-flex rounded-md shadow-xs">
-                            <button
-		                            @click="chart = 'mood'"
-		                            type="button"
-		                            class="relative inline-flex items-center rounded-l-md  px-3 py-2 text-xs font-semibold  ring-1 ring-gray-300 ring-inset focus:z-10"
-		                            :class="chart === 'mood' ? 'bg-indigo-100 text-gray-700 hover:bg-indigo-50' : 'bg-white text-gray-900 hover:bg-gray-50'"
-                            >
-	                            Mood Chart
-                            </button>
-                             <button
-		                             @click="chart = 'call'"
-		                             type="button"
-		                             class="relative inline-flex items-center rounded-r-md  px-3 py-2 text-xs font-semibold  ring-1 ring-gray-300 ring-inset  focus:z-10"
-		                             :class="chart === 'call' ? 'bg-indigo-100 text-gray-700 hover:bg-indigo-50' : 'bg-white text-gray-900 hover:bg-gray-50'"
-                             >
-	                            Call Log
-                            </button>
-						</span>
-					</div>
+
+					<x-buttons.button-group
+							:buttons="[
+                                ['key' => 'mood', 'label' => 'Mood Chart'],
+                                ['key' => 'call', 'label' => 'Call Log'],
+                               ]"
+							click-handler="chart"
+							class="ml-8" />
+
 					<div
 							class="mt-4 px-8"
 							x-show="chart === 'mood'">
@@ -106,11 +101,28 @@
 					</div>
 				</div>
 
-				<div x-show="tab === 'requests'">
-					<livewire:cards.request-card :room="$room" />
+				{{--REQUEST SECTION--}}
+				<div
+						class="mt-4"
+						x-show="tab === 'requests'"
+						x-data="{list: 'subject'}">
+
+					<x-buttons.button-group
+							:buttons="[
+									['key' => 'subject', 'label' => 'Subject Requests'],
+									['key' => 'information', 'label' => 'RFI'],
+						]"
+							click-handler="list"
+							class="ml-8" />
+
+					<div x-show="list === 'subject'">
+						<livewire:cards.request-card :room="$room" />
+					</div>
+					<div x-show="list === 'information'">
+						ROI
+					</div>
 				</div>
 			</x-navigation.tab-navigation>
 		</div>
 	</div>
 </x-negotiation-layout>
-

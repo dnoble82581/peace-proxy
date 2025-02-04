@@ -5,6 +5,8 @@
 	use Livewire\Features\SupportRedirects\Redirector;
 	use Livewire\Volt\Component;
 	use function Livewire\Volt\{state};
+	use Twilio\Rest\Client;
+
 
 	new class extends Component {
 		public Subject $subject;
@@ -29,6 +31,24 @@
 				"echo-presence:subject.{$this->room->id},SubjectUpdatedEvent" => 'refresh',
 			];
 		}
+
+		public function callSubject()
+		{
+//			 Find your Account SID and Auth Token at twilio.com/console
+//			 and set the environment variables. See http://twil.io/secure
+			$sid = getenv("TWILIO_ACCOUNT_SID");
+			$token = getenv("TWILIO_AUTH_TOKEN");
+			$twilio = new Client($sid, $token);
+
+			$call = $twilio->calls->create(
+				"+13195947290", // To
+				"+18666380641", // From
+				["twiml" => "<Response><Say>Hello Dusty. This is your app calling.</Say></Response>"]
+			);
+			print $call->sid;
+		}
+
+		public function textSubject() {}
 	}
 ?>
 
@@ -69,7 +89,7 @@
 						alt="Temporary Subject Image">
 			@endif
 			<div class="mt-3 flex justify-between gap-2 px-1">
-				<button>
+				<button wire:click="callSubject">
 					<x-heroicons::micro.solid.phone-arrow-up-right class="w-6 h-6 text-teal-500" />
 				</button>
 				<button>

@@ -101,10 +101,6 @@ class AssociateForm extends Form
         if ($this->images) {
             $this->processImages();
         }
-        //        if ($this->documentsToUpload) {
-        //            $this->processDocuments();
-        //        }
-
         $this->associate->update($this->all());
     }
 
