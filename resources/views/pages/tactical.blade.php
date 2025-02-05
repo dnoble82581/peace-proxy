@@ -89,28 +89,16 @@
 				{{--Charts--}}
 
 				<div
+						class="mt-4"
 						x-show="tab === 'charts'"
 						x-data="{ chart: 'mood' }">
-					<div class="ml-8">
-						<span class="isolate inline-flex rounded-md shadow-xs">
-                            <button
-		                            @click="chart = 'mood'"
-		                            type="button"
-		                            class="relative inline-flex items-center rounded-l-md  px-3 py-2 text-xs font-semibold  ring-1 ring-gray-300 ring-inset focus:z-10"
-		                            :class="chart === 'mood' ? 'bg-indigo-100 text-gray-700 hover:bg-indigo-50' : 'bg-white text-gray-900 hover:bg-gray-50'"
-                            >
-	                            Mood Chart
-                            </button>
-                             <button
-		                             @click="chart = 'call'"
-		                             type="button"
-		                             class="relative inline-flex items-center rounded-r-md  px-3 py-2 text-xs font-semibold  ring-1 ring-gray-300 ring-inset  focus:z-10"
-		                             :class="chart === 'call' ? 'bg-indigo-100 text-gray-700 hover:bg-indigo-50' : 'bg-white text-gray-900 hover:bg-gray-50'"
-                             >
-	                            Call Log
-                            </button>
-						</span>
-					</div>
+					<x-buttons.button-group
+							:buttons="[
+                                ['key' => 'mood', 'label' => 'Mood Chart'],
+                                ['key' => 'call', 'label' => 'Call Log'],
+                               ]"
+							click-handler="chart"
+							class="ml-8" />
 					<div
 							class="mt-4 px-8"
 							x-show="chart === 'mood'">

@@ -56,6 +56,17 @@ class OnSceneRiskAssessment extends Modal
         }
     }
 
+    public function getTallyProperty(): int
+    {
+        $total = 0;
+        foreach ($this->responses as $response) {
+            // Add 1 for True, 0 otherwise
+            $total += strtolower($response) === 'Yes' ? 1 : 0;
+        }
+
+        return $total;
+    }
+
     /**
      * @throws Exception
      */
@@ -97,7 +108,8 @@ class OnSceneRiskAssessment extends Modal
 
     public function render(): View
     {
-        return view('livewire.modals.forms.on-scene-risk-assessment')->with('riskAssessmentQuestions',
-            $this->questions);
+        return view('livewire.modals.forms.on-scene-risk-assessment',
+            ['tally' => $this->tally])->with('riskAssessmentQuestions',
+                $this->questions);
     }
 }
