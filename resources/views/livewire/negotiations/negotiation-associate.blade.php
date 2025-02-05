@@ -81,9 +81,9 @@
 		public function getListeners():array
 		{
 			return [
-				"echo-presence:associate.{$this->room->id},AssociateEditedEvent" => 'refresh',
-				"echo-presence:associate.{$this->room->id},AssociateCreatedEvent" => 'refresh',
-				"echo-presence:associate.{$this->room->id},AssociateDeletedEvent" => 'refresh',
+				"echo-presence:associate.{$this->room->id},AssociateEditedEvent" => 'refreshAssociates',
+				"echo-presence:associate.{$this->room->id},AssociateCreatedEvent" => 'refreshAssociates',
+				"echo-presence:associate.{$this->room->id},AssociateDeletedEvent" => 'refreshAssociates',
 			];
 		}
 	};

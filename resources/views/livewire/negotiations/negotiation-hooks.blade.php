@@ -57,11 +57,11 @@
 		{
 			return [
 				// Listens for HookCreatedEvent and refreshes the component
-				"echo-presence:hook.{$this->room->id},HookCreatedEvent" => 'refresh',
+				"echo-presence:hook.{$this->room->id},HookCreatedEvent" => 'refreshHooks',
 				// Listens for HookDeletedEvent and refreshes the component
-				"echo-presence:hook.{$this->room->id},HookDeletedEvent" => 'refresh',
+				"echo-presence:hook.{$this->room->id},HookDeletedEvent" => 'refreshHooks',
 				// Listens for HookEditedEvent and refreshes the component
-				"echo-presence:hook.{$this->room->id},HookEditedEvent" => 'refresh',
+				"echo-presence:hook.{$this->room->id},HookEditedEvent" => 'refreshHooks',
 			];
 		}
 

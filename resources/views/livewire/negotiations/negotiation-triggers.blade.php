@@ -50,9 +50,9 @@
 		public function getListeners():array
 		{
 			return [
-				"echo-presence:trigger.{$this->room->id},TriggerCreatedEvent" => 'refresh',
-				"echo-presence:trigger.{$this->room->id},TriggerEditedEvent" => 'refresh',
-				"echo-presence:trigger.{$this->room->id},TriggerDeletedEvent" => 'refresh',
+				"echo-presence:trigger.{$this->room->id},TriggerCreatedEvent" => 'refreshTriggers',
+				"echo-presence:trigger.{$this->room->id},TriggerEditedEvent" => 'refreshTriggers',
+				"echo-presence:trigger.{$this->room->id},TriggerDeletedEvent" => 'refreshTriggers',
 			];
 		}
 

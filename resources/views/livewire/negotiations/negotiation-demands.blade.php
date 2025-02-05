@@ -28,9 +28,9 @@
 		public function getListeners():array
 		{
 			return [
-				"echo-presence:demand.{$this->room->id},DemandDeletedEvent" => 'refresh',
-				"echo-presence:demand.{$this->room->id},DemandCreatedEvent" => 'refresh',
-				"echo-presence:demand.{$this->room->id},DemandUpdatedEvent" => 'refresh',
+				"echo-presence:demand.{$this->room->id},DemandDeletedEvent" => 'refreshDemands',
+				"echo-presence:demand.{$this->room->id},DemandCreatedEvent" => 'refreshDemands',
+				"echo-presence:demand.{$this->room->id},DemandUpdatedEvent" => 'refreshDemands',
 			];
 		}
 
