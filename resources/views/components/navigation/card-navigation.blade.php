@@ -1,4 +1,4 @@
-@props(['labels' => []])
+@props(['labels' => [], 'contentClasses' => ''])
 <div>
 	<div class="grid grid-cols-1 sm:hidden">
 		<!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
@@ -24,7 +24,7 @@
 	<div class="hidden sm:block">
 		<div class="border-b border-gray-200">
 			<nav
-					class="-mb-px flex space-x-8"
+					class="-mb-px flex {{ $contentClasses }} space-x-8"
 					aria-label="Tabs">
 				<!-- Current: "border-indigo-500 text-indigo-600", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
 				{{ $content }}

@@ -12,8 +12,6 @@
 		public function logout(Logout $logout):void
 		{
 			$logout();
-
-			$this->redirect('/', navigate: true);
 		}
 
 	}; ?>

@@ -10,7 +10,7 @@
 			content="{{ csrf_token() }}">
 
 	<title>{{ config('app.name', 'Laravel') }}</title>
-	
+
 	<!-- Scripts -->
 	<wireui:scripts />
 	@livewireStyles

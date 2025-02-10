@@ -57,7 +57,7 @@
 		<div class="absolute top-2 right-2">
 			<x-dropdown.dropdown>
 				<x-slot:trigger>
-					<button>
+					<button class="hidden">
 						<x-heroicons::mini.solid.ellipsis-vertical class="w-6 h-6 text-gray-400" />
 					</button>
 				</x-slot:trigger>

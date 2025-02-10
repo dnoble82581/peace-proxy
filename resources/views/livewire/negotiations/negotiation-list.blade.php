@@ -1,5 +1,6 @@
 <?php
 
+	use App\Events\UserLoggedOutEvent;
 	use App\Models\Negotiation;
 	use App\Models\User;
 	use Illuminate\Database\Eloquent\Collection;

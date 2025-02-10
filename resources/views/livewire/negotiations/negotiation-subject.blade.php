@@ -50,7 +50,7 @@
 ?>
 
 <div
-		x-data="{ card: 'general'}"
+		x-data="{ card: 'general', show: true}"
 		class="rounded-lg bg-white shadow dark:bg-gray-800 relative flex-1">
 	<div class="px-4">
 		<div>
@@ -66,7 +66,7 @@
 				</select>
 			</div>
 			<div class="hidden sm:block">
-				<div class="border-b border-gray-200">
+				<div :class="show ? 'border-b flex items-center justify-between border-gray-200' : 'flex items-center justify-between'">
 					<nav
 							class="-mb-px flex space-x-8"
 							aria-label="Tabs">
@@ -120,11 +120,21 @@
 							<span class="">Social({{ $subject->documents->count() }})</span>
 						</button>
 					</nav>
+					<div>
+						<button
+								@click="show = !show"
+								type="button">
+							<x-heroicons::micro.solid.chevron-up-down class="w-5 dark-light-text" />
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="h-48 p-2 overflow-y-auto overflow-x-hidden">
+	<div
+			x-show="show"
+			class="h-48 p-2 overflow-y-auto overflow-x-hidden reusable-transition">
+		{{--		ToDO:Remember to fix dropdown for editing subject--}}
 		<div
 				x-show="card === 'general'"
 				class="rounded-lg dark:bg-gray-800">

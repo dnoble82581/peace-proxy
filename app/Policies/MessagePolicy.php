@@ -16,6 +16,7 @@ class MessagePolicy
 
     public function create(User $user): bool
     {
+
         $allowedRoles = ['Primary Negotiator', 'Secondary Negotiator', 'Tactical Lead', 'Incident Commander'];
 
         return in_array($user->role, $allowedRoles);

@@ -1,5 +1,6 @@
 <?php
 
+	use App\Events\UserLoggedInEvent;
 	use App\Models\Role;
 	use App\Models\Room;
 	use App\Models\RoomUser;
@@ -32,7 +33,6 @@
 
 		public function enterRoom():void
 		{
-
 			$this->validate();
 			$this->loginUser();
 		}
@@ -43,6 +43,7 @@
 			if ($this->user->hasRole('Tactical Lead')) {
 				redirect(route('tactical.room', $this->room->id));
 			} else {
+				event(new UserLoggedInEvent(auth()->user()->tenant_id));
 				redirect(route('negotiation.room', ['room' => $this->room->id]));
 			}
 		}

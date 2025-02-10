@@ -9,7 +9,6 @@ use App\Traits\UserPrivilegeTrait;
 use App\Traits\UserScopesTrait;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -78,13 +77,6 @@ class User extends Authenticatable
         return $this->morphMany(Document::class, 'documentable');
     }
 
-    public function rooms(): BelongsToMany
-    {
-        return $this->belongsToMany(Room::class)
-            ->withPivot('role_id', 'room_id', 'created_at', 'updated_at')
-            ->using(RoomUser::class);
-    }
-
     public function negotiations(): HasMany
     {
         return $this->hasMany(Negotiation::class);
@@ -93,6 +85,11 @@ class User extends Authenticatable
     public function objectives(): HasMany
     {
         return $this->hasMany(Objective::class);
+    }
+
+    public function conversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class, 'sender_id')->orWhere('receiver_id', $this->id);
     }
 
     public function hasRole(string $role): bool

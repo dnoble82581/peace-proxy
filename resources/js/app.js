@@ -13,4 +13,3 @@ function addReusableTransitions (el) {
 document.querySelectorAll('.reusable-transition').forEach((el) => {
 	addReusableTransitions(el)
 })
-

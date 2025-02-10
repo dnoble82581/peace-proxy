@@ -111,3 +111,7 @@ Broadcast::channel('document.{roomId}', function (User $user, int $roomId) {
     }
     abort(403);
 });
+
+Broadcast::channel('user.{tenantId}', function (User $user, int $tenantId) {
+    return $user->tenant_id === $tenantId;
+});

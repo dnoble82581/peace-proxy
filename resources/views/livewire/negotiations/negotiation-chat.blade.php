@@ -214,7 +214,7 @@
 			@class([
                         'flex flex-col overflow-y-auto',
                         'h-[32rem]' => auth()->user()->can('create', App\Models\Message::class),
-                        'h-[37rem]' => !auth()->user()->can('create', App\Models\Message::class),
+                        'h-[38rem]' => !auth()->user()->can('create', App\Models\Message::class),
                     ])>
 		<div class="flex flex-col justify-end flex-1 p-4">
 			<div
@@ -231,25 +231,26 @@
 			</div>
 		</div>
 	</div>
-	<hr>
+	<hr @class(['hidden' => !auth()->user()->can(
+	'create', App\Models\Message::class)])>
 	<div class="">
-		<form
-				wire:submit.prevent="sendMessage">
-			<label
-					for="chat-input"
-					class="sr-only">Your message</label>
+		@can('create', App\Models\Message::class)
+			<form
+					wire:submit.prevent="sendMessage">
+				<label
+						for="chat-input"
+						class="sr-only">Your message</label>
 
-			<div class="bg-gray-100 dark:bg-gray-700 rounded-b-lg">
-				@can('create', App\Models\Message::class)
+				<div class="bg-gray-100 dark:bg-gray-700 rounded-b-lg">
 					<div class="py-2 px-8 border-t bg-gray-100 flex items-center space-x-4 dark:bg-gray-700">
 						<button class="bg-gray-200 p-1 rounded-lg">⚠️</button>
 						<button class="bg-gray-200 p-1 rounded-lg">🆘</button>
 						<button class="bg-gray-200 p-1 rounded-lg">👏</button>
 					</div>
-				@endcan
 
-				<div class="flex items-center px-3 pt-2 pb-3">
-					@can('create', App\Models\Message::class)
+
+					<div class="flex items-center px-3 pt-2 pb-3">
+
 						<textarea
 								wire:model="newMessage"
 								id="chat-input"
@@ -269,9 +270,10 @@
 							</svg>
 							<span class="sr-only">Send message</span>
 						</button>
-					@endcan
+					</div>
 				</div>
-			</div>
-		</form>
+			</form>
+		@endcan
+
 	</div>
 </div>

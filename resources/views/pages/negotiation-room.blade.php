@@ -1,7 +1,7 @@
 <x-negotiation-layout>
 	<div class="pt-4 overflow-hidden pb-8 px-4">
 		{{--SUBJECT AND INFORMATION SECTION--}}
-		<div class="flex items-center gap-3">
+		<div class="flex gap-3">
 			<div class="flex-1">
 				<livewire:negotiations.negotiation-subject
 						:room="$room" />
@@ -15,33 +15,25 @@
 
 		<!-- CHAT SECTION -->
 		<div class="grid grid-cols-12 gap-4 mt-4">
+			<div class="col-span-12 border-gray-400 p-4">
+				Quick Action Section
+			</div>
 			<x-navigation.tab-navigation
 					container-class="sm:col-span-4"
 					:tabs="[
-                    ['key' => 'public', 'label' => 'Public'],
-                    ['key' => 'private', 'label' => 'Private'],
-                    ['key' => 'tactical', 'label' => 'Tactical'],
+                    ['key' => 'chat', 'label' => 'Chat'],
                 ]"
-					:default-tab="'public'">
+					:default-tab="'chat'">
 
 				<div
 						class=""
-						x-show="tab === 'public'">
+						x-show="tab === 'chat'">
+					{{--					<div class="bg-white h-[38rem] rounded-b-lg shadow-lg">--}}
+					{{--						<livewire:teams.show_loggedin_members />--}}
+					{{--					</div>--}}
 					<livewire:negotiations.negotiation-chat
 							:room="$room"
 							:toTactical="false"
-							:isPrivate="false" />
-				</div>
-				<div x-show="tab === 'private'">
-					<livewire:negotiations.negotiation-chat
-							:room="$room"
-							:toTactical="false"
-							:isPrivate="true" />
-				</div>
-				<div x-show="tab === 'tactical'">
-					<livewire:negotiations.negotiation-chat
-							:room="$room"
-							:toTactical="true"
 							:isPrivate="false" />
 				</div>
 			</x-navigation.tab-navigation>
@@ -126,3 +118,4 @@
 		</div>
 	</div>
 </x-negotiation-layout>
+
