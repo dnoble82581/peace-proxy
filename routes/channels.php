@@ -103,3 +103,11 @@ Broadcast::channel('response.{roomId}', function (User $user, int $roomId) {
     }
     abort(403);
 });
+
+Broadcast::channel('document.{roomId}', function (User $user, int $roomId) {
+    $room = Room::find($roomId);
+    if ($user->can('view', $room)) {
+        return ['id' => $user->id, 'name' => $user->name];
+    }
+    abort(403);
+});

@@ -39,7 +39,7 @@
 			</div>
 		</div>
 		<div class="flex items-center justify-between">
-			<span class="text-xs font-normal text-gray-500 dark:text-gray-400 capitalize">{{ $message->user->getRoleName() }}</span>
+			<span class="text-xs font-normal text-gray-500 dark:text-gray-400 capitalize">{{ $message->user->role }}</span>
 			@if($message->responses()->count())
 				<button
 						wire:click="showResponses({{ $message->id }})"

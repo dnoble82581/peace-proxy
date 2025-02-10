@@ -79,6 +79,8 @@ class DocumentProcessor
 
     /**
      * Store the document in the designated location.
+     *
+     * @throws Exception
      */
     private function storeDocument($document, $model, string $filename): void
     {
@@ -100,5 +102,31 @@ class DocumentProcessor
         }
 
         throw new Exception('Invalid document type provided for storage.');
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function deleteDocument(Model $model, string $filename): bool
+    {
+        $savePath = '/documents/'.strtolower(class_basename($model)).'/'.$model->id.'/'.$filename;
+
+        // Check if the file exists
+        if (! Storage::disk($this->disk)->exists($savePath)) {
+            throw new Exception('Document not found in storage.');
+        }
+
+        // Attempt to delete the file
+        $deletedFromStorage = Storage::disk($this->disk)->delete($savePath);
+
+        // If successfully removed from storage, delete the database record (if applicable)
+        if ($deletedFromStorage) {
+            $deletedFromDatabase = $model->documents()->where('filename', $filename)->delete();
+
+            return $deletedFromDatabase > 0; // Return `true` if the database record was deleted
+
+        }
+
+        return false;
     }
 }

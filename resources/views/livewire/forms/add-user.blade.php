@@ -1,67 +1,67 @@
 <?php
 
-use App\Livewire\Forms\UserForm;
-use App\Models\User;
-use Livewire\Features\SupportRedirects\Redirector;
-use Livewire\Volt\Component;
-use Livewire\WithFileUploads;
+	use App\Livewire\Forms\UserForm;
+	use App\Models\User;
+	use Livewire\Features\SupportRedirects\Redirector;
+	use Livewire\Volt\Component;
+	use Livewire\WithFileUploads;
 
-/**
- * Anonymous Livewire Component for creating a new team member.
- *
- * This component handles the creation process, including form submissions,
- * file uploads (e.g., avatar and application), and redirect actions.
- */
-new class extends Component {
-    use WithFileUploads;
+	/**
+	 * Anonymous Livewire Component for creating a new team member.
+	 *
+	 * This component handles the creation process, including form submissions,
+	 * file uploads (e.g., avatar and application), and redirect actions.
+	 */
+	new class extends Component {
+		use WithFileUploads;
 
-    /**
-     * @var UserForm $form The form object to manage the creation of a new team member.
-     */
-    public UserForm $form;
+		/**
+		 * @var UserForm $form The form object to manage the creation of a new team member.
+		 */
+		public UserForm $form;
 
-    /**
-     * Handles the form submission, creates a new team member,
-     * and redirects to the team management page.
-     *
-     * @return Redirector Returns a redirection to the '/team' route.
-     */
-    public function submit():Redirector
-    {
-        // Create a new team member using the form data
-        $this->form->create();
+		/**
+		 * Handles the form submission, creates a new team member,
+		 * and redirects to the team management page.
+		 *
+		 * @return Redirector Returns a redirection to the '/team' route.
+		 */
+		public function submit():Redirector
+		{
+			// Create a new team member using the form data
+			$this->form->create();
 
-        // Redirect to the team management page
-        return redirect('/team');
-    }
+			// Redirect to the team management page
+			return redirect('/team');
+		}
 
-    /**
-     * Cancels the operation and redirects back to the team management page.
-     *
-     * @return Redirector Returns a redirection to the '/team' route.
-     */
-    public function cancel():Redirector
-    {
-        return redirect('/team');
-    }
+		/**
+		 * Cancels the operation and redirects back to the team management page.
+		 *
+		 * @return Redirector Returns a redirection to the '/team' route.
+		 */
+		public function cancel():Redirector
+		{
+			return redirect('/team');
+		}
 
-    /**
-     * Retrieves the placeholder image for the user's avatar.
-     * If a new photo has been uploaded in the form, it returns its temporary URL.
-     * Otherwise, it returns a default placeholder image URL.
-     *
-     * @return string The placeholder or temporary URL for the avatar.
-     */
-    public function getPhotoPlaceholder():string
-    {
-        if ($this->form->photo) {
-            return $this->form->photo->temporaryUrl();
-        }
+		/**
+		 * Retrieves the placeholder image for the user's avatar.
+		 * If a new photo has been uploaded in the form, it returns its temporary URL.
+		 * Otherwise, it returns a default placeholder image URL.
+		 *
+		 * @return string The placeholder or temporary URL for the avatar.
+		 */
+		public function getPhotoPlaceholder():string
+		{
+			if ($this->form->photo) {
+				return $this->form->photo->temporaryUrl();
+			}
 
-        // Return default placeholder image
-        return 'https://api.dicebear.com/9.x/shapes/svg?seed=Luis';
-    }
-}
+			// Return default placeholder image
+			return 'https://api.dicebear.com/9.x/shapes/svg?seed=Luis';
+		}
+	}
 
 ?>
 
@@ -127,11 +127,17 @@ new class extends Component {
 					option-value="value" />
 
 			<!-- Input for the user's title -->
-			<x-input
-					label="Title"
-					wire:model="form.title"
-					placeholder="Title"
-					class="col-span-6 sm:col-span-2" />
+			<x-select
+					label="Privileges"
+					wire:model="form.privileges"
+					class="col-span-6 sm:col-span-2"
+					:options="[
+                    ['name' => 'User', 'value' => 'user'],
+                    ['name' => 'Admin', 'value' => 'admin'],
+                    ['name' => 'Super Admin', 'value' => 'super admin'],
+                ]"
+					option-label="name"
+					option-value="value" />
 
 			<!-- Dropdown for the user's role -->
 			<x-select
@@ -139,8 +145,12 @@ new class extends Component {
 					wire:model="form.role"
 					class="col-span-6 sm:col-span-2"
 					:options="[
-                    ['name' => 'Admin', 'value' => 'admin'],
-                    ['name' => 'User', 'value' => 'user'],
+                    ['name' => 'Primary Negotiator', 'value' => 'primary negotiator'],
+                    ['name' => 'Secondary Negotiator', 'value' => 'secondary negotiator'],
+                    ['name' => 'Recorder', 'value' => 'recorder'],
+                    ['name' => 'Tactical User', 'value' => 'tactical user'],
+                    ['name' => 'Tactical Admin', 'value' => 'tactical admin'],
+                    ['name' => 'Tactical Super Admin', 'value' => 'tactical super admin'],
                 ]"
 					option-label="name"
 					option-value="value" />

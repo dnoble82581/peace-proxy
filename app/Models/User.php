@@ -5,7 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Services\UserAvatarService;
 use App\Traits\BelongsToTenant;
-use App\Traits\UserRoleTrait;
+use App\Traits\UserPrivilegeTrait;
 use App\Traits\UserScopesTrait;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,12 +14,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use BelongsToTenant, HasFactory, HasRoles, Notifiable, UserRoleTrait, UserScopesTrait;
+    use BelongsToTenant, HasFactory, Notifiable, UserPrivilegeTrait, UserScopesTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -56,7 +55,7 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role == 'admin';
+        return $this->privileges == 'admin';
     }
 
     public function isSuperAdmin(): bool
@@ -98,7 +97,7 @@ class User extends Authenticatable
 
     public function hasRole(string $role): bool
     {
-        return $this->roles()->where('name', $role)->exists();
+        return $this->role === $role;
     }
 
     public function requests(): HasMany

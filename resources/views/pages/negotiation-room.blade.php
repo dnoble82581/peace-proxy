@@ -1,6 +1,5 @@
 <x-negotiation-layout>
 	<div class="pt-4 overflow-hidden pb-8 px-4">
-
 		{{--SUBJECT AND INFORMATION SECTION--}}
 		<div class="flex items-center gap-3">
 			<div class="flex-1">
@@ -13,6 +12,7 @@
 						:room="$room" />
 			</div>
 		</div>
+
 		<!-- CHAT SECTION -->
 		<div class="grid grid-cols-12 gap-4 mt-4">
 			<x-navigation.tab-navigation
@@ -119,7 +119,7 @@
 						<livewire:cards.request-card :room="$room" />
 					</div>
 					<div x-show="list === 'information'">
-						ROI
+						<livewire:cards.rfi-card :room="$room" />
 					</div>
 				</div>
 			</x-navigation.tab-navigation>

@@ -78,8 +78,8 @@
 			/>
 			{{-- Column: Title --}}
 			<x-table-elements.sortable-column
-					label="Title"
-					value="title"
+					label="Privileges"
+					value="privileges"
 					:canSort="true"
 					:sortField="$sortField"
 					:sortAsc="$sortAsc"
@@ -161,7 +161,7 @@
 
 				{{-- Title and Department --}}
 				<td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-					<div class="text-sm leading-5 text-gray-900 dark:text-slate-300">{{$user->title}}</div>
+					<div class="text-sm leading-5 text-gray-900 dark:text-slate-300">{{$user->privileges }}</div>
 					{{--					<div class="text-sm leading-5 text-gray-500">{{$user->department}}</div>--}}
 				</td>
 

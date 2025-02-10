@@ -209,10 +209,14 @@ class ProductionSeeder extends Seeder
         Permission::create([
             'name' => 'request',
         ]);
+        Permission::create([
+            'name' => 'approve',
+        ]);
 
         $role = Role::create([
             'name' => 'admin',
-        ])->givePermissionTo(Permission::all());
+        ]);
+        $role->givePermissionTo(Permission::all());
 
         $role = Role::create([
             'name' => 'team-coordinator',

@@ -36,8 +36,8 @@
 		{
 //			 Find your Account SID and Auth Token at twilio.com/console
 //			 and set the environment variables. See http://twil.io/secure
-			$sid = getenv("TWILIO_ACCOUNT_SID");
-			$token = getenv("TWILIO_AUTH_TOKEN");
+			$sid = config('twilio.account_sid');
+			$token = config('twilio.auth_token');
 			$twilio = new Client($sid, $token);
 
 			$call = $twilio->calls->create(

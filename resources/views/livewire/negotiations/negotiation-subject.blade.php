@@ -42,6 +42,8 @@
 				"echo-presence:warning.{$this->room->id},WarningCreatedEvent" => 'refresh',
 				"echo-presence:warrant.{$this->room->id},WarrantCreatedEvent" => 'refresh',
 				"echo-presence:warrant.{$this->room->id},WarrantDeletedEvent" => 'refresh',
+				"echo-presence:document.{$this->room->id},DocumentDeletedEvent" => 'refresh',
+				"echo-presence:document.{$this->room->id},DocumentCreatedEvent" => 'refresh',
 			];
 		}
 	}

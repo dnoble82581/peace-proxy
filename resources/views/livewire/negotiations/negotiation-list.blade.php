@@ -7,7 +7,6 @@
 	use Livewire\Attributes\Validate;
 	use Livewire\Volt\Component;
 	use Livewire\WithPagination;
-	use Spatie\Permission\Models\Role;
 
 	new class extends Component {
 		use WithPagination;
@@ -19,7 +18,7 @@
 		{
 			$this->negotiations = $this->getNegotiations();
 			$this->user = auth()->user();
-			$this->roles = Role::all();
+			$this->roles = ['Primary Negotiator', 'Secondary Negotiator', 'Recorder'];
 		}
 
 		private function getNegotiations():Collection

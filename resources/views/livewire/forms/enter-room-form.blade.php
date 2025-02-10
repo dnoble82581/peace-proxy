@@ -1,18 +1,18 @@
 <?php
 
+	use App\Models\Role;
 	use App\Models\Room;
 	use App\Models\RoomUser;
 	use App\Models\User;
 	use Illuminate\Database\Eloquent\Collection;
 	use Livewire\Attributes\Validate;
 	use Livewire\Volt\Component;
-	use Spatie\Permission\Models\Role;
 
 	new class extends Component {
 		public Collection $roles;
 
-		#[Validate('required')]
-		public int $chosenRole;
+		#[Validate(['required', 'string'])]
+		public string $chosenRole;
 
 		public Room $room;
 
@@ -21,37 +21,40 @@
 		public function mount($room):void
 		{
 			$this->room = $room;
-			$this->user = auth()->user();
 			$this->roles = $this->getRoles();
+			$this->user = auth()->user();
+		}
+
+		private function getRoles()
+		{
+			return Role::all();
 		}
 
 		public function enterRoom():void
 		{
+
 			$this->validate();
 			$this->loginUser();
 		}
 
 		private function loginUser():void
 		{
-			$this->user->syncRoles($this->chosenRole);
-
-			if ($this->user->hasRole('tactical-lead')) {
+			$this->updateUserRole();
+			if ($this->user->hasRole('Tactical Lead')) {
 				redirect(route('tactical.room', $this->room->id));
 			} else {
-				redirect(route('negotiation.room', $this->room->id));
+				redirect(route('negotiation.room', ['room' => $this->room->id]));
 			}
 		}
 
-		private function getRole($roleId) {}
-
-		private function getRoles():Collection
+		private function updateUserRole()
 		{
-			return Role::all();
+			auth()->user()->update(['role' => $this->chosenRole]);
 		}
+
 	}
 
 ?>
-
 <form
 		wire:submit.prevent="enterRoom()"
 		class="flex shrink-0 items-center gap-x-4">
@@ -66,7 +69,7 @@
 				class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
 			<option selected>Choose your role</option>
 			@foreach($roles as $role)
-				<option value={{ $role->id }}>{{ $role->name }}</option>
+				<option value='{{ $role->name }}'>{{ $role->name }}</option>
 			@endforeach
 		</select>
 	</div>

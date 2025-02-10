@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Modals\Forms;
 
+use App\Events\DocumentCreatedEvent;
 use App\Models\RiskAssessmentQuestions;
 use App\Models\RiskAssessmentResponses;
 use App\Models\Subject;
@@ -56,17 +57,6 @@ class OnSceneRiskAssessment extends Modal
         }
     }
 
-    public function getTallyProperty(): int
-    {
-        $total = 0;
-        foreach ($this->responses as $response) {
-            // Add 1 for True, 0 otherwise
-            $total += strtolower($response) === 'Yes' ? 1 : 0;
-        }
-
-        return $total;
-    }
-
     /**
      * @throws Exception
      */
@@ -100,6 +90,7 @@ class OnSceneRiskAssessment extends Modal
         $this->reset('responses'); // Clear all responses
 
         $this->subject->update(['risk_assessment' => true]);
+        event(new DocumentCreatedEvent($this->subject->room_id));
         $this->close();
 
         // Allow the user to download the PDF directly
@@ -108,8 +99,7 @@ class OnSceneRiskAssessment extends Modal
 
     public function render(): View
     {
-        return view('livewire.modals.forms.on-scene-risk-assessment',
-            ['tally' => $this->tally])->with('riskAssessmentQuestions',
-                $this->questions);
+        return view('livewire.modals.forms.on-scene-risk-assessment')->with('riskAssessmentQuestions',
+            $this->questions);
     }
 }

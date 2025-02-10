@@ -1,10 +1,17 @@
 <?php
 
+	use App\Events\DocumentDeletedEvent;
+	use App\Models\Document;
 	use App\Models\Subject;
+	use App\Services\DocumentProcessor;
 	use Livewire\Volt\Component;
 	use function Livewire\Volt\{state};
 
 	new class extends Component {
+
+		public string $flashMessage = 'Some message';
+
+
 		public Subject $subject;
 
 		public function mount($subject)
@@ -18,10 +25,42 @@
 				arguments: ['subjectId' => $this->subject->id]);
 		}
 
+		public function downloadDocument(Document $document)
+		{
+			$filePath = '/documents/'.strtolower(class_basename($document->documentable)).'/'.$document->documentable_id.'/'.$document->filename;
+
+			if (Storage::disk('s3')->exists($filePath)) {
+				return Storage::disk('s3')->download($filePath, $document->filename);
+			}
+
+			abort(404, 'Document not found');
+
+		}
+
 		public function deleteDocument($documentId)
 		{
-			dd($documentId);
-//			Delete record from database and from amazon s3
+			$documentToDelete = Document::findOrFail($documentId);
+			$documentProcessor = new DocumentProcessor;
+			try {
+				$isDeleted = $documentProcessor->deleteDocument($this->subject,
+					$documentToDelete->filename);
+				if ($isDeleted) {
+					$this->flashMessage = 'Document successfully deleted.';
+				} else {
+					$this->flashMessage = 'Failed to delete the document.';
+				}
+			} catch (Exception $e) {
+				echo 'Error: '.$e->getMessage();
+			}
+			event(new DocumentDeletedEvent($documentToDelete->id, $this->subject->room_id));
+		}
+
+		public function getListeners():array
+		{
+			return [
+				"echo-presence:document.{$this->subject->room_id},DocumentDeletedEvent" => 'refresh',
+				"echo-presence:document.{$this->subject->room_id},DocumentCreatedEvent" => 'refresh',
+			];
 		}
 	}
 
@@ -68,12 +107,12 @@
 								</a>
 								<button
 										type="button"
-										wire:click="deleteDocument({{ $document->id }})">
+										wire:click="deleteDocument({{ $document->id}})">
 									<x-heroicons::outline.trash class="w-4 h-4 hover:text-red-500 text-red-400 cursor-pointer" />
 								</button>
 								<button
 										type="button"
-										wire:click="deleteDocument({{ $document->id }})">
+										wire:click="downloadDocument({{ $document->id }})">
 									<x-heroicons::outline.arrow-down-tray class="w-4 h-4 hover:text-slate-500 text-slate-400 cursor-pointer" />
 								</button>
 							</td>

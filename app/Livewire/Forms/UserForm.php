@@ -5,6 +5,7 @@ namespace App\Livewire\Forms;
 use App\Models\User;
 use App\Services\DocumentProcessor;
 use Exception;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
@@ -42,7 +43,7 @@ class UserForm extends Form
      *
      * @var string
      */
-    #[Validate(['required', 'email', 'max:254'])]
+    #[Validate(['required', 'email', 'max:254', 'unique:users,email'])]
     public $email = '';
 
     /**
@@ -74,8 +75,8 @@ class UserForm extends Form
      *
      * @var string
      */
-    #[Validate(['required'])]
-    public $role = 'User';
+    #[Validate(['nullable'])]
+    public $role = '';
 
     /**
      * User's title or job position.
@@ -83,7 +84,7 @@ class UserForm extends Form
      * @var string|null
      */
     #[Validate(['nullable'])]
-    public $title = '';
+    public $privliges = 'user';
 
     /**
      * User's account status (active/inactive).
@@ -93,13 +94,15 @@ class UserForm extends Form
     #[Validate(['boolean'])]
     public $status = false;
 
-    //    #[Validate(['file', 'max:10000', 'mimes:pdf', 'nullable'])]
+    #[Validate(['file', 'max:10000', 'mimes:pdf', 'nullable'])]
     public $application;
 
     /**
      * Create a new user in the system using the form's data.
+     *
+     * @throws Exception
      */
-    public function create()
+    public function create(): Redirector
     {
         $this->validate();
 
@@ -111,7 +114,9 @@ class UserForm extends Form
 
         $user = User::create($userData);
 
-        $this->handleFileUploads($user);
+        if ($this->application) {
+            $this->handleFileUploads($user);
+        }
 
         return redirect('/team');
     }
@@ -128,7 +133,7 @@ class UserForm extends Form
             'secondary_phone' => $this->secondary_phone,
             'avatar' => $this->avatar,
             'role' => $this->role,
-            'title' => $this->title,
+            'privileges' => $this->privliges,
             'status' => $this->status,
             'password' => $this->user ?? bcrypt('Password'), // Only set password for new users
         ];
@@ -161,6 +166,8 @@ class UserForm extends Form
 
     /**
      * Update the existing user's data in the system.
+     *
+     * @throws Exception
      */
     public function update(): void
     {
