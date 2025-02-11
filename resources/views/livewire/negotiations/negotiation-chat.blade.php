@@ -6,9 +6,12 @@
 	use App\Models\Message;
 	use App\Models\Room;
 	use App\Models\User;
+	use App\Services\ConversationService;
 	use Illuminate\Support\Collection;
 	use Livewire\Attributes\Validate;
 	use Livewire\Volt\Component;
+	use App\Services\MessageService;
+
 
 	/**
 	 * ChatRoom Component
@@ -23,6 +26,8 @@
 
 		public Collection $conversations;
 		public Conversation $defaultConversation;
+		public array $activeUsers = [];
+//		public MessageService $messageService;
 
 
 		/**
@@ -90,9 +95,9 @@
 		public function sendMessage($currentConversationId):void
 		{
 			$this->validate();
-
+			$messageService = new MessageService;
 			$message = $this->createMessage($currentConversationId);
-			$this->broadcastMessage($message);
+			$messageService->broadcastMessage($message);
 			$this->newMessage = '';
 
 		}
@@ -102,34 +107,17 @@
 		 *
 		 * @return Message The newly created message instance.
 		 */
-		private function createMessage($currentconversationId):Message
+		private function createMessage($currentConversationId):Message
 		{
-			return $this->room->messages()->create([
-				'user_id' => $this->user->id,
-				'tenant_id' => $this->user->tenant_id,
-				'room_id' => $this->room->id,
-				'conversation_id' => $currentconversationId,
-				'message' => $this->newMessage,
-			]);
-
+			$messageService = new MessageService;
+			return $messageService->createMessage($this->room, $this->user, $this->newMessage,
+				$currentConversationId);
 		}
 
 		public function refreshChat():void
 		{
 			$this->room->load('messages');
 			$this->dispatch('new-message');
-		}
-
-		/**
-		 * Broadcasts the new message to all listeners.
-		 *
-		 * @param  Message  $message  The message to be broadcasted.
-		 *
-		 * @return void
-		 */
-		private function broadcastMessage(Message $message):void
-		{
-			broadcast(new NewMessageEvent($message));
 		}
 
 		/**
@@ -157,71 +145,18 @@
 
 		public function createGroupChats():void
 		{
-			// Ensure Public Chat exists
-			$publicConversation = Conversation::firstOrCreate(
-				[
-					'type' => 'public', // Unique type
-					'room_id' => $this->room->id,
-					'tenant_id' => $this->room->tenant_id,
-				],
-				[
-					'initiator_id' => auth()->user()->id,
-					'created_at' => now(),
-					'updated_at' => now(),
-				]);
-
-			$privateConversation = Conversation::firstOrCreate(
-				[
-					'type' => 'negotiator', // Unique type
-					'room_id' => $this->room->id,
-					'tenant_id' => $this->room->tenant_id,
-				],
-				[
-					'initiator_id' => auth()->user()->id,
-					'created_at' => now(),
-					'updated_at' => now(),
-				]);
-
-			// Add participants to Public Chat
-			$this->addParticipantsToConversation($publicConversation, 'public');
-
-			// Add participants to Private Chat
-			$this->addParticipantsToConversation($privateConversation, 'private');
+			$conversationService = new ConversationService;
+			$defaultPublicConversation = [
+				'type' => 'public', // Unique type
+				'room_id' => $this->room->id,
+				'tenant_id' => $this->room->tenant_id,
+				'initiator_id' => $this->user->id,
+			];
+			$publicConversation = $conversationService->createGroupChat($defaultPublicConversation);
+			$conversationService->addParticipantsToConversation($publicConversation, User::all());
 
 		}
 
-		private function addParticipantsToConversation(Conversation $conversation, string $type):void
-		{
-			if ($type === 'public') {
-				$participants = User::all(); // Modify this if participant selection needs customization
-
-				$bulkInsert = $participants->map(function ($participant) use ($conversation) {
-					return [
-						'conversation_id' => $conversation->id,
-						'user_id' => $participant->id,
-						'tenant_id' => $this->room->tenant_id,
-						'created_at' => now(),
-						'updated_at' => now(),
-					];
-				})->toArray();
-
-				DB::table('conversation_participants')->insertOrIgnore($bulkInsert); // Avoid duplicates
-			} else {
-				$participants = User::where('role', 'Primary Negotiator')->orWhere('role',
-					'Secondary Negotiator')->get();
-				$bulkInsert = $participants->map(function ($participant) use ($conversation) {
-					return [
-						'conversation_id' => $conversation->id,
-						'user_id' => $participant->id,
-						'tenant_id' => $this->room->tenant_id,
-						'created_at' => now(),
-						'updated_at' => now(),
-					];
-				})->toArray();
-
-				DB::table('conversation_participants')->insertOrIgnore($bulkInsert); // Avoid duplicates
-			}
-		}
 
 		/**
 		 * Handles the presence of a user in the chat room.
@@ -229,11 +164,22 @@
 		 * Implementation should be defined for displaying or reacting
 		 * to users who are currently in the chat room.
 		 *
-		 * @param  mixed  $user  The user present in the chat room.
+		 * @param $users
 		 *
 		 * @return void
 		 */
-		public function handleUserHere($user):void {}
+		public function handleUserHere($users):void
+		{
+			$this->activeUsers = collect($users)->map(function ($user) {
+				return [
+					'id' => $user['id'],
+					'name' => $user['name'],
+					'avatar' => $user['avatar'],
+					'last_active' => now(), // Initialize the user's activity timestamp
+				];
+			})->toArray();
+
+		}
 
 		/**
 		 * Handles when a user joins the chat room.
@@ -245,7 +191,19 @@
 		 *
 		 * @return void
 		 */
-		public function handleUserJoining($user):void {}
+		public function handleUserJoining($user):void
+		{
+			$newUser = [
+				'id' => $user['id'],
+				'name' => $user['name'],
+				'avatar' => $user['avatar'],
+				'last_active' => now() // Record the current timestamp
+			];
+
+			// Avoid duplicating users in the array
+			$this->activeUsers[] = $newUser;
+		}
+
 
 		/**
 		 * Handles when a user leaves the chat room.
@@ -257,7 +215,42 @@
 		 *
 		 * @return void
 		 */
-		public function handleUserLeaving($user):void {}
+		public function handleUserLeaving($user):void
+		{
+			$this->activeUsers = collect($this->activeUsers)
+				->where('id', '!=', $user['id']) // Remove the user who left
+				->toArray();
+		}
+
+		public function trackIdleUsers():void
+		{
+			$idleThreshold = now()->subMinutes(5); // Define idle time (e.g., 5 minutes)
+
+			$this->activeUsers = collect($this->activeUsers)->map(function ($user) use ($idleThreshold) {
+				return [
+					...$user,
+					'is_idle' => $user['last_active'] < $idleThreshold, // Mark the user as idle if past the threshold
+				];
+			})->toArray();
+		}
+
+		public function createConversation($userId)
+		{
+			$user = User::findOrFail($userId);
+
+			$privateConversation = Conversation::firstOrCreate(
+				[
+					'type' => $user->name, // Unique type
+					'room_id' => $this->room->id,
+					'tenant_id' => $this->room->tenant_id,
+				],
+				[
+					'initiator_id' => auth()->user()->id,
+					'created_at' => now(),
+					'updated_at' => now(),
+				]);
+		}
+
 
 	}
 ?>
@@ -267,15 +260,73 @@
 		class="bg-white dark:bg-gray-800 shadow-lg rounded-b-lg rounded-t-lg">
 
 	{{--	Conversation Tabs as Buttons--}}
-	<div class="flex space-x-4 p-4 border-b dark:border-gray-700">
-		@foreach ($conversations as $conversation)
+	<div class="flex items-center justify-between space-x-4 p-4 border-b dark:border-gray-700">
+		<div>
+			@foreach ($conversations as $conversation)
+				<button
+						@click="conversation = '{{ $conversation->type }}'"
+						class="rounded-md px-3 py-2 text-sm font-medium text-indigo-700"
+						:class="{ 'bg-indigo-100': conversation === '{{ $conversation->type }}' }">
+					{{ ucfirst($conversation->type) }}
+				</button>
+			@endforeach
+		</div>
+		<div
+				x-data="{ open: false, submenu: false }"
+				class="relative">
+			<!-- Main Dropdown Trigger -->
 			<button
-					@click="conversation = '{{ $conversation->type }}'"
-					class="rounded-md px-3 py-2 text-sm font-medium text-indigo-700"
-					:class="{ 'bg-indigo-100': conversation === '{{ $conversation->type }}' }">
-				{{ ucfirst($conversation->type) }}
+					@click="open = !open">
+				<x-heroicons::micro.solid.plus class="w-5 h-5 text-gray-400 dark:text-gray-300" />
 			</button>
-		@endforeach
+
+			<!-- Main Dropdown Content -->
+			<div
+					x-show="open"
+					@click.away="open = false"
+					class="absolute z-50 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-700 ltr:origin-top-right rtl:origin-top-left end-0 ring-1 ring-black ring-opacity-5"
+			>
+				<!-- Dropdown Option 2 with Submenu -->
+				<div
+						class="relative"
+						x-data="{ submenu: false }">
+					<x-dropdown.dropdown-button
+							@click="submenu = !submenu"
+							class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+						New Conversation
+					</x-dropdown.dropdown-button>
+
+					<!-- Submenu Dropdown -->
+					<div
+							x-show="submenu"
+							class="absolute left-full ml-3 top-0 w-56 bg-white rounded shadow-lg ring-1 ring-black ring-opacity-5"
+							@click.away="submenu = false"
+					>
+						@foreach($activeUsers as $user)
+							<x-dropdown.dropdown-button
+									wire:click="createConversation({{ $user['id'] }})"
+									class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+								<div class="flex items-center space-x-2 rtl:space-x-reverse">
+									<img
+											class="w-8 h-8 rounded-full"
+											src="{{ $user['avatar'] }}"
+											alt="User Avatar">
+									<span>{{ $user['name'] }}</span>
+								</div>
+
+							</x-dropdown.dropdown-button>
+						@endforeach
+					</div>
+				</div>
+
+				<!-- Dropdown Option 3 -->
+				<x-dropdown.dropdown-button
+						class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+					Group Conversation
+				</x-dropdown.dropdown-button>
+			</div>
+		</div>
+
 	</div>
 
 	{{--	Conversation Content Section--}}
@@ -288,7 +339,7 @@
 				<h3 class="font-bold text-lg mb-3">Conversation: {{ ucfirst($conversation->type) }}</h3>
 				<div
 						id="messages-container"
-						class="flex flex-col overflow-y-auto {{ auth()->user()->cannot('create', App\Models\Message::class) ? 'h-[40rem]' : 'h-[35rem]' }} bg-gray-100 rounded-lg p-4">
+						class="flex flex-col overflow-y-auto {{ auth()->user()->cannot('create', App\Models\Message::class) ? 'h-[46rem]' : 'h-[35rem]' }} bg-gray-100 rounded-lg p-4">
 					<div class="space-y-4">
 						@foreach ($conversation->messages as $message)
 							@php

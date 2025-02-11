@@ -11,7 +11,7 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('chat.{roomId}', function (User $user, int $roomId) {
     $room = Room::find($roomId);
     if ($user->can('view', $room)) {
-        return ['id' => $user->id, 'name' => $user->name];
+        return ['id' => $user->id, 'name' => $user->name, 'avatar' => $user->avatarUrl()];
     }
     abort(403);
 });
