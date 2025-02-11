@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Conversation extends Model
 {
@@ -12,13 +13,18 @@ class Conversation extends Model
 
     protected $guarded = ['id'];
 
-    public function sender(): BelongsTo
+    public function messages(): HasMany
     {
-        return $this->belongsTo(User::class, 'sender_id');
+        return $this->hasMany(Message::class);
     }
 
-    public function receiver(): BelongsTo
+    public function participants(): HasMany
     {
-        return $this->belongsTo(User::class, 'receiver_id');
+        return $this->hasMany(ConversationParticipant::class);
+    }
+
+    public function initiator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'initiator_id');
     }
 }

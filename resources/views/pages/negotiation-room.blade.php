@@ -18,25 +18,11 @@
 			<div class="col-span-12 border-gray-400 p-4">
 				Quick Action Section
 			</div>
-			<x-navigation.tab-navigation
-					container-class="sm:col-span-4"
-					:tabs="[
-                    ['key' => 'chat', 'label' => 'Chat'],
-                ]"
-					:default-tab="'chat'">
+			<div class="col-span-4">
+				<livewire:negotiations.negotiation-chat
+						:room="$room" />
+			</div>
 
-				<div
-						class=""
-						x-show="tab === 'chat'">
-					{{--					<div class="bg-white h-[38rem] rounded-b-lg shadow-lg">--}}
-					{{--						<livewire:teams.show_loggedin_members />--}}
-					{{--					</div>--}}
-					<livewire:negotiations.negotiation-chat
-							:room="$room"
-							:toTactical="false"
-							:isPrivate="false" />
-				</div>
-			</x-navigation.tab-navigation>
 
 			{{--BOARD SECTION--}}
 			<x-navigation.tab-navigation
@@ -51,7 +37,7 @@
 
 				{{--Board--}}
 				<div x-show="tab === 'board'">
-					<div class="space-y-4 max-h-[610px] overflow-y-auto sticky top-0 overflow-x-hidden">
+					<div class="space-y-4 max-h-[50rem] overflow-y-auto sticky top-0 overflow-x-hidden">
 						<livewire:negotiations.negotiation-hooks :room="$room" />
 						<livewire:negotiations.negotiation-triggers :room="$room" />
 						<livewire:negotiations.negotiation-demands :room="$room" />

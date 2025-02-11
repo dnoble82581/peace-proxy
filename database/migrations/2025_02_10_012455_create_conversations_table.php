@@ -10,9 +10,10 @@ return new class extends Migration
     {
         Schema::create('conversations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sender_id');
-            $table->foreignId('receiver_id');
-            $table->foreignId('tenant_id');
+            $table->string('type')->default('group'); // 'individual', 'group'
+            $table->foreignId('initiator_id'); // The user who initiated this conversation
+            $table->foreignId('room_id'); // The room this conversation belongs to.
+            $table->foreignId('tenant_id'); // The room this conversation belongs to.
             $table->timestamps();
         });
     }

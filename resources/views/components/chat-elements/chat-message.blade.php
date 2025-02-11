@@ -13,9 +13,7 @@
 		</div>
 		<div
 				@php
-					if ($isEmergent){
-						$messageClasses = 'bg-rose-200 border border-rose-500';
-					}elseif($isOwnMessage){
+					if($isOwnMessage){
 						$messageClasses = 'bg-slate-100 dark:bg-slate-200';
 					}else{
 						$messageClasses = 'bg-sky-100 dark:bg-blue-200';
@@ -40,14 +38,14 @@
 		</div>
 		<div class="flex items-center justify-between">
 			<span class="text-xs font-normal text-gray-500 dark:text-gray-400 capitalize">{{ $message->user->role }}</span>
-			@if($message->responses()->count())
-				<button
-						wire:click="showResponses({{ $message->id }})"
-						type="button"
-						class="text-xs uppercase font-normal text-indigo-700 dark:text-emerald-400 mt-0.5"> {{ $message->responses()->count() }}
-					{{ $message->responses()->count() > 1 ? 'responses' : 'response' }}
-				</button>
-			@endif
+			{{--			@if($message->responses()->count())--}}
+			{{--				<button--}}
+			{{--						wire:click="showResponses({{ $message->id }})"--}}
+			{{--						type="button"--}}
+			{{--						class="text-xs uppercase font-normal text-indigo-700 dark:text-emerald-400 mt-0.5"> {{ $message->responses()->count() }}--}}
+			{{--					{{ $message->responses()->count() > 1 ? 'responses' : 'response' }}--}}
+			{{--				</button>--}}
+			{{--			@endif--}}
 		</div>
 	</div>
 </div>

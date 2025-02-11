@@ -1,6 +1,8 @@
 <?php
 
 	use App\Events\NewMessageEvent;
+	use App\Models\Conversation;
+	use App\Models\ConversationParticipant;
 	use App\Models\Message;
 	use App\Models\Room;
 	use App\Models\User;
@@ -19,6 +21,10 @@
 	 */
 	new class extends Component {
 
+		public Collection $conversations;
+		public Conversation $defaultConversation;
+
+
 		/**
 		 * Stores the message being written by the user
 		 *
@@ -34,13 +40,6 @@
 		 * @var Room
 		 */
 		public Room $room;
-
-		public bool $isPrivate = false;
-
-		public bool $emergency = false;
-		public bool $important = false;
-		public bool $toPrimary = false;
-		public bool $toTactical = false;
 		public string $sortBy = '';
 
 		/**
@@ -57,17 +56,26 @@
 		 * Sets the current room and user.
 		 *
 		 * @param  Room  $room  The chat room instance.
-		 * @param $isPrivate
-		 * @param $toTactical
 		 *
 		 * @return void
 		 */
-		public function mount(Room $room, $isPrivate, $toTactical):void
+		public function mount(Room $room):void
 		{
 			$this->room = $room;
 			$this->user = auth()->user();
-			$isPrivate? $this->toPrimary = true : $this->toPrimary = false;
+			$this->createGroupChats();
+
+			$this->fetchConversations();
 		}
+
+		public function fetchConversations():void
+		{
+			$this->conversations = Conversation::where('room_id', $this->room->id)
+				->where('tenant_id', $this->room->tenant_id)
+				->get();
+			$this->defaultConversation = $this->conversations->first();
+		}
+
 
 		/**
 		 * Sends a new message to the chat room.
@@ -75,53 +83,35 @@
 		 * Validates the input message, creates the new message,
 		 * broadcasts it, and resets the message input field.
 		 *
+		 * @param $currentConversationId
+		 *
 		 * @return void
 		 */
-		public function sendMessage():void
+		public function sendMessage($currentConversationId):void
 		{
 			$this->validate();
 
-			$message = $this->createMessage();
+			$message = $this->createMessage($currentConversationId);
 			$this->broadcastMessage($message);
+			$this->newMessage = '';
 
-			$this->reset('newMessage');
-			$this->reset('emergency');
-			if (!$this->isPrivate) {
-				$this->reset('toPrimary');
-			}
 		}
-
-		public function getFilteredMessages()
-		{
-			return $this->room->messages->filter(function ($message) {
-				if ($this->toTactical) {
-					return $message->to_tactical;
-				}
-
-				if ($this->toPrimary) {
-					return $message->to_primary;
-				}
-				return !($message->to_primary || $message->to_tactical);
-			});
-		}
-
 
 		/**
 		 * Creates a new message in the database.
 		 *
 		 * @return Message The newly created message instance.
 		 */
-		private function createMessage():Message
+		private function createMessage($currentconversationId):Message
 		{
 			return $this->room->messages()->create([
 				'user_id' => $this->user->id,
 				'tenant_id' => $this->user->tenant_id,
-				'emergency' => $this->emergency,
-				'to_primary' => $this->toPrimary,
-				'to_tactical' => $this->toTactical,
-				'important' => $this->important,
+				'room_id' => $this->room->id,
+				'conversation_id' => $currentconversationId,
 				'message' => $this->newMessage,
 			]);
+
 		}
 
 		public function refreshChat():void
@@ -165,6 +155,74 @@
 				arguments: ['messageId' => $messageId]);
 		}
 
+		public function createGroupChats():void
+		{
+			// Ensure Public Chat exists
+			$publicConversation = Conversation::firstOrCreate(
+				[
+					'type' => 'public', // Unique type
+					'room_id' => $this->room->id,
+					'tenant_id' => $this->room->tenant_id,
+				],
+				[
+					'initiator_id' => auth()->user()->id,
+					'created_at' => now(),
+					'updated_at' => now(),
+				]);
+
+			$privateConversation = Conversation::firstOrCreate(
+				[
+					'type' => 'negotiator', // Unique type
+					'room_id' => $this->room->id,
+					'tenant_id' => $this->room->tenant_id,
+				],
+				[
+					'initiator_id' => auth()->user()->id,
+					'created_at' => now(),
+					'updated_at' => now(),
+				]);
+
+			// Add participants to Public Chat
+			$this->addParticipantsToConversation($publicConversation, 'public');
+
+			// Add participants to Private Chat
+			$this->addParticipantsToConversation($privateConversation, 'private');
+
+		}
+
+		private function addParticipantsToConversation(Conversation $conversation, string $type):void
+		{
+			if ($type === 'public') {
+				$participants = User::all(); // Modify this if participant selection needs customization
+
+				$bulkInsert = $participants->map(function ($participant) use ($conversation) {
+					return [
+						'conversation_id' => $conversation->id,
+						'user_id' => $participant->id,
+						'tenant_id' => $this->room->tenant_id,
+						'created_at' => now(),
+						'updated_at' => now(),
+					];
+				})->toArray();
+
+				DB::table('conversation_participants')->insertOrIgnore($bulkInsert); // Avoid duplicates
+			} else {
+				$participants = User::where('role', 'Primary Negotiator')->orWhere('role',
+					'Secondary Negotiator')->get();
+				$bulkInsert = $participants->map(function ($participant) use ($conversation) {
+					return [
+						'conversation_id' => $conversation->id,
+						'user_id' => $participant->id,
+						'tenant_id' => $this->room->tenant_id,
+						'created_at' => now(),
+						'updated_at' => now(),
+					];
+				})->toArray();
+
+				DB::table('conversation_participants')->insertOrIgnore($bulkInsert); // Avoid duplicates
+			}
+		}
+
 		/**
 		 * Handles the presence of a user in the chat room.
 		 *
@@ -205,75 +263,99 @@
 ?>
 
 <div
-		class="bg-white dark:bg-gray-800 shadow-lg rounded-b-lg">
-	<div
-			x-data
-			x-init="$nextTick(() => $el.scrollTop = $el.scrollHeight)"
-			@new-message.window="setTimeout(() => $el.scrollTop = $el.scrollHeight, 100)"
-			id="conversation"
-			@class([
-                        'flex flex-col overflow-y-auto',
-                        'h-[32rem]' => auth()->user()->can('create', App\Models\Message::class),
-                        'h-[38rem]' => !auth()->user()->can('create', App\Models\Message::class),
-                    ])>
-		<div class="flex flex-col justify-end flex-1 p-4">
-			<div
-					class="space-y-1">
-				@foreach($this->room->messages as $message)
-					@php
-						$isOwnMessage = auth()->id() === $message->user_id;
-						$isEmergent = $message->emergency;
-					@endphp
-					<x-chat-elements.chat-message
-							:message="$message"
-							:isOwnMessage="$isOwnMessage" />
-				@endforeach
-			</div>
-		</div>
+		x-data="{ conversation: '{{ $conversations->isNotEmpty() ? $conversations->first()->type : '' }}' }"
+		class="bg-white dark:bg-gray-800 shadow-lg rounded-b-lg rounded-t-lg">
+
+	{{--	Conversation Tabs as Buttons--}}
+	<div class="flex space-x-4 p-4 border-b dark:border-gray-700">
+		@foreach ($conversations as $conversation)
+			<button
+					@click="conversation = '{{ $conversation->type }}'"
+					class="rounded-md px-3 py-2 text-sm font-medium text-indigo-700"
+					:class="{ 'bg-indigo-100': conversation === '{{ $conversation->type }}' }">
+				{{ ucfirst($conversation->type) }}
+			</button>
+		@endforeach
 	</div>
-	<hr @class(['hidden' => !auth()->user()->can(
-	'create', App\Models\Message::class)])>
-	<div class="">
-		@can('create', App\Models\Message::class)
-			<form
-					wire:submit.prevent="sendMessage">
-				<label
-						for="chat-input"
-						class="sr-only">Your message</label>
 
-				<div class="bg-gray-100 dark:bg-gray-700 rounded-b-lg">
-					<div class="py-2 px-8 border-t bg-gray-100 flex items-center space-x-4 dark:bg-gray-700">
-						<button class="bg-gray-200 p-1 rounded-lg">⚠️</button>
-						<button class="bg-gray-200 p-1 rounded-lg">🆘</button>
-						<button class="bg-gray-200 p-1 rounded-lg">👏</button>
-					</div>
-
-
-					<div class="flex items-center px-3 pt-2 pb-3">
-
-						<textarea
-								wire:model="newMessage"
-								id="chat-input"
-								rows="1"
-								class="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-								placeholder="Your message..."></textarea>
-						<button
-								type="submit"
-								class="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
-							<svg
-									class="w-5 h-5 rotate-90 rtl:-rotate-90"
-									aria-hidden="true"
-									xmlns="http://www.w3.org/2000/svg"
-									fill="currentColor"
-									viewBox="0 0 18 20">
-								<path d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
-							</svg>
-							<span class="sr-only">Send message</span>
-						</button>
+	{{--	Conversation Content Section--}}
+	<div class="p-4">
+		@foreach ($conversations as $conversation)
+			<div
+					x-show="conversation === '{{ $conversation->type }}'"
+					wire:key="conversation-{{ $conversation->id }}">
+				{{-- Message List --}}
+				<h3 class="font-bold text-lg mb-3">Conversation: {{ ucfirst($conversation->type) }}</h3>
+				<div
+						id="messages-container"
+						class="flex flex-col overflow-y-auto {{ auth()->user()->cannot('create', App\Models\Message::class) ? 'h-[40rem]' : 'h-[35rem]' }} bg-gray-100 rounded-lg p-4">
+					<div class="space-y-4">
+						@foreach ($conversation->messages as $message)
+							@php
+								$isOwnMessage = auth()->id() === $message->user_id;
+							@endphp
+							<div class="flex items-start {{ $isOwnMessage ? '' : 'ml-8' }} gap-2.5">
+								<img
+										class="w-8 h-8 rounded-full"
+										src="{{ $message->user->avatarUrl() }}"
+										alt="User Avatar">
+								<div class="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 {{ $isOwnMessage ? 'bg-slate-200' : 'bg-white' }} rounded-e-xl rounded-es-xl dark:bg-gray-700">
+									<div class="flex items-center space-x-2 rtl:space-x-reverse">
+										<span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $message->user->name }}</span>
+										<span class="text-sm font-normal text-gray-500 dark:text-gray-400">{{ $message->created_at->diffForHumans() }}</span>
+									</div>
+									<p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{ $message->message }}</p>
+									<span class="text-xs font-normal text-gray-500 dark:text-gray-400">Delivered</span>
+								</div>
+								<div>
+									<x-dropdown.dropdown>
+										<x-slot:trigger>
+											<button
+													type="button"
+													class="bg-white rounded p-0.5">
+												<x-heroicons::solid.ellipsis-vertical class="w-5 h-5 text-gray-400 dark:text-gray-300" />
+											</button>
+										</x-slot:trigger>
+										<x-slot:content>
+											<x-dropdown.dropdown-button value="Reply" />
+											<x-dropdown.dropdown-button value="Like" />
+										</x-slot:content>
+									</x-dropdown.dropdown>
+								</div>
+							</div>
+						@endforeach
 					</div>
 				</div>
-			</form>
-		@endcan
 
+				{{-- Message Input (if allowed to send messages) --}}
+				@can('create', App\Models\Message::class)
+					<div class="bg-gray-100 rounded-lg p-4 mt-4">
+						<form wire:submit.prevent="sendMessage({{ $conversation->id }})">
+                            <textarea
+		                            wire:model.defer="newMessage"
+		                            class="w-full p-2 rounded-lg border-gray-300"
+		                            rows="3"
+		                            placeholder="Type your message here..."></textarea>
+							<button
+									type="submit"
+									class="px-4 py-2 mt-2 text-white bg-blue-500 rounded-lg"
+							>
+								Send Message
+							</button>
+						</form>
+					</div>
+				@endcan
+			</div>
+		@endforeach
 	</div>
 </div>
+
+@script
+<script>
+	$wire.on('new-message', () => {
+		let chatWindow = document.getElementById('messages-container')
+		chatWindow.scrollTop = chatWindow.scrollHeight - 5
+	})
+</script>
+@endscript
+

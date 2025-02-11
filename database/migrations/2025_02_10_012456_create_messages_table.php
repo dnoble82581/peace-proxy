@@ -13,11 +13,7 @@ return new class extends Migration
             $table->foreignId('user_id');
             $table->foreignId('tenant_id');
             $table->foreignId('room_id');
-            $table->foreignId('conversation_id')->nullable()->default(null);
-            $table->boolean('emergency')->default(false);
-            $table->boolean('important')->default(false);
-            $table->boolean('to_primary')->default(false);
-            $table->boolean('to_tactical')->default(false);
+            $table->foreignId('conversation_id')->constrained('conversations')->onDelete('cascade');
             $table->longText('message');
             $table->timestamps();
         });

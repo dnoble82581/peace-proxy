@@ -12,7 +12,7 @@ class RoomController extends Controller
     public function index($roomId): View
     {
         $room = Room::with([
-            'messages:id,message,created_at,room_id,user_id,updated_at,to_primary,to_tactical,emergency,important',
+            'messages:id,message,room_id,created_at,user_id,updated_at',
             // Fetch necessary columns
             'messages.user:id,name', // Fetch user data for each message
             'subject:id,name,address,city,state,zip,phone,tenant_id,room_id,facebook_url,x_url,instagram_url,snapchat_url,youtube_url,weapons,weapons_details',
@@ -34,6 +34,11 @@ class RoomController extends Controller
         return view('pages.negotiation-room', [
             'room' => $room,
         ]);
+    }
+
+    public function tacticalRoom()
+    {
+        dd('here');
     }
 
     public function store(Request $request)

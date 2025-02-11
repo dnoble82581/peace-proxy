@@ -27,7 +27,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/shell', [PagesController::class, 'shell'])->name('shell');
 
     Route::get('/negotiation/tactical/{room}',
-        [PagesController::class, 'tacticalRoom'])->name('tactical.room');
+        [RoomController::class, 'tacticalRoom'])->name('tactical.room');
 
     Route::get('/negotiation/room/{room}/edit-subject/{subject:name}',
         [SubjectController::class, 'update'])->name('edit.subject');
