@@ -30,6 +30,7 @@
 			return [
 				'echo-private:user.'.auth()->id().',InvitationSent' => 'refreshInvitations',
 				'echo-private:user.'.auth()->id().',InvitationDeclinedEvent' => 'refreshInvitations',
+				'echo-private:user.'.auth()->id().',InvitationAcceptedEvent' => 'refreshInvitations',
 			];
 		}
 

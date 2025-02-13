@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\InvitationAcceptedEvent;
 use App\Events\InvitationDeclinedEvent;
 use App\Events\InvitationSent;
 use App\Models\Invitation;
@@ -91,6 +92,8 @@ class InvitationService
         $conversationService->addParticipantsToConversation($newConversation, $usersToAdd);
         // Mark the invitation as accepted
         $invitation->update(['status' => 'accepted']);
+
+        broadcast(new InvitationAcceptedEvent($invitation));
     }
 
     public function fetchPendingInvitations(): Collection

@@ -53,17 +53,28 @@ class ConversationService
         $allParticipants = array_unique(array_merge($userIds, [$authUser->id]));
         sort($allParticipants);
 
-        $conversation = Conversation::private()
-            ->whereHas('participants', function ($query) use ($allParticipants) {
-                $query->select('conversation_id')
-                    ->groupBy('conversation_id')
-                    ->havingRaw('COUNT(user_id) = ?', [count($allParticipants)])
-                    ->whereIn('user_id', $allParticipants);
-            }, '=', 1)
-            ->first();
+        // Use a database lock to prevent duplicate conversation creation
+        return DB::transaction(function () use ($allParticipants, $room, $authUser) {
+            // Check if a conversation with these exact participants exists
+            $existingConversation = Conversation::query()
+                ->private() // Assuming `private()` is a scope for private conversations
+                ->whereHas('participants', function ($query) use ($allParticipants) {
+                    // Ensure the same set of participants exist
+                    $query->select('conversation_id')
+                        ->groupBy('conversation_id')
+                        ->havingRaw('COUNT(user_id) = ?', [count($allParticipants)])
+                        ->whereIn('user_id', $allParticipants);
+                }, '=', 1)
+                ->lockForUpdate() // Prevent race conditions by locking the rows
+                ->first();
 
-        if (! $conversation) {
-            $conversation = Conversation::create([
+            if ($existingConversation) {
+                // Return the already existing conversation
+                return $existingConversation;
+            }
+
+            // Create a new conversation if none exists
+            return Conversation::create([
                 'name' => 'Private Conversation',
                 'type' => 'private',
                 'initiator_id' => $authUser->id,
@@ -72,13 +83,7 @@ class ConversationService
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-
-            // Use distinct participants to avoid duplicate initiators
-            //            $participants = array_map(fn ($userId) => ['user_id' => $userId], $allParticipants);
-            //            $conversation->participants()->createMany($participants);
-        }
-
-        return $conversation;
+        });
     }
 
     public function addParticipantsToConversation($conversation, $users): void

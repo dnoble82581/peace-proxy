@@ -17,21 +17,12 @@
 	use Livewire\Attributes\On;
 	use App\Services\InvitationService;
 
-	/**
-	 * ChatRoom Component
-	 *
-	 * This Livewire component manages a chat room. It handles:
-	 * - Sending messages
-	 * - Broadcasting messages
-	 * - Listening to events (e.g., user presence)
-	 * - Displaying a chat interface
-	 */
 	new class extends Component {
 
 		public Collection $conversations;
 		public Conversation $defaultConversation;
 		public array $activeUsers = [];
-		
+
 		#[Validate('string|required|min:3|max:255')]
 		public string $newMessage = '';
 
@@ -87,6 +78,8 @@
 				"echo-presence:chat.{$this->room->id},here" => 'handleUserHere',
 				"echo-presence:chat.{$this->room->id},joining" => 'handleUserJoining',
 				"echo-presence:chat.{$this->room->id},leaving" => 'handleUserLeaving',
+				'echo-private:user.'.auth()->id().',InvitationDeclinedEvent' => 'refreshInvitations',
+				'echo-private:user.'.auth()->id().',InvitationAcceptedEvent' => 'fetchConversations',
 			];
 		}
 
@@ -159,9 +152,40 @@
 			})->toArray();
 		}
 
+		public function leaveConversation($conversationId)
+		{
+			// Retrieve the conversation
+			$conversation = Conversation::find($conversationId);
+
+			// Validate that the conversation exists
+			if (!$conversation) {
+				session()->flash('error', 'Conversation not found.');
+				return;
+			}
+
+			// Check if the user is part of this conversation
+			$participant = ConversationParticipant::where('conversation_id', $conversationId)
+				->where('user_id', $this->user->id)
+				->first();
+			
+			if (!$participant) {
+				session()->flash('error', 'You are not part of this conversation.');
+				return;
+			}
+
+			// Remove the user from the conversation
+			$participant->delete();
+
+			// Flash success message and redirect or refresh
+			session()->flash('message', 'You have successfully left the conversation.');
+
+			// Optionally redirect the user or update the conversation list
+			// $this->fetchConversations(); // Refresh the conversation list
+
+		}
+
 		public function sendUsersInvite(array $userIds):void
 		{
-
 			$invitationService = new InvitationService();
 			foreach ($userIds as $userId) {
 				$existingInvite = $invitationService->findExistingInvitation(auth()->id(), $userId);
@@ -171,7 +195,7 @@
 				$conversationService = new ConversationService();
 				$conversationService->sendInvitations(null, [$userId], $this->user->id);
 			}
-
+			session()->flash('message', 'Invitation sent!');
 		}
 	}
 ?>
@@ -238,7 +262,7 @@
 					<!-- Submenu Dropdown -->
 					<div
 							x-show="submenu"
-							class="absolute left-full ml-3 top-0 w-56 bg-white rounded shadow-lg ring-1 ring-black ring-opacity-5"
+							class="absolute left-full ml-3 top-0 w-80 bg-white rounded shadow-lg ring-1 ring-black ring-opacity-5"
 							@click.away="submenu = false">
 
 						@foreach ($activeUsers as $user)
@@ -247,15 +271,23 @@
 								<x-dropdown.dropdown-button
 										wire:click="sendUsersInvite([{{$user['id']}}])"
 										class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-									<div class="flex items-center space-x-2 rtl:space-x-reverse">
-										<img
-												class="w-8 h-8 rounded-full"
-												src="{{ $user['avatar'] }}"
-												alt="User Avatar">
-										<div>
-											<span class="block">{{ $user['name'] }}</span>
-											<span class="block text-xs text-gray-500">{{ $user['role'] }}</span>
+									<div class="flex items-center justify-between">
+										<div class="flex items-center space-x-2">
+											<img
+													class="w-8 h-8 rounded-full"
+													src="{{ $user['avatar'] }}"
+													alt="User Avatar">
+											<div>
+												<div>{{ $user['name'] }}</div>
+												<span class="block text-xs text-gray-500">{{ $user['role'] }}</span>
+											</div>
 										</div>
+										@if (session('message'))
+											<div class="text-emerald-400 text-xs font-semibold">
+												{{ session('message') }}
+												<div class="text-xs font-normal text-gray-500">Waiting for reply</div>
+											</div>
+										@endif
 									</div>
 								</x-dropdown.dropdown-button>
 							@endif
@@ -284,8 +316,21 @@
 					<h3 class="font-bold text-lg mb-3">
 						Conversation: {{ ucfirst($conversation->name) }}</h3>
 				@else
-					<h3 class="font-bold text-lg mb-3">
-						Conversation To: {{ ucfirst($conversation->getOtherParticipantName()) }}</h3>
+					<div class="flex items-center justify-between space-x-4">
+						<div>
+							<h3 class="font-bold text-lg mb-3">
+								Conversation To: {{ ucfirst($conversation->getOtherParticipantName()) }}</h3>
+						</div>
+						<div class="mb-3">
+							<button
+									wire:click="leaveConversation({{ $conversation->id }})"
+									type="button"
+									class="text-xs text-gray-500 hover:text-gray-600 flex items-center gap-1 font-semibold">
+								<span>Leave</span>
+								<x-heroicons::micro.solid.arrow-right class="w-3 h-3" />
+							</button>
+						</div>
+					</div>
 				@endif
 
 				<div
