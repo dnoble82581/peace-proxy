@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Traits\BelongsToTenant;
-use DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -29,18 +28,34 @@ class Conversation extends Model
         return $this->belongsTo(User::class, 'initiator_id');
     }
 
-    public function addParticipants($userIds): void
+    public function scopePrivate($query)
     {
-        $data = collect($userIds)->map(function ($userId) {
-            return [
-                'conversation_id' => $this->id,
-                'user_id' => $userId,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        });
+        return $query->where('type', 'private');
+    }
 
-        // Insert or ignore to avoid duplicate entries
-        DB::table('conversation_participants')->insertOrIgnore($data->toArray());
+    public function scopePublic($query)
+    {
+        return $query->where('type', 'public');
+    }
+
+    public function getOtherParticipantName(): string
+    {
+        $authUserId = auth()->id();
+
+        // Ensure participants are loaded and eager-load associated User models
+        $this->loadMissing('participants.user');
+
+        // Safely retrieve the first participant who is not the auth user
+        $otherParticipant = $this->participants
+            ->firstWhere('user_id', '!=', $authUserId);
+
+        return $otherParticipant && $otherParticipant->user
+            ? $otherParticipant->user->name
+            : 'Unknown';
+    }
+
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(Invitation::class);
     }
 }

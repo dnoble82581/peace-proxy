@@ -11,7 +11,7 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('chat.{roomId}', function (User $user, int $roomId) {
     $room = Room::find($roomId);
     if ($user->can('view', $room)) {
-        return ['id' => $user->id, 'name' => $user->name, 'avatar' => $user->avatarUrl()];
+        return ['id' => $user->id, 'name' => $user->name, 'avatar' => $user->avatarUrl(), 'role' => $user->role];
     }
     abort(403);
 });
@@ -112,6 +112,7 @@ Broadcast::channel('document.{roomId}', function (User $user, int $roomId) {
     abort(403);
 });
 
-Broadcast::channel('user.{tenantId}', function (User $user, int $tenantId) {
-    return $user->tenant_id === $tenantId;
+Broadcast::channel('user.{userId}', function ($user, $userId) {
+    // Check if the authenticated user is authorized to listen to this channel
+    return (int) $user->id === (int) $userId; // Make sure only the user themselves can listen
 });

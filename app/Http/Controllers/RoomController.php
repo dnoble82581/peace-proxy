@@ -36,10 +36,7 @@ class RoomController extends Controller
         ]);
     }
 
-    public function tacticalRoom()
-    {
-        dd('here');
-    }
+    public function tacticalRoom() {}
 
     public function store(Request $request)
     {
