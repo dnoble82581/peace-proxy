@@ -14,9 +14,9 @@ Route::view('/', 'pages.welcome');
 Route::middleware(['auth'])->group(function () {
     Route::get('/leave-impersonation',
         [ImpersonationController::class, 'leave'])->name('leave-impersonation');
-    Route::view('team', 'pages.team')->name('team');
+    Route::view('dashboard/team', 'pages.team')->name('team');
     Route::view('create-user', 'pages.create-user')->name('create.user');
-    Route::get('edit-user/{id}', [UserController::class, 'update'])->name('edit.user');
+    Route::get('dashboard/team/edit-user/{id}', [UserController::class, 'update'])->name('edit.user');
 
     Route::get('/documents/user/{user}/{filename}', [DocumentController::class, 'showUserDocument']);
     Route::get('/documents/subject/{subject}/{filename}', [DocumentController::class, 'showSubjectDocument']);

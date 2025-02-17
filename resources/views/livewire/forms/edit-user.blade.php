@@ -65,7 +65,7 @@
 		public function submit():Redirector
 		{
 			$this->form->update(); // Updates the user data.
-			return redirect('/team'); // Redirects back to the team list.
+			return redirect(route('team')); // Redirects back to the team list.
 		}
 
 		/**
@@ -76,7 +76,7 @@
 		 */
 		public function cancel():Redirector
 		{
-			return redirect('/team');
+			return redirect(route('team'));
 		}
 
 		/**

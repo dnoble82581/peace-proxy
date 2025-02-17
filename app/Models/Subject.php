@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
@@ -82,7 +83,7 @@ class Subject extends Model
         return $value ? preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '($1) $2-$3', $value) : null;
     }
 
-    public function getAge($date = null)
+    public function getAge($date = null): int
     {
         if (! $date) {
             return 0;
@@ -95,6 +96,11 @@ class Subject extends Model
     public function imageUrl($image): string
     {
         return Storage::disk('s3-public')->url($image);
+    }
+
+    public function socialMediaProviders(): MorphToMany
+    {
+        return $this->morphToMany(SocialMediaProvider::class, 'providerable', 'social_media_providerables');
     }
 
     public function images(): HasMany

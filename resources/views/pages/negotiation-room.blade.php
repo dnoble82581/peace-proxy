@@ -13,11 +13,11 @@
 			</div>
 		</div>
 
+		<div class="h-20 relative">
+			<x-buttons.speed-dial />
+		</div>
 		<!-- CHAT SECTION -->
-		<div class="grid grid-cols-12 gap-4 mt-4">
-			<div class="col-span-12 border-gray-400 p-4">
-				Quick Action Section
-			</div>
+		<div class="grid grid-cols-12 gap-4">
 			<div class="col-span-4">
 				<livewire:negotiations.negotiation-chat
 						:room="$room" />
@@ -45,15 +45,16 @@
 					</div>
 				</div>
 
-				{{--OBJECTIVES SECTION--}}
-				<div x-show="tab === 'objectives'">
+				<div
+						x-show="tab === 'objectives'"
+						class="space-y-4">
 					<livewire:cards.objectives-card
 							:negotiationId="$room->negotiation->id"
 							:roomId="$room->id" />
 				</div>
 
-				{{--CHART SECTION--}}
 
+				{{--CHART SECTION--}}
 				<div
 						class="mt-4"
 						x-show="tab === 'charts'"
@@ -61,20 +62,16 @@
 
 					<x-buttons.button-group
 							:buttons="[
-                                ['key' => 'mood', 'label' => 'Mood Chart'],
-                                ['key' => 'call', 'label' => 'Call Log'],
-                               ]"
+            ['key' => 'mood', 'label' => 'Mood Chart'],
+            ['key' => 'call', 'label' => 'Call Log'],
+        ]"
 							click-handler="chart"
 							class="ml-8" />
 
-					<div
-							class="mt-4 px-8"
-							x-show="chart === 'mood'">
+					<div x-show="chart === 'mood'">
 						<livewire:charts.mood-log-chart :room="$room" />
 					</div>
-					<div
-							x-show="chart === 'call'"
-							class="mt-4 px-8">
+					<div x-show="chart === 'call'">
 						<livewire:charts.call-log-chart :room="$room" />
 					</div>
 				</div>

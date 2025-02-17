@@ -71,7 +71,7 @@
 ?>
 
 <div
-		class="mt-3 dark:bg-gray-800 bg-white"
+		class="dark:bg-gray-800 bg-white"
 		wire:ignore>
 	<canvas id="callsChart"></canvas>
 	<div class="flex items-center justify-between mt-3 p-2">

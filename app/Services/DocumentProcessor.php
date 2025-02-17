@@ -85,7 +85,6 @@ class DocumentProcessor
     private function storeDocument($document, $model, string $filename): void
     {
         $savePath = '/documents/'.strtolower(class_basename($model)).'/'.$model->id.'/';
-
         // If document is an uploaded file
         if ($document instanceof UploadedFile) {
             Storage::disk($this->disk)->putFileAs($savePath, $document, $filename);

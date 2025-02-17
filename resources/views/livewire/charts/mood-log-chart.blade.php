@@ -5,153 +5,118 @@
 	use Carbon\Carbon;
 	use Livewire\Volt\Component;
 
-// Define an anonymous Livewire component
 	new class extends Component {
-		public Room $room; // Associated Room model instance
-		public array $moodLabels = []; // Chart labels (timestamps)
-		public array $moodData = []; // Chart data (mood values)
+		public Room $room;
+		public array $moodLabels = [];
+		public array $moodData = [];
+		private const MOODS = [
+			['value' => -4, 'name' => 'Saddest'],
+			['value' => -3, 'name' => 'Sad'],
+			['value' => -2, 'name' => 'Depressed'],
+			['value' => -1, 'name' => 'Upset'],
+			['value' => 0, 'name' => 'Base_Line'],
+			['value' => 1, 'name' => 'Annoyed'],
+			['value' => 2, 'name' => 'Happy'],
+			['value' => 3, 'name' => 'Happy'],
+			['value' => 4, 'name' => 'Happy'],
+		];
 
-		// Mount method is called when the component is initialized
-		public function mount($room):void
+		public function mount(Room $room):void
 		{
-			// Assign the passed-in Room to the component
 			$this->room = $room;
-
-			// Prepare initial chart data
 			$this->prepareChart();
 		}
 
 		/**
-		 * Logs a mood, saves it in the database, and updates the chart on the frontend.
-		 *
-		 * @param  int  $mood  - Mood value (e.g., -4 to 4)
-		 * @param  string  $name  - Mood's descriptive name
+		 * Logs a mood, saves it in the database, and dispatches events.
 		 */
-		public function logMood($mood, $name):void
+		public function logMood(int $mood, string $name):void
 		{
-			// Create a new mood log entry in the database
-			$newMood = $this->room->subject->moodLogs()->create([
-				'time' => now(), // Current timestamp for the mood log
-				'mood' => $mood, // Mood value
-				'name' => $name, // Descriptive name of the mood
-				'subject_id' => $this->room->subject->id, // Associated subject ID
-				'negotiation_id' => $this->room->negotiation->id, // Negotiation ID
-				'room_id' => $this->room->id, // Room ID
-				'tenant_id' => $this->room->tenant_id // Tenant ID
-			]);
+			try {
+				$newMood = $this->room->subject->moodLogs()->create([
+					'time' => now(),
+					'mood' => $mood,
+					'name' => $name,
+					'subject_id' => $this->room->subject->id,
+					'negotiation_id' => $this->room->negotiation->id,
+					'room_id' => $this->room->id,
+					'tenant_id' => $this->room->tenant_id,
+				]);
 
-//        broadcast(new ChartUpdatedEvent($newMood->id, $this->room->id));
-
-			// Dispatches an event to refresh the related subject
-			$this->dispatch('refreshSubject');
-			event(new ChartUpdatedEvent($this->room->id, $newMood->id));
-
-			// Format the timestamp for updating the chart
-			$newLabel = $newMood->created_at->format('D:H:i');
-
-			// Dispatch a 'moodUpdate' event to the frontend with the new label and mood value
-			$this->dispatch('moodUpdate', $newLabel, $newMood->mood);
+				// Dispatch frontend events
+				$this->dispatch('refreshSubject');
+				$this->dispatch('moodUpdate', $this->formatTimestamp($newMood->created_at), $newMood->mood);
+				event(new ChartUpdatedEvent($this->room->id, $newMood->id));
+			} catch (Exception $e) {
+				logger('Failed to log mood: '.$e->getMessage());
+			}
 		}
 
 		/**
-		 * Prepares the data for the mood chart by fetching the latest mood logs.
+		 * Prepares mood chart data.
 		 */
 		public function prepareChart():void
 		{
-			// Fetch up to 6 of the most recent mood logs, sorted by time descending
-			foreach ($this->room->subject->moodLogs->sortByDesc('created_at')->take(10) as $mood) {
-				// Format the creation timestamp for the x-axis labels
-				$this->moodLabels[] = Carbon::parse($mood->created_at)
-					->setTimezone(config(key: 'app.timezone')) // Adjust to the app's timezone
-					->format('D:H:i'); // Format as Day:Hour:Minute
+			$recentMoodLogs = $this->room->subject->moodLogs()
+				->latest('created_at')
+				->take(10)
+				->get();
 
-				// Add the mood value to the data array
-				$this->moodData[] = $mood->mood;
-			}
+			$this->moodLabels = $recentMoodLogs->map(fn($mood) => $this->formatTimestamp($mood->created_at))->toArray();
+			$this->moodData = $recentMoodLogs->pluck('mood')->toArray();
 
-			// Log a message if either the labels or data arrays are empty
 			if (empty($this->moodLabels) || empty($this->moodData)) {
-				logger('Chart data is empty. Check moodLogs data structure.');
+				logger('Mood chart data is empty. No mood logs available.');
 			}
 		}
 
+		/**
+		 * Formats a timestamp for chart labels.
+		 */
+		private function formatTimestamp(Carbon $timestamp):string
+		{
+			return $timestamp->setTimezone(config('app.timezone'))->format('D:H:i');
+		}
 
-	}
+		/**
+		 * Returns mood labels for frontend rendering.
+		 */
+		public function getMoods():array
+		{
+			return self::MOODS;
+		}
+	};
 
 ?>
 
-		<!-- Frontend Markup -->
+{{-- ToDO: Fix this or put it back the way it was. --}}
+
+<!-- Frontend Markup -->
 <div
 		wire:ignore
 		class="bg-white dark:bg-gray-800">
-	<!-- Canvas for the Chart.js chart -->
+	<!-- Chart Canvas -->
 	<canvas id="moodChart"></canvas>
 
-	<!-- Mood buttons for logging mood -->
-	<div class="mt-2 flex space-x-2 justify-between items-center dark:opacity-80 dark:bg-gray-800 mb-4 rounded p-2">
-		<!-- Button for "Saddest" mood -->
-		<button
-				wire:click="logMood(-4, 'Saddest')"
-				class="w-8 h-8 hover:-translate-y-[3px] hover:scale-110 transition-transform duration-300 ease-in-out dark:bg-gray-800">
-			<x-svg-images.mood_emojis.saddest />
-		</button>
-		<!-- Button for "Sad" mood -->
-		<button
-				wire:click="logMood(-3, 'Sad')"
-				class="w-8 h-8 hover:-translate-y-[3px] hover:scale-110 transition-transform duration-300 ease-in-out">
-			<x-svg-images.mood_emojis.depressed />
-		</button>
-		<!-- Button for "Down" mood -->
-		<button
-				wire:click="logMood(-2, 'Down')"
-				class="w-8 h-8 hover:-translate-y-[3px] hover:scale-110 transition-transform duration-300 ease-in-out">
-			<x-svg-images.mood_emojis.sad />
-		</button>
-		<!-- Button for "Anxious" mood -->
-		<button
-				wire:click="logMood(-1, 'Anxious')"
-				class="w-8 h-8 hover:-translate-y-[3px] hover:scale-110 transition-transform duration-300 ease-in-out">
-			<x-svg-images.mood_emojis.anxious />
-		</button>
-		<!-- Button for "Base" mood -->
-		<button
-				wire:click="logMood(0, 'Base')"
-				class="w-8 h-8 hover:-translate-y-[3px] hover:scale-110 transition-transform duration-300 ease-in-out">
-			<x-svg-images.mood_emojis.base_line />
-		</button>
-		<!-- Button for "Happy" mood -->
-		<button
-				wire:click="logMood(1, 'Happy')"
-				class="w-8 h-8 hover:-translate-y-[3px] hover:scale-110 transition-transform duration-300 ease-in-out">
-			<x-svg-images.mood_emojis.happy />
-		</button>
-		<!-- Button for "Nervous" mood -->
-		<button
-				wire:click="logMood(2, 'Nervous')"
-				class="w-8 h-8 hover:-translate-y-[3px] hover:scale-110 transition-transform duration-300 ease-in-out">
-			<x-svg-images.mood_emojis.annoyed />
-		</button>
-		<!-- Button for "Upset" mood -->
-		<button
-				wire:click="logMood(3, 'Upset')"
-				class="w-8 h-8 hover:-translate-y-[3px] hover:scale-110 transition-transform duration-300 ease-in-out">
-			<x-svg-images.mood_emojis.upset />
-		</button>
-		<!-- Button for "Mad" mood -->
-		<button
-				wire:click="logMood(4, 'Mad')"
-				class="w-8 h-8 hover:-translate-y-[3px] hover:scale-110 transition-transform duration-300 ease-in-out">
-			<x-svg-images.mood_emojis.mad />
-		</button>
-	</div>
+	<!-- Mood Logging Buttons -->
+	{{--	<div class="mt-4 flex space-x-2 justify-between items-center dark:bg-gray-800 rounded p-2">--}}
+	{{--		@foreach ($this->getMoods() as $mood)--}}
+	{{--			<x-buttons.mood-button--}}
+	{{--					:value="$mood['value']"--}}
+	{{--					:name="$mood['name']"--}}
+	{{--					:svg="strtolower($mood['name'])">--}}
+	{{--			</x-buttons.mood-button>--}}
+	{{--		@endforeach--}}
+	{{--	</div>--}}
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
 	const ctx = document.getElementById('moodChart')
 	if (ctx) {
-		// Initializes a new Chart.js line chart
+		// Initializes a new Chart.js line chart1
 		let moodChart = new Chart(ctx, {
 			type: 'line',
 			data: {

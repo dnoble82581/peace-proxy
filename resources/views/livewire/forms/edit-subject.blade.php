@@ -210,22 +210,19 @@
 		</div>
 		<x-dividers.form-divider class="py-4 font-bold">Social</x-dividers.form-divider>
 		<div class="flex flex-col sm:flex-row items-center gap-4">
-			<x-input
-					label="Facebook Url"
-					placeholder="Facebook Url"
-					wire:model="form.facebook_url" />
-			<x-input
-					label="Instagram Url"
-					placeholder="Instagram Url"
-					wire:model="form.instagram_url" />
-			<x-input
-					label="X Url"
-					placeholder="X Url"
-					wire:model="form.x_url" />
-			<x-input
-					label="Snapchat Url"
-					placeholder="Snapchat Url"
-					wire:model="form.snapchat_url" />
+			<x-select
+					wire:model="form.social_media"
+					label="Search Social"
+					placeholder="Select provider"
+					multiselect
+					:async-data="route('api.social-media.index')"
+					:template="[
+            'platform_name' => 'user-option',
+        ]"
+					option-label="platform_name"
+					option-value="id"
+					option-description="website_url"
+			/>
 		</div>
 		<x-dividers.form-divider class="font-bold">Notes</x-dividers.form-divider>
 		<div class="flex items-center gap-4">

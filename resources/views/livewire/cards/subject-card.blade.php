@@ -32,21 +32,7 @@
 			];
 		}
 
-		public function callSubject()
-		{
-//			 Find your Account SID and Auth Token at twilio.com/console
-//			 and set the environment variables. See http://twil.io/secure
-			$sid = config('twilio.account_sid');
-			$token = config('twilio.auth_token');
-			$twilio = new Client($sid, $token);
-
-			$call = $twilio->calls->create(
-				"+13195947290", // To
-				"+18666380641", // From
-				["twiml" => "<Response><Say>Hello Dusty. This is your app calling.</Say></Response>"]
-			);
-			print $call->sid;
-		}
+		public function callSubject() {}
 
 		public function textSubject() {}
 	}
@@ -54,10 +40,10 @@
 
 <div class="pt-3">
 	<div class="flex gap-5 justify-between items-center px-8">
-		<div class="absolute top-2 right-2">
+		<div class="absolute top-12 right-4">
 			<x-dropdown.dropdown>
 				<x-slot:trigger>
-					<button class="hidden">
+					<button class="">
 						<x-heroicons::mini.solid.ellipsis-vertical class="w-6 h-6 text-gray-400" />
 					</button>
 				</x-slot:trigger>

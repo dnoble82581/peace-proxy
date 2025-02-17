@@ -24,7 +24,7 @@ class DocumentController extends Controller
         return $this->showDocument($user, $filename);
     }
 
-    public function showDocument($entity, $filename)
+    private function showDocument($entity, $filename)
     {
 
         if (! ($entity instanceof User || $entity instanceof Subject)) {

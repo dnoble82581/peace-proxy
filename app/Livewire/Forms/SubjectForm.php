@@ -4,6 +4,7 @@ namespace App\Livewire\Forms;
 
 use App\Models\Subject;
 use App\Services\DocumentProcessor;
+use Exception;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
@@ -84,6 +85,8 @@ class SubjectForm extends Form
     #[Validate(['nullable'])]
     public $snapchat_url = '';
 
+    public array $social_media = [];
+
     #[Validate(['nullable'])]
     public $weapons = 'No';
 
@@ -119,6 +122,9 @@ class SubjectForm extends Form
         $this->weapons_details = $this->subject->weapons_details;
     }
 
+    /**
+     * @throws Exception
+     */
     public function update(): void
     {
         if ($this->images) {
@@ -127,7 +133,10 @@ class SubjectForm extends Form
         if ($this->documentsToUpload) {
             $this->processDocuments();
         }
+
         $this->subject->update($this->all());
+
+        $this->syncSocialMedia();
     }
 
     private function processImages(): void
@@ -142,13 +151,29 @@ class SubjectForm extends Form
 
     private function saveImage($image)
     {
-        return $image->store('subjects/'.$this->subject->id, 's3-public');
+        return $image->store($this->subject->tenant->name.'/avatars/'.$this->subject->id, 's3-public');
     }
 
+    /**
+     * @throws Exception
+     */
     private function processDocuments(): void
     {
         $documentProcessor = new DocumentProcessor;
         $documentProcessor->processDocuments($this->documentsToUpload, $this->subject, auth()->user()->id);
+    }
+
+    private function syncSocialMedia(): void
+    {
+        // If the social_media array is empty, clear the relationship.
+        if (empty($this->social_media)) {
+            $this->subject->socialMediaProviders()->detach();
+
+            return;
+        }
+
+        // Attach or sync the social media providers.
+        $this->subject->socialMediaProviders()->sync($this->social_media);
     }
 
     public function deleteImage($imageId): void

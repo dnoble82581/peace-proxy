@@ -14,7 +14,7 @@ class DocumentPolicy
 
     public function view(User $user, Document $document): bool
     {
-        return $user->role === 'admin' && $document->tenant_id === $user->tenant_id;
+        return $user->privileges === 'admin' && $document->tenant_id === $user->tenant_id;
     }
 
     public function create(User $user): bool {}

@@ -12,6 +12,8 @@ return new class extends Migration
             $table->id();
             $table->string('platform_name');
             $table->string('website_url');
+            $table->string('icon_url')->nullable();
+            $table->string('entity_url')->nullable();
             $table->timestamps();
         });
     }

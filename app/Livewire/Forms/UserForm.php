@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
 
+// ToDo: fix validation here
+
 /**
  * Class UserForm
  *
@@ -43,7 +45,6 @@ class UserForm extends Form
      *
      * @var string
      */
-    #[Validate(['required', 'email', 'max:254', 'unique:users,email'])]
     public $email = '';
 
     /**
@@ -146,7 +147,7 @@ class UserForm extends Form
      */
     public function saveUserAvatar(): string
     {
-        return $this->photo->store('avatars', 's3-public');
+        return $this->photo->store($this->user->tenant->name.'/avatars/'.$this->user->id, 's3-public');
     }
 
     /**
@@ -171,7 +172,9 @@ class UserForm extends Form
      */
     public function update(): void
     {
-        $this->validate();
+        $this->validate([
+            'email' => 'required|email|max:254|unique:users,email,'.($this->user->id ?? 'null'),
+        ]);
 
         if ($this->photo) {
             $this->deleteExistingAvatar();
@@ -181,7 +184,6 @@ class UserForm extends Form
         if ($this->application) {
             $this->handleFileUploads($this->user);
         }
-
         $this->user->update($this->all());
     }
 

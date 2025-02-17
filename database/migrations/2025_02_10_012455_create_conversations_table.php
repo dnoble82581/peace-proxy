@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->foreignId('initiator_id'); // The user who initiated this conversation
             $table->foreignId('room_id'); // The room this conversation belongs to.
+            $table->boolean('is_active')->default(true);
             $table->foreignId('tenant_id'); // The room this conversation belongs to.
             $table->timestamps();
         });

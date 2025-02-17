@@ -21,6 +21,7 @@ class ConversationService
     {
         return Conversation::where('room_id', $roomId)
             ->where('tenant_id', $tenantId)
+            ->where('is_active', true)
             ->whereHas('participants', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })
@@ -75,10 +76,11 @@ class ConversationService
 
             // Create a new conversation if none exists
             return Conversation::create([
-                'name' => 'Private Conversation',
+                'name' => 'private'.now()->timestamp,
                 'type' => 'private',
                 'initiator_id' => $authUser->id,
                 'room_id' => $room->id,
+                'is_active' => true,
                 'tenant_id' => $room->tenant_id,
                 'created_at' => now(),
                 'updated_at' => now(),

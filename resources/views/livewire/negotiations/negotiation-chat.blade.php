@@ -43,9 +43,9 @@
 		public function fetchConversations():void
 		{
 			$conversationService = new ConversationService;
-			$this->conversations = $conversationService->fetchConversations($this->room->id,
-				$this->room->tenant_id, $this->user->id)->load('participants.user');
-			$this->defaultConversation = $this->conversations->first();
+			$this->conversations = $conversationService->fetchConversations($this->room->id, $this->room->tenant_id,
+				$this->user->id)->load('participants.user');
+			$this->resetToPublicConversation();
 		}
 
 		public function sendMessage($currentConversationId):void
@@ -78,9 +78,15 @@
 				"echo-presence:chat.{$this->room->id},here" => 'handleUserHere',
 				"echo-presence:chat.{$this->room->id},joining" => 'handleUserJoining',
 				"echo-presence:chat.{$this->room->id},leaving" => 'handleUserLeaving',
+				"echo-presence:chat.{$this->room->id},ParticipantLeavesChatEvent" => 'handleParticipantLeft',
 				'echo-private:user.'.auth()->id().',InvitationDeclinedEvent' => 'refreshInvitations',
 				'echo-private:user.'.auth()->id().',InvitationAcceptedEvent' => 'fetchConversations',
 			];
+		}
+
+		public function handleParticipantLeft($data):void
+		{
+			$this->fetchConversations();
 		}
 
 		public function showResponses($messageId):void
@@ -88,6 +94,21 @@
 			$this->dispatch('modal.open', component: 'modals.message-responses',
 				arguments: ['messageId' => $messageId]);
 		}
+
+		public function resetToPublicConversation():void
+		{
+// Find the "public" conversation in the $conversations collection
+			$publicConversation = $this->conversations->firstWhere('name', 'public');
+
+			// If a public conversation exists, set it as the default
+			if ($publicConversation) {
+				$this->defaultConversation = $publicConversation;
+			} else {
+				// Handle the case where a public conversation doesn't exist gracefully
+				$this->defaultConversation = null;
+			}
+		}
+
 
 		public function createGroupChats():void
 		{
@@ -152,36 +173,11 @@
 			})->toArray();
 		}
 
-		public function leaveConversation($conversationId)
+		public function leaveConversation(int $conversationId):void
 		{
-			// Retrieve the conversation
-			$conversation = Conversation::find($conversationId);
-
-			// Validate that the conversation exists
-			if (!$conversation) {
-				session()->flash('error', 'Conversation not found.');
-				return;
-			}
-
-			// Check if the user is part of this conversation
-			$participant = ConversationParticipant::where('conversation_id', $conversationId)
-				->where('user_id', $this->user->id)
-				->first();
-			
-			if (!$participant) {
-				session()->flash('error', 'You are not part of this conversation.');
-				return;
-			}
-
-			// Remove the user from the conversation
-			$participant->delete();
-
-			// Flash success message and redirect or refresh
-			session()->flash('message', 'You have successfully left the conversation.');
-
-			// Optionally redirect the user or update the conversation list
-			// $this->fetchConversations(); // Refresh the conversation list
-
+			$conversation = Conversation::findOrFail($conversationId);
+			$conversation->update(['is_active' => false]);
+			event(new \App\Events\ParticipantLeavesChatEvent($this->room->id));
 		}
 
 		public function sendUsersInvite(array $userIds):void
@@ -194,8 +190,10 @@
 				}
 				$conversationService = new ConversationService();
 				$conversationService->sendInvitations(null, [$userId], $this->user->id);
+
+				session()->flash('user_message_'.$userId, "Invitation sent to User ID: $userId");
+
 			}
-			session()->flash('message', 'Invitation sent!');
 		}
 	}
 ?>
@@ -234,8 +232,6 @@
 					@click="open = !open">
 				<x-heroicons::micro.solid.plus class="w-5 h-5 text-gray-400 dark:text-gray-300" />
 			</button>
-
-
 			<!-- Main Dropdown Content -->
 			<div
 					x-show="open"
@@ -258,40 +254,46 @@
 							</span>
 						</div>
 					</x-dropdown.dropdown-button>
-
 					<!-- Submenu Dropdown -->
 					<div
 							x-show="submenu"
 							class="absolute left-full ml-3 top-0 w-80 bg-white rounded shadow-lg ring-1 ring-black ring-opacity-5"
 							@click.away="submenu = false">
-
-						@foreach ($activeUsers as $user)
-							@if ($user['id'] !== auth()->id())
-								<!-- Exclude the current user -->
-								<x-dropdown.dropdown-button
-										wire:click="sendUsersInvite([{{$user['id']}}])"
-										class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-									<div class="flex items-center justify-between">
-										<div class="flex items-center space-x-2">
-											<img
-													class="w-8 h-8 rounded-full"
-													src="{{ $user['avatar'] }}"
-													alt="User Avatar">
-											<div>
-												<div>{{ $user['name'] }}</div>
-												<span class="block text-xs text-gray-500">{{ $user['role'] }}</span>
+						@if(empty(!$activeUsers))
+							@foreach ($activeUsers as $user)
+								@if ($user['id'] !== auth()->id())
+									<!-- Exclude the current user -->
+									<x-dropdown.dropdown-button
+											wire:click="sendUsersInvite([{{$user['id']}}])"
+											class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+										<div class="flex items-center justify-between">
+											<div class="flex items-center space-x-2">
+												<img
+														class="w-8 h-8 rounded-full"
+														src="{{ $user['avatar'] }}"
+														alt="User Avatar">
+												<div>
+													<div>{{ $user['name'] }}</div>
+													<span class="block text-xs text-gray-500">{{ $user['role'] }}</span>
+												</div>
 											</div>
+											@if (session('user_message_'. $user['id']))
+												<div class="text-emerald-400 text-xs font-semibold">
+													{{ session('message') }}
+													<div class="text-xs font-normal text-gray-500">Waiting for reply
+													</div>
+												</div>
+											@endif
 										</div>
-										@if (session('message'))
-											<div class="text-emerald-400 text-xs font-semibold">
-												{{ session('message') }}
-												<div class="text-xs font-normal text-gray-500">Waiting for reply</div>
-											</div>
-										@endif
-									</div>
-								</x-dropdown.dropdown-button>
-							@endif
-						@endforeach
+									</x-dropdown.dropdown-button>
+								@endif
+							@endforeach
+						@else
+							<div class="text-start text-sm leading-5 text-gray-700 px-4 py-2 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
+								No Users Yet
+							</div>
+						@endif
+
 					</div>
 				</div>
 				<!-- Dropdown Option 3 -->
@@ -378,7 +380,7 @@
 
 				{{-- Message Input (if allowed to send messages) --}}
 				@can('createMessage', $conversation)
-					<div class="bg-gray-100 rounded-lg p-4 mt-4">
+					<div class="bg-gray-100 dark:bg-gray-600 rounded-lg p-4 mt-4">
 						<form wire:submit.prevent="sendMessage({{ $conversation->id }})">
                             <textarea
 		                            wire:model.defer="newMessage"

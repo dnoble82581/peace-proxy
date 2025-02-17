@@ -20,7 +20,7 @@
 			$this->pendingInvitations = $this->fetchPendingInvitations();
 		}
 
-		private function getRoom($roomId)
+		private function getRoom($roomId):Room
 		{
 			return Room::findOrFail($roomId);
 		}
