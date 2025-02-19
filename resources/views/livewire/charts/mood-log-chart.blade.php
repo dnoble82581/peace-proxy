@@ -9,17 +9,6 @@
 		public Room $room;
 		public array $moodLabels = [];
 		public array $moodData = [];
-		private const MOODS = [
-			['value' => -4, 'name' => 'Saddest'],
-			['value' => -3, 'name' => 'Sad'],
-			['value' => -2, 'name' => 'Depressed'],
-			['value' => -1, 'name' => 'Upset'],
-			['value' => 0, 'name' => 'Base_Line'],
-			['value' => 1, 'name' => 'Annoyed'],
-			['value' => 2, 'name' => 'Happy'],
-			['value' => 3, 'name' => 'Happy'],
-			['value' => 4, 'name' => 'Happy'],
-		];
 
 		public function mount(Room $room):void
 		{
@@ -77,14 +66,6 @@
 		{
 			return $timestamp->setTimezone(config('app.timezone'))->format('D:H:i');
 		}
-
-		/**
-		 * Returns mood labels for frontend rendering.
-		 */
-		public function getMoods():array
-		{
-			return self::MOODS;
-		}
 	};
 
 ?>
@@ -99,15 +80,18 @@
 	<canvas id="moodChart"></canvas>
 
 	<!-- Mood Logging Buttons -->
-	{{--	<div class="mt-4 flex space-x-2 justify-between items-center dark:bg-gray-800 rounded p-2">--}}
-	{{--		@foreach ($this->getMoods() as $mood)--}}
-	{{--			<x-buttons.mood-button--}}
-	{{--					:value="$mood['value']"--}}
-	{{--					:name="$mood['name']"--}}
-	{{--					:svg="strtolower($mood['name'])">--}}
-	{{--			</x-buttons.mood-button>--}}
-	{{--		@endforeach--}}
-	{{--	</div>--}}
+	<div class="p-4 flex justify-between">
+		@foreach (App\Enums\MoodsList::cases() as $mood)
+			<button
+					title="{{ $mood->description() }}"
+					class="hover:-translate-y-1 transition-all duration-300 ease-in-out">
+				<x-dynamic-component
+						wire:click="logMood({{ $mood->numericValue() }}, '{{ $mood->value }}')"
+						:component="$mood->emoji()"
+						class="w-8 h-8" />
+			</button>
+		@endforeach
+	</div>
 </div>
 
 

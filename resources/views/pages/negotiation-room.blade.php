@@ -13,7 +13,7 @@
 			</div>
 		</div>
 
-		<div class="h-20 relative">
+		<div class="py-3">
 			<x-buttons.speed-dial />
 		</div>
 		<!-- CHAT SECTION -->

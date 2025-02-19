@@ -112,4 +112,9 @@ class Subject extends Model
     {
         return 'https://api.dicebear.com/9.x/initials/svg?seed='.$this->name;
     }
+
+    public function rfis(): HasMany
+    {
+        return $this->hasMany(RequestForInformation::class);
+    }
 }

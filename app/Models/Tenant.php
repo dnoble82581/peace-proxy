@@ -56,4 +56,9 @@ class Tenant extends Model
     {
         return $this->hasMany(Conversation::class);
     }
+
+    public function rfis(): HasMany
+    {
+        return $this->hasMany(RequestForInformation::class);
+    }
 }

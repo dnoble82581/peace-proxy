@@ -2,6 +2,14 @@ Demands Threats and Deadlines section
 
 General Log of all requests, demands, deliveries,
 
-Create a Risk assessment object and link the responses to it. It should have a tally field to display.
+Fix tally on Risk assessment
 
-Fix Spatie permissions. They are not attaching permissions when seeded for some reason.
+Need to create an RFI Object
+
+RFI Table:
+room_id
+tenant_id
+subject_id
+user_id
+notes
+

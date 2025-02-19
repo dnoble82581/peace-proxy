@@ -16,38 +16,50 @@
 		@foreach ($questions as $question)
 			<div
 					class="flex items-center justify-between px-4 pb-2 border-b border-gray-200"
-					wire:key="question-{{ $question->id }}">
-				<p>{{ $question->id }}. {{ $question->question_text }}</p>
+					wire:key="question-{{ $question->id }}"
+					role="group"
+					aria-labelledby="question-label-{{ $question->id }}"
+			>
+				<p id="question-label-{{ $question->id }}">{{ $question->id }}. {{ $question->question_text }}</p>
+
 				@if($question->type === 'single-choice')
 					<div class="flex items-center space-x-4">
 						<!-- Radio option for 'Yes' -->
-						<x-radio
-								label="Yes"
-								wire:model="responses.{{ $question->id }}"
-								value="Yes"
-								id="q{{ $question->id }}_yes"
-								wire:key="option-{{ $question->id }}-yes"
-						/>
+						<div>
+							<label for="q{{ $question->id }}_yes">Yes</label>
+							<input
+									type="radio"
+									id="q{{ $question->id }}_yes"
+									name="question-{{ $question->id }}"
+									wire:model="responses.{{ $question->id }}"
+									value="Yes"
+							/>
+						</div>
 
 						<!-- Radio option for 'No' -->
-						<x-radio
-								label="No"
-								wire:model="responses.{{ $question->id }}"
-								value="No"
-								id="q{{ $question->id }}_no"
-								wire:key="option-{{ $question->id }}-no"
-						/>
+						<div>
+							<label for="q{{ $question->id }}_no">No</label>
+							<input
+									type="radio"
+									id="q{{ $question->id }}_no"
+									name="question-{{ $question->id }}"
+									wire:model="responses.{{ $question->id }}"
+									value="No"
+							/>
+						</div>
 					</div>
 				@else
+					<label
+							for="response-{{ $question->id }}"
+							class="sr-only">Provide an answer</label>
 					<input
 							type="text"
+							id="response-{{ $question->id }}"
 							wire:model="responses.{{ $question->id }}"
 							placeholder="Your answer"
-							wire:key="response-{{ $question->id }}"
 					/>
 				@endif
 			</div>
 		@endforeach
-
 	</x-form-layouts.form-layout>
 </div>
