@@ -32,7 +32,6 @@
 		public function editassociate():void
 		{
 			$this->form->update();
-			event(new AssociateEditedEvent($this->room->id, $this->associate->id));
 			$this->redirect(route('negotiation.room', $this->room->id));
 		}
 

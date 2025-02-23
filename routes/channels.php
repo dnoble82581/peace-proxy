@@ -88,7 +88,7 @@ Broadcast::channel('warning.{roomId}', function (User $user, int $roomId) {
     abort(403);
 });
 
-Broadcast::channel('request.{roomId}', function (User $user, int $roomId) {
+Broadcast::channel('subject-request.{roomId}', function (User $user, int $roomId) {
     $room = Room::find($roomId);
     if ($user->can('view', $room)) {
         return ['id' => $user->id, 'name' => $user->name];
@@ -115,4 +115,20 @@ Broadcast::channel('document.{roomId}', function (User $user, int $roomId) {
 Broadcast::channel('user.{userId}', function ($user, $userId) {
     // Check if the authenticated user is authorized to listen to this channel
     return (int) $user->id === (int) $userId; // Make sure only the user themselves can listen
+});
+
+Broadcast::channel('rfi.{roomId}', function (User $user, int $roomId) {
+    $room = Room::find($roomId);
+    if ($user->can('view', $room)) {
+        return ['id' => $user->id, 'name' => $user->name];
+    }
+    abort(403);
+});
+
+Broadcast::channel('deliveryPlan.{roomId}', function (User $user, int $roomId) {
+    $room = Room::find($roomId);
+    if ($user->can('view', $room)) {
+        return ['id' => $user->id, 'name' => $user->name];
+    }
+    abort(403);
 });

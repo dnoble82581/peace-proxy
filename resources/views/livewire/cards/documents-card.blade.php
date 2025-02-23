@@ -80,7 +80,6 @@
 				</x-dropdown.dropdown-button>
 			</x-slot:content>
 		</x-dropdown.dropdown>
-
 	</div>
 	<ul
 			role="list"

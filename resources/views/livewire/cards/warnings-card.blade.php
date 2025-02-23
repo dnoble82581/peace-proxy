@@ -83,7 +83,7 @@
 				</div>
 			@endforeach
 		@else
-			<div class="h-full col-span-3">
+			<div class="h-full col-span-4">
 				<h3 class="text-7xl text-gray-200 uppercase text-center mt-8">No Warnings</h3>
 			</div>
 		@endif

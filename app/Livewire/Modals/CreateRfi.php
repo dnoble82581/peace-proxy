@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Modals;
 
+use App\Events\RequestForInformationEvent;
 use App\Models\Room;
 use App\Models\Subject;
 use App\Models\User;
@@ -42,16 +43,11 @@ class CreateRfi extends Modal
         ];
     }
 
-    public function mount($userId, $subjectId, $roomId): void
+    public function mount($userId, $roomId): void
     {
-        $this->subject = $this->getSubject($subjectId);
         $this->user = $this->getUser($userId);
         $this->room = $this->getRoom($roomId);
-    }
-
-    private function getSubject(int $subjectId): Subject
-    {
-        return Subject::findOrFail($subjectId);
+        $this->subject = $this->room->subject;
     }
 
     private function getUser(int $UserId): User
@@ -72,12 +68,14 @@ class CreateRfi extends Modal
     public function submit()
     {
         $this->validate();
-        $this->subject->rfis()->create([
+        $newRfi = $this->subject->rfis()->create([
             'request' => $this->rfi,
             'tenant_id' => $this->room->tenant_id,
             'room_id' => $this->room->id,
             'user_id' => $this->user->id,
         ]);
+        event(new RequestForInformationEvent($this->room->id, $newRfi->id, 'edited'));
+
         $this->close();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Forms;
 
+use App\Events\AssociateEvent;
 use App\Models\Associate;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
@@ -102,6 +103,8 @@ class AssociateForm extends Form
             $this->processImages();
         }
         $this->associate->update($this->all());
+        event(new AssociateEvent($this->associate->room_id, $this->associate->id, 'edited'));
+
     }
 
     private function processImages(): void
@@ -120,7 +123,7 @@ class AssociateForm extends Form
     {
         $this->validate();
 
-        $this->associate = $room->associates()->create([
+        $newAssociate = $this->associate = $room->associates()->create([
             'negotiation_id' => $room->negotiation_id,
             'room_id' => $room->id,
             'subject_id' => $room->subject_id,
@@ -157,6 +160,8 @@ class AssociateForm extends Form
         if ($this->images) {
             $this->processImages();
         }
+
+        event(new AssociateEvent($room->id, $newAssociate->id, 'created'));
     }
 
     private function saveImage($image)

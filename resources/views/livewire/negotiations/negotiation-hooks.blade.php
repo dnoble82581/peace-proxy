@@ -1,6 +1,7 @@
 <?php
 
 	use App\Events\HookDeletedEvent;
+	use App\Events\HookEvent;
 	use App\Models\Hook;
 	use App\Models\Room;
 	use App\Models\User;
@@ -56,12 +57,9 @@
 		public function getListeners():array
 		{
 			return [
-				// Listens for HookCreatedEvent and refreshes the component
-				"echo-presence:hook.{$this->room->id},HookCreatedEvent" => 'refreshHooks',
-				// Listens for HookDeletedEvent and refreshes the component
-				"echo-presence:hook.{$this->room->id},HookDeletedEvent" => 'refreshHooks',
-				// Listens for HookEditedEvent and refreshes the component
-				"echo-presence:hook.{$this->room->id},HookEditedEvent" => 'refreshHooks',
+				"echo-presence:hook.{$this->room->id},HookEvent" => 'refreshHooks',
+//				"echo-presence:hook.{$this->room->id},HookDeletedEvent" => 'refreshHooks',
+//				"echo-presence:hook.{$this->room->id},HookEditedEvent" => 'refreshHooks',
 			];
 		}
 
@@ -106,7 +104,7 @@
 
 				// Perform deletion and broadcast the HookDeletedEvent
 				$hook->delete();
-				event(new HookDeletedEvent($hookId, $this->room->id));
+				event(new HookEvent($this->room->id, null, 'deleted'));
 			} catch (AuthorizationException $exception) {
 				// Handle the case where the user is not authorized to delete the hook
 				session()->flash('error', 'You are not authorized to delete this hook.');

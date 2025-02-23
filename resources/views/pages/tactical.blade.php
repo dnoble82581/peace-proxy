@@ -12,36 +12,17 @@
 						:room="$room" />
 			</div>
 		</div>
+
+		<div class="py-3">
+			<x-buttons.speed-dial />
+		</div>
+
 		<!-- Chat Menu -->
 		<div class="grid grid-cols-12 gap-4 mt-4">
-			<x-navigation.tab-navigation
-					container-class="sm:col-span-4 bg-white"
-					:tabs="[
-                    ['key' => 'public', 'label' => 'Public'],
-                    ['key' => 'private', 'label' => 'Private'],
-                    ['key' => 'tactical', 'label' => 'Tactical'],
-                ]"
-					:default-tab="'tactical'">
-
-				<div x-show="tab === 'public'">
-					<livewire:negotiations.negotiation-chat
-							:room="$room"
-							:toTactical="false"
-							:isPrivate="false" />
-				</div>
-				<div x-show="tab === 'private'">
-					<livewire:negotiations.negotiation-chat
-							:room="$room"
-							:toTactical="false"
-							:isPrivate="true" />
-				</div>
-				<div x-show="tab === 'tactical'">
-					<livewire:negotiations.negotiation-chat
-							:room="$room"
-							:toTactical="true"
-							:isPrivate="false" />
-				</div>
-			</x-navigation.tab-navigation>
+			<div class="col-span-4">
+				<livewire:negotiations.negotiation-chat
+						:room="$room" />
+			</div>
 
 			<x-navigation.tab-navigation
 					container-class="sm:col-span-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg"
@@ -80,7 +61,9 @@
 				</div>
 
 				{{--Objectives--}}
-				<div x-show="tab === 'objectives'">
+				<div
+						x-show="tab === 'objectives'"
+						class="space-y-4">
 					<livewire:cards.objectives-card
 							:negotiationId="$room->negotiation->id"
 							:roomId="$room->id" />
@@ -92,27 +75,43 @@
 						class="mt-4"
 						x-show="tab === 'charts'"
 						x-data="{ chart: 'mood' }">
+
 					<x-buttons.button-group
 							:buttons="[
-                                ['key' => 'mood', 'label' => 'Mood Chart'],
-                                ['key' => 'call', 'label' => 'Call Log'],
-                               ]"
+            ['key' => 'mood', 'label' => 'Mood Chart'],
+            ['key' => 'call', 'label' => 'Call Log'],
+        ]"
 							click-handler="chart"
 							class="ml-8" />
-					<div
-							class="mt-4 px-8"
-							x-show="chart === 'mood'">
+
+					<div x-show="chart === 'mood'">
 						<livewire:charts.mood-log-chart :room="$room" />
 					</div>
-					<div
-							x-show="chart === 'call'"
-							class="mt-4 px-8">
+					<div x-show="chart === 'call'">
 						<livewire:charts.call-log-chart :room="$room" />
 					</div>
 				</div>
 
-				<div x-show="tab === 'requests'">
-					<livewire:cards.request-card :room="$room" />
+				{{--REQUEST SECTION--}}
+				<div
+						class="mt-4"
+						x-show="tab === 'requests'"
+						x-data="{list: 'subject'}">
+
+					<x-buttons.button-group
+							:buttons="[
+									['key' => 'subject', 'label' => 'Subject Requests'],
+									['key' => 'information', 'label' => 'RFI'],
+						]"
+							click-handler="list"
+							class="ml-8" />
+
+					<div x-show="list === 'subject'">
+						<livewire:cards.request-card :room="$room" />
+					</div>
+					<div x-show="list === 'information'">
+						<livewire:cards.rfi-card :room="$room" />
+					</div>
 				</div>
 			</x-navigation.tab-navigation>
 		</div>

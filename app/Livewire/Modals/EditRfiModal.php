@@ -2,16 +2,15 @@
 
 namespace App\Livewire\Modals;
 
-use App\Events\WarrantEvent;
-use App\Livewire\Forms\WarrantForm;
-use App\Models\Warrant;
+use App\Events\RequestForInformationEvent;
+use App\Models\RequestForInformation;
 use WireElements\Pro\Components\Modal\Modal;
 
-class EditWarrantForm extends Modal
+class EditRfiModal extends Modal
 {
-    public Warrant $warrant;
+    public RequestForInformation $rfi;
 
-    public WarrantForm $form;
+    public string $request;
 
     public static function behavior(): array
     {
@@ -36,26 +35,28 @@ class EditWarrantForm extends Modal
         ];
     }
 
-    public function mount($warrantId)
+    public function mount($rfiId)
     {
-        $this->warrant = $this->getWarrant($warrantId);
-        $this->form->setForm($this->warrant);
+        $this->rfi = $this->getRfi($rfiId);
+        $this->request = $this->rfi->request;
     }
 
-    private function getWarrant($warrantId)
+    private function getRfi($rfiId): RequestForInformation
     {
-        return Warrant::findOrFail($warrantId);
+        return RequestForInformation::findOrFail($rfiId);
     }
 
-    public function editWarrant()
+    public function updateRfi(): void
     {
-        $this->form->update($this->warrant);
-        event(new WarrantEvent($this->warrant->subject->room_id, $this->warrant->id, 'edited'));
+        $this->rfi->update([
+            'request' => $this->request,
+        ]);
+        event(new RequestForInformationEvent($this->rfi->room_id, $this->rfi->id, 'edited'));
         $this->close();
     }
 
     public function render()
     {
-        return view('livewire.modals.edit-warrant-form');
+        return view('livewire.modals.edit-rfi-modal');
     }
 }

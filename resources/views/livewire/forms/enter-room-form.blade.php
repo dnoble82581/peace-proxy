@@ -24,6 +24,7 @@
 			$this->room = $room;
 			$this->roles = $this->getRoles();
 			$this->user = auth()->user();
+			$this->user->update(['role' => '']);
 		}
 
 		private function getRoles()
@@ -40,15 +41,34 @@
 		private function loginUser():void
 		{
 			$this->updateUserRole();
-			if ($this->user->hasRole('Tactical Lead')) {
-				redirect(route('tactical.room', $this->room->id));
-			} else {
+			$this->user = auth()->user();
+			
+			$roleRedirections = $this->getRoleRedirectionRoutes();
+
+			// Get the route based on the user's role, or fall back to a default redirection
+			$redirectRoute = $roleRedirections[$this->user->role] ?? route('negotiation.room',
+				['room' => $this->room->id]);
+
+			// Dispatch event if required (e.g., only for negotiation room roles)
+			if ($this->user->role !== 'Tactical Lead') {
 				event(new UserLoggedInEvent(auth()->user()->tenant_id));
-				redirect(route('negotiation.room', ['room' => $this->room->id]));
 			}
+
+			redirect($redirectRoute);
 		}
 
-		private function updateUserRole()
+		private function getRoleRedirectionRoutes():array
+		{
+			return [
+				'Tactical Lead' => route('tactical.room', $this->room->id),
+				'Primary Negotiator' => route('negotiation.room', ['room' => $this->room->id]),
+				'Secondary Negotiator' => route('negotiation.room', ['room' => $this->room->id]),
+				'Recorder' => route('negotiation.room', ['room' => $this->room->id]),
+				// Add other roles and their routes as needed
+			];
+		}
+
+		private function updateUserRole():void
 		{
 			auth()->user()->update(['role' => $this->chosenRole]);
 		}

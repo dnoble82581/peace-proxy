@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Modals;
 
-use App\Events\ObjectiveCreatedEvent;
+use App\Events\ObjectiveEvent;
 use App\Models\Negotiation;
 use App\Models\Objective;
 use Livewire\Attributes\Validate;
@@ -53,7 +53,7 @@ class CreateObjectiveForm extends Modal
             'objective' => $this->objective,
             'priority' => $this->priority,
         ]);
-        event(new ObjectiveCreatedEvent($newObjective->id, $this->roomId));
+        event(new ObjectiveEvent($this->roomId, $newObjective->id, 'created'));
 
         $this->close();
     }

@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Modals;
 
-use App\Events\ObjectiveEditedEvent;
+use App\Events\ObjectiveEvent;
 use App\Models\Objective;
 use Livewire\Attributes\Validate;
 use WireElements\Pro\Components\Modal\Modal;
@@ -72,7 +72,7 @@ class EditObjectiveForm extends Modal
             'objective' => $this->objective,
             'priority' => $this->priority,
         ]);
-        event(new ObjectiveEditedEvent($this->objectiveToEdit->id, $this->roomId));
+        event(new ObjectiveEvent($this->roomId, $this->objectiveToEdit->id, 'edited'));
         $this->close();
     }
 

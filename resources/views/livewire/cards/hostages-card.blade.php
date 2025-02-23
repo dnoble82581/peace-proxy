@@ -33,7 +33,7 @@
 		public function getListeners():array
 		{
 			return [
-				"echo-presence:associate.{$this->roomId},AssociateEditedEvent" => 'refresh',
+				"echo-presence:associate.$this->roomId,AssociateEditedEvent" => 'refresh',
 			];
 		}
 	}
@@ -46,8 +46,8 @@
 			<x-cards.hostage-tiny-card :hostage="$hostage" />
 		@endforeach
 	@else
-		<div class="col-span-2">
-			<h3 class="text-7xl text-gray-200 uppercase text-center mt-8">No Hostages</h3>
+		<div class="h-full col-span-2">
+			<h3 class="text-7xl text-gray-200 uppercase text-center mt-12">No Hostages</h3>
 		</div>
 	@endif
 </div>

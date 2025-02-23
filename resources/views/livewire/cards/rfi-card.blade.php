@@ -1,5 +1,7 @@
 <?php
 
+	use App\Events\RequestForInformationEvent;
+	use App\Models\RequestForInformation;
 	use App\Models\Room;
 	use App\Models\Subject;
 	use Livewire\Volt\Component;
@@ -18,11 +20,39 @@
 		public function addRfi()
 		{
 			$this->dispatch('modal.open', component: 'modals.create-rfi', arguments: [
-				'subjectId' => $this->subjectId, 'userId' => auth()->user()->id, 'roomId' => $this->room->id
+				'userId' => auth()->user()->id, 'roomId' => $this->room->id
 			]);
 		}
-	}
 
+		public function showRfi($rfiId)
+		{
+			$this->dispatch('modal.open', component: 'modals.show-rfi-modal', arguments: ['rfiId' => $rfiId]);
+		}
+
+		public function editRfi($rfiId)
+		{
+			$this->dispatch('modal.open', component: 'modals.edit-rfi-modal', arguments: ['rfiId' => $rfiId]);
+		}
+
+		public function deleteRfi($rfiId)
+		{
+			$rfiToDelete = RequestForInformation::findOrFail($rfiId);
+			$rfiToDelete->delete();
+			event(new RequestForInformationEvent($this->room->id, null, 'deleted'));
+		}
+
+		public function getListeners()
+		{
+			return [
+				"echo-presence:rfi.{$this->room->id},RequestForInformationEvent" => 'refresh',
+			];
+		}
+
+//		public function refresh()
+//		{
+//			dd('here');
+//		}
+	}
 ?>
 
 <div>
@@ -42,14 +72,17 @@
 						<td class="px-3 py-2 text-xs whitespace-nowrap dark-light-text">Responses</td>
 						<td class="relative py-2 space-x-2 pr-4 pl-3 text-left text-xs font-medium whitespace-nowrap sm:pr-3">
 							<button
+									wire:click="showRfi({{ $rfi->id }})"
 									type="button">
 								<x-heroicons::outline.envelope-open class="w-4 h-4 hover:text-indigo-500 text-indigo-400 cursor-pointer" />
 							</button>
 							<button
+									wire:click="editRfi({{ $rfi->id }})"
 									type="button">
 								<x-heroicons::mini.solid.pencil-square class="w-4 h-4 hover:text-blue-500 text-blue-400 cursor-pointer" />
 							</button>
 							<button
+									wire:click="deleteRfi({{ $rfi->id }})"
 									type="button">
 								<x-heroicons::outline.trash class="w-4 h-4 hover:text-red-500 text-red-400 cursor-pointer" />
 							</button>

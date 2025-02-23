@@ -1,6 +1,7 @@
 <?php
 
 	use App\Events\TriggerDeletedEvent;
+	use App\Events\TriggerEvent;
 	use App\Models\Room;
 	use App\Models\Trigger;
 	use App\Models\User;
@@ -50,9 +51,9 @@
 		public function getListeners():array
 		{
 			return [
-				"echo-presence:trigger.{$this->room->id},TriggerCreatedEvent" => 'refreshTriggers',
-				"echo-presence:trigger.{$this->room->id},TriggerEditedEvent" => 'refreshTriggers',
-				"echo-presence:trigger.{$this->room->id},TriggerDeletedEvent" => 'refreshTriggers',
+				"echo-presence:trigger.{$this->room->id},TriggerEvent" => 'refreshTriggers',
+//				"echo-presence:trigger.{$this->room->id},TriggerEditedEvent" => 'refreshTriggers',
+//				"echo-presence:trigger.{$this->room->id},TriggerDeletedEvent" => 'refreshTriggers',
 			];
 		}
 
@@ -60,7 +61,7 @@
 		{
 			$triggerToDelete = Trigger::findOrFail($triggerId);
 			$triggerToDelete->delete();
-			event(new TriggerDeletedEvent($triggerId, $this->room->id));
+			event(new TriggerEvent($this->room->id, null, 'deleted'));
 		}
 
 		public function editTrigger($triggerId):void

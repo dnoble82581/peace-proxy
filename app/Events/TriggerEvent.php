@@ -8,21 +8,35 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ObjectiveDeletedEvent implements ShouldBroadcastNow
+class TriggerEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public int $roomId;
 
-    public function __construct($roomId)
+    public ?int $triggerId;
+
+    public string $action;
+
+    public function __construct(int $roomId, ?int $triggerId, string $action)
     {
         $this->roomId = $roomId;
+        $this->triggerId = $triggerId;
+        $this->action = $action;
     }
 
     public function broadcastOn(): array
     {
         return [
-            new PresenceChannel('objective.'.$this->roomId),
+            new PresenceChannel('trigger.'.$this->roomId),
+        ];
+    }
+
+    public function broadcastWith(): array
+    {
+        return [
+            'action' => $this->action,
+            'warrantId' => $this->triggerId,
         ];
     }
 }

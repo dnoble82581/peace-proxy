@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Modals;
 
-use App\Events\HookCreatedEvent;
+use App\Events\HookEvent;
 use App\Models\Room;
 use App\Models\User;
 use Illuminate\View\View;
@@ -59,7 +59,7 @@ class CreateHookForm extends Modal
             'tenant_id' => $this->room->tenant_id,
             'subject_id' => $this->room->subject_id,
         ]);
-        event(new HookCreatedEvent($newHook->id, $this->room->id));
+        event(new HookEvent($this->room->id, $newHook->id, 'created'));
         $this->close();
     }
 

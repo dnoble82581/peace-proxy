@@ -5,7 +5,6 @@ namespace App\Livewire\Modals;
 use App\Enums\PriorityLevel;
 use App\Enums\SubjectRequestStatus;
 use App\Enums\SubjectRequestType;
-use App\Events\RequestEditedEvent;
 use App\Livewire\Forms\SubjectRequestForm;
 use App\Models\Room;
 use Illuminate\View\View;
@@ -49,7 +48,6 @@ class CreateRequestModal extends Modal
     public function saveRequest()
     {
         $this->form->createSubjectRequest($this->room);
-        event(new RequestEditedEvent($this->room->id));
         $this->close();
     }
 

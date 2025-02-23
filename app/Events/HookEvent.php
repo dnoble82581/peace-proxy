@@ -8,21 +8,35 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class WarrantCreatedEvent implements ShouldBroadcastNow
+class HookEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public int $roomId;
 
-    public function __construct($roomId)
+    public ?int $hookId;
+
+    public string $action;
+
+    public function __construct(int $roomId, ?int $hookId, string $action)
     {
         $this->roomId = $roomId;
+        $this->hookId = $hookId;
+        $this->action = $action;
     }
 
     public function broadcastOn(): array
     {
         return [
-            new PresenceChannel('warrant.'.$this->roomId),
+            new PresenceChannel('hook.'.$this->roomId),
+        ];
+    }
+
+    public function broadcastWith(): array
+    {
+        return [
+            'action' => $this->action,
+            'associateId' => $this->hookId,
         ];
     }
 }

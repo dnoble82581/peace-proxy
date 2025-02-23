@@ -18,6 +18,9 @@
 			$this->validate();
 
 			$this->form->authenticate();
+			$user = auth()->user();
+			$user->update(['role' => '']);
+			
 			Session::regenerate();
 
 			$this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);

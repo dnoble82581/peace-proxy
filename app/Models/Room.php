@@ -52,4 +52,10 @@ class Room extends Model
     {
         return $this->hasMany(RequestForInformation::class);
     }
+
+    public function deliveryPlans(): HasMany
+    {
+        return $this->hasMany(DeliveryPlan::class);
+
+    }
 }

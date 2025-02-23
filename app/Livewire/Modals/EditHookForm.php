@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Modals;
 
-use App\Events\HookEditedEvent;
+use App\Events\HookEvent;
 use App\Models\Hook;
 use App\Models\Room;
 use App\Models\User;
@@ -144,7 +144,7 @@ class EditHookForm extends Modal
         ]);
 
         // Fire a HookEditedEvent to notify listeners of the update
-        event(new HookEditedEvent($this->hook->id, $this->room->id));
+        event(new HookEvent($this->room->id, $this->hook->id, 'edited'));
 
         // Close the modal after the update is complete
         $this->close();

@@ -79,7 +79,6 @@
 				"echo-presence:chat.{$this->room->id},joining" => 'handleUserJoining',
 				"echo-presence:chat.{$this->room->id},leaving" => 'handleUserLeaving',
 				"echo-presence:chat.{$this->room->id},ParticipantLeavesChatEvent" => 'handleParticipantLeft',
-				'echo-private:user.'.auth()->id().',InvitationDeclinedEvent' => 'refreshInvitations',
 				'echo-private:user.'.auth()->id().',InvitationAcceptedEvent' => 'fetchConversations',
 			];
 		}
@@ -88,7 +87,7 @@
 		{
 			$this->fetchConversations();
 		}
-
+		
 		public function showResponses($messageId):void
 		{
 			$this->dispatch('modal.open', component: 'modals.message-responses',
@@ -97,7 +96,7 @@
 
 		public function resetToPublicConversation():void
 		{
-// Find the "public" conversation in the $conversations collection
+			// Find the "public" conversation in the $conversations collection
 			$publicConversation = $this->conversations->firstWhere('name', 'public');
 
 			// If a public conversation exists, set it as the default
@@ -192,7 +191,6 @@
 				$conversationService->sendInvitations(null, [$userId], $this->user->id);
 
 				session()->flash('user_message_'.$userId, "Invitation sent to User ID: $userId");
-
 			}
 		}
 	}

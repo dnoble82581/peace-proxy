@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Forms;
 
+use App\Events\SubjectRequestEvent;
 use App\Models\Room;
 use App\Models\SubjectRequest;
 use Livewire\Attributes\Validate;
@@ -37,7 +38,7 @@ class SubjectRequestForm extends Form
     public function createSubjectRequest($room)
     {
         $this->validate();
-        SubjectRequest::create([
+        $newSubjectRequest = SubjectRequest::create([
             'user_id' => auth()->user()->id,
             'tenant_id' => $room->tenant_id,
             'room_id' => $room->id,
@@ -51,6 +52,7 @@ class SubjectRequestForm extends Form
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        event(new SubjectRequestEvent($room->id, $newSubjectRequest->id, 'created'));
     }
 
     public function updateSubjectRequest($request)

@@ -8,13 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('responses', function (Blueprint $table) {
+        Schema::create('delivery_plans', function (Blueprint $table) {
             $table->id();
-            $table->text('body');
-            $table->nullableMorphs('respondable');
-            $table->unsignedBigInteger('respondingTo');
+            $table->string('delivery_location')->nullable();
+            $table->text('special_instructions')->nullable();
+            $table->string('title')->default('Primary Delivery Plan');
+            $table->text('notes')->nullable();
+            $table->nullableMorphs('deliverable');
             $table->foreignId('user_id');
-            $table->foreignId('subject_id');
             $table->foreignId('room_id');
             $table->foreignId('tenant_id');
             $table->timestamps();

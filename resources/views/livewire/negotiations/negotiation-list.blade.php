@@ -26,9 +26,7 @@
 		{
 			return Negotiation::query()->with('rooms')->get();
 		}
-
 	}
-
 ?>
 
 <div>

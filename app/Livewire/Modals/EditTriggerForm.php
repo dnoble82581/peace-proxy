@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Modals;
 
-use App\Events\TriggerEditedEvent;
+use App\Events\TriggerEvent;
 use App\Models\Room;
 use App\Models\Trigger;
 use Livewire\Attributes\Validate;
@@ -70,7 +70,7 @@ class EditTriggerForm extends Modal
             'tenant_id' => $this->room->tenant_id,
             'subject_id' => $this->room->subject_id,
         ]);
-        event(new TriggerEditedEvent($this->trigger->id, $this->room->id));
+        event(new TriggerEvent($this->room->id, $this->trigger->id, 'edited'));
         $this->close();
     }
 

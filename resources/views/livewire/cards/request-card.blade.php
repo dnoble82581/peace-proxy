@@ -1,6 +1,7 @@
 <?php
 
 	use App\Events\RequestEditedEvent;
+	use App\Events\SubjectRequestEvent;
 	use App\Events\SubjectUpdatedEvent;
 	use App\Livewire\Forms\SubjectRequestForm;
 	use App\Models\Room;
@@ -41,9 +42,9 @@
 		public function getListeners():array
 		{
 			return [
-				"echo-presence:request.{$this->room->id},RequestEditedEvent" => 'refresh',
-				"echo-presence:response.{$this->room->id},ResponseCreatedEvent" => 'refresh',
-				"echo-presence:response.{$this->room->id},ResponseUpdatedEvent" => 'refresh',
+				"echo-presence:subject-request.{$this->room->id},SubjectRequestEvent" => 'refresh',
+//				"echo-presence:response.{$this->room->id},ResponseCreatedEvent" => 'refresh',
+//				"echo-presence:response.{$this->room->id},ResponseUpdatedEvent" => 'refresh',
 			];
 		}
 
@@ -64,7 +65,7 @@
 		{
 			$requestToDelete = SubjectRequest::findOrFail($requestId);
 			$requestToDelete->delete();
-			event(new RequestEditedEvent($this->room->id));
+			event(new SubjectRequestEvent($this->room->id, null, 'deleted'));
 		}
 	}
 

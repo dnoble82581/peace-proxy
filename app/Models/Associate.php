@@ -22,7 +22,7 @@ class Associate extends Model
 
     public function socialMedia(): HasMany
     {
-        return $this->hasMany(SocialMediaService::class);
+        //        return $this->hasMany(SocialMediaService::class);
     }
 
     public function subject(): BelongsTo

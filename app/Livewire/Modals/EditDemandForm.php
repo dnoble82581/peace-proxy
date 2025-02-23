@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Modals;
 
-use App\Events\DemandUpdatedEvent;
+use App\Events\DemandEvent;
 use App\Models\Demand;
 use App\Models\Room;
 use Livewire\Attributes\Validate;
@@ -55,7 +55,7 @@ class EditDemandForm extends Modal
         ];
     }
 
-    public function mount($roomId, $demandId)
+    public function mount($roomId, $demandId): void
     {
         $this->demand = $this->getDemand($demandId);
         $this->room = $this->getRoom($roomId);
@@ -93,7 +93,7 @@ class EditDemandForm extends Modal
             'deadline' => $this->deadline,
             'description' => $this->description,
         ]);
-        event(new DemandUpdatedEvent($this->room->id, $this->demand->id));
+        event(new DemandEvent($this->room->id, $this->demand->id, 'edited'));
         $this->close();
     }
 

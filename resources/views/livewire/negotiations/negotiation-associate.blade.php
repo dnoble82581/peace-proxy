@@ -1,6 +1,7 @@
 <?php
 
 	use App\Events\AssociateDeletedEvent;
+	use App\Events\AssociateEvent;
 	use App\Models\Associate;
 	use App\Models\Room;
 	use App\Traits\Searchable;
@@ -69,7 +70,7 @@
 			}
 			$this->associate->delete();
 
-			event(new AssociateDeletedEvent($this->room->id));
+			event(new AssociateEvent($this->room->id, null, 'deleted'));
 			$this->refreshAssociates(); // Refresh the list immediately after deletion
 		}
 
@@ -81,9 +82,7 @@
 		public function getListeners():array
 		{
 			return [
-				"echo-presence:associate.{$this->room->id},AssociateEditedEvent" => 'refreshAssociates',
-				"echo-presence:associate.{$this->room->id},AssociateCreatedEvent" => 'refreshAssociates',
-				"echo-presence:associate.{$this->room->id},AssociateDeletedEvent" => 'refreshAssociates',
+				"echo-presence:associate.{$this->room->id},AssociateEvent" => 'refreshAssociates',
 			];
 		}
 	};

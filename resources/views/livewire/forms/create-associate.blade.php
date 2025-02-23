@@ -2,6 +2,7 @@
 
 
 	use App\Events\AssociateCreatedEvent;
+	use App\Events\AssociateEvent;
 	use App\Livewire\Forms\AssociateForm;
 	use App\Models\Room;
 	use Livewire\Volt\Component;
@@ -31,7 +32,6 @@
 		public function saveassociate()
 		{
 			$this->form->create($this->room);
-			event(new AssociateCreatedEvent($this->room->id));
 			$this->redirect(route('negotiation.room', $this->room->id));
 		}
 	}

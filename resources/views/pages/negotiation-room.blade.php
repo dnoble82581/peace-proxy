@@ -22,8 +22,7 @@
 				<livewire:negotiations.negotiation-chat
 						:room="$room" />
 			</div>
-
-
+			
 			{{--BOARD SECTION--}}
 			<x-navigation.tab-navigation
 					container-class="sm:col-span-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg"

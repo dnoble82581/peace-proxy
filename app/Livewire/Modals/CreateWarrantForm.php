@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Modals;
 
-use App\Events\WarrantCreatedEvent;
+use App\Events\WarrantEvent;
 use App\Livewire\Forms\WarrantForm;
 use App\Models\Subject;
 use Illuminate\View\View;
@@ -53,7 +53,7 @@ class CreateWarrantForm extends Modal
     public function addWarrant(): void
     {
         $this->form->createWarrant($this->subject);
-        event(new WarrantCreatedEvent($this->subject->room_id));
+        event(new WarrantEvent($this->subject->room_id, null, 'created'));
         $this->close();
     }
 

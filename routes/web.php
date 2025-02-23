@@ -24,10 +24,10 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/create-negotiation', 'pages.create-negotiation')->name('create.negotiation');
     Route::get('/negotiation/room/{room}', [RoomController::class, 'index'])->name('negotiation.room');
 
-    Route::get('/shell', [PagesController::class, 'shell'])->name('shell')->middleware('admin');
-
     Route::get('/negotiation/tactical/{room}',
         [RoomController::class, 'tacticalRoom'])->name('tactical.room');
+
+    Route::get('/{tenant}/admin/dashboard', [PagesController::class, 'admin'])->name('admin')->middleware('admin');
 
     Route::get('/negotiation/room/{room}/edit-subject/{subject:name}',
         [SubjectController::class, 'update'])->name('edit.subject');

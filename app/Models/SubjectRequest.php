@@ -36,6 +36,11 @@ class SubjectRequest extends Model
         };
     }
 
+    public function deliveryPlans(): MorphMany
+    {
+        return $this->morphMany(DeliveryPlan::class, 'deliverable');
+    }
+
     public function responses(): MorphMany
     {
         return $this->morphMany(Response::class, 'respondable');

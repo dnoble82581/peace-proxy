@@ -4,10 +4,9 @@
 		x-data="{ details: true }"
 		class="dark:bg-gray-700 rounded shadow">
 	<div class="flex items-center justify-between gap-x-6 p-4">
-		<div class="min-w-0">
+		<div class="min-w-0 flex-1">
 			<div class="flex items-start gap-x-3">
 				<p class="text-sm/6 font-semibold dark-light-text capitalize">{{ $demand->title }}</p>
-				<span class="inline-flex items-center rounded-md bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 capitalize">{{ $demand->status }}</span>
 			</div>
 			<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500 dark:text-slate-300">
 				<p class="whitespace-nowrap text-red-700 dark:text-slate-300">Due on
@@ -15,13 +14,53 @@
 				</p>
 			</div>
 		</div>
-		<div class="min-w-0">
+		<div class="min-w-0 flex-1">
 			<div class="flex items-start gap-x-3">
-				<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300">{{ $demand->type }}</p>
+				<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300">Status</p>
 			</div>
 			<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
 				<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
-					<p class="whitespace-nowrap text-gray-500 dark:text-slate-300">{{ $demand->status }}
+					<span class="inline-flex items-center rounded-md  px-1.5 py-0.5 text-xs font-medium {{$demand->getBadgeColor()}} ring-1 ring-inset capitalize">{{ $demand->status }}</span>
+				</div>
+			</div>
+		</div>
+		<div class="min-w-0 flex-1">
+			<div class="flex items-start gap-x-3">
+				<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300 flex items-center gap-2">Delivery
+				                                                                                             Plan</p>
+				<div>
+					<x-dropdown.dropdown>
+						<x-slot:trigger>
+							<button>
+								<x-heroicons::micro.solid.plus class="size-5 text-gray-500" />
+							</button>
+						</x-slot:trigger>
+						<x-slot:content>
+							@if ($demand->deliveryPlans->count())
+								@foreach ($demand->deliveryPlans as $plan)
+									<x-dropdown.dropdown-button value="Add Delivery Plan" />
+								@endforeach
+							@else
+								<span class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition duration-150 ease-in-out">No Plans Created</span>
+							@endif
+						</x-slot:content>
+					</x-dropdown.dropdown>
+				</div>
+			</div>
+			<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
+				<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
+					<p class="whitespace-nowrap text-gray-500 dark:text-slate-300">None
+					</p>
+				</div>
+			</div>
+		</div>
+		<div class="min-w-0 flex-1">
+			<div class="flex items-start gap-x-3">
+				<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300">Responses</p>
+			</div>
+			<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
+				<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
+					<p class="whitespace-nowrap text-gray-500 dark:text-slate-300">None
 					</p>
 				</div>
 			</div>

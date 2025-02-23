@@ -28,11 +28,6 @@ return new class extends Migration
             $table->string('mental_health_history')->nullable();
             $table->longText('physical_description')->nullable();
             $table->longText('notes')->nullable();
-            $table->string('facebook_url')->nullable();
-            $table->string('x_url')->nullable();
-            $table->string('instagram_url')->nullable();
-            $table->string('snapchat_url')->nullable();
-            $table->string('youtube_url')->nullable();
             $table->string('weapons')->nullable();
             $table->boolean('risk_assessment')->default(false);
             $table->text('weapons_details')->nullable();

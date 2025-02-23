@@ -5,7 +5,7 @@ namespace App\Livewire\Modals;
 use App\Enums\PriorityLevel;
 use App\Enums\SubjectRequestStatus;
 use App\Enums\SubjectRequestType;
-use App\Events\RequestEditedEvent;
+use App\Events\SubjectRequestEvent;
 use App\Livewire\Forms\SubjectRequestForm;
 use App\Models\SubjectRequest;
 use WireElements\Pro\Components\Modal\Modal;
@@ -62,7 +62,7 @@ class EditRequestForm extends Modal
     public function editRequest()
     {
         $this->form->updateSubjectRequest($this->subjectRequest);
-        event(new RequestEditedEvent($this->subjectRequest->room_id));
+        event(new SubjectRequestEvent($this->subjectRequest->room_id, $this->subjectRequest->id, 'edited'));
         $this->close();
     }
 

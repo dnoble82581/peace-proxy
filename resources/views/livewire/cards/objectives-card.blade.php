@@ -2,6 +2,7 @@
 
 	use App\Events\ObjectiveDeletedEvent;
 	use App\Events\ObjectiveEditedEvent;
+	use App\Events\ObjectiveEvent;
 	use App\Models\Negotiation;
 	use App\Models\Objective;
 	use Illuminate\Support\Collection;
@@ -47,16 +48,14 @@
 		public function getListeners():array
 		{
 			return [
-				"echo-presence:objective.{$this->roomId},ObjectiveCreatedEvent" => 'refreshObjectives',
-				"echo-presence:objective.{$this->roomId},ObjectiveEditedEvent" => 'refreshObjectives',
-				"echo-presence:objective.{$this->roomId},ObjectiveDeletedEvent" => 'refresh',
+				"echo-presence:objective.{$this->roomId},ObjectiveEvent" => 'refreshObjectives',
 			];
 		}
 
 		public function deleteObjective(Objective $objective):void
 		{
 			$objective->delete();
-			event(new ObjectiveDeletedEvent($this->roomId));
+			event(new ObjectiveEvent($this->roomId, null, 'deleted'));
 		}
 
 		public function refreshObjectives():void
@@ -78,7 +77,7 @@
 					'updated_at' => now()
 				]);
 			}
-			event(new ObjectiveEditedEvent($objective->id, $this->roomId));
+			event(new ObjectiveEvent($this->roomId, $objective->id, 'edited'));
 		}
 	}
 ?>

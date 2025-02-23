@@ -165,15 +165,15 @@ class SubjectForm extends Form
 
     private function syncSocialMedia(): void
     {
-        // If the social_media array is empty, clear the relationship.
-        if (empty($this->social_media)) {
-            $this->subject->socialMediaProviders()->detach();
-
-            return;
-        }
-
-        // Attach or sync the social media providers.
-        $this->subject->socialMediaProviders()->sync($this->social_media);
+        //        // If the social_media array is empty, clear the relationship.
+        //        if (empty($this->social_media)) {
+        //            $this->subject->socialMediaProviders()->detach();
+        //
+        //            return;
+        //        }
+        //
+        //        // Attach or sync the social media providers.
+        //        $this->subject->socialMediaProviders()->sync($this->social_media);
     }
 
     public function deleteImage($imageId): void

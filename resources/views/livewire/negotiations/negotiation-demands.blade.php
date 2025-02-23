@@ -1,6 +1,7 @@
 <?php
 
 	use App\Events\DemandDeletedEvent;
+	use App\Events\DemandEvent;
 	use App\Events\DemandUpdatedEvent;
 	use App\Models\Demand;
 	use App\Models\Room;
@@ -28,9 +29,7 @@
 		public function getListeners():array
 		{
 			return [
-				"echo-presence:demand.{$this->room->id},DemandDeletedEvent" => 'refreshDemands',
-				"echo-presence:demand.{$this->room->id},DemandCreatedEvent" => 'refreshDemands',
-				"echo-presence:demand.{$this->room->id},DemandUpdatedEvent" => 'refreshDemands',
+				"echo-presence:demand.{$this->room->id},DemandEvent" => 'refreshDemands',
 			];
 		}
 
@@ -53,7 +52,6 @@
 			} else {
 				dd('denied');
 			}
-
 		}
 
 		public function deleteDemand($demandId):void
@@ -62,7 +60,7 @@
 			if (auth()->user()->can('delete', $demandToDelete)) {
 				try {
 					$demandToDelete->delete();
-					event(new DemandDeletedEvent($demandId, $this->room->id));
+					event(new DemandEvent($this->room->id, null, 'deleted'));
 				} catch (AuthorizationException $exception) {
 					Session()->flash('error', 'You ar not authorized to delete this demand.');
 				}
@@ -82,7 +80,7 @@
 			if (auth()->user()->can('update', $demand)) {
 				try {
 					$demand->update(['status' => 'requested']);
-					event(new DemandUpdatedEvent($this->room->id, $demand->id));
+					event(new DemandEvent($this->room->id, $demand->id, 'edited'));
 				} catch (AuthorizationException $exception) {
 					Session()->flash('error', 'You are not authorized to edit this demand');
 				}

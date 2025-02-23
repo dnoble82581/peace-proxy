@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Modals;
 
-use App\Events\TriggerCreatedEvent;
+use App\Events\TriggerEvent;
 use App\Models\Room;
 use App\Models\User;
 use Livewire\Attributes\Validate;
@@ -49,12 +49,12 @@ class CreateTriggerForm extends Modal
         $this->user = $this->getUser();
     }
 
-    private function getUser()
+    private function getUser(): User
     {
         return auth()->user();
     }
 
-    public function saveTrigger()
+    public function saveTrigger(): void
     {
         $this->validate();
         $newTrigger = $this->room->subject->triggers()->create([
@@ -63,7 +63,7 @@ class CreateTriggerForm extends Modal
             'tenant_id' => $this->room->tenant_id,
             'subject_id' => $this->room->subject_id,
         ]);
-        event(new TriggerCreatedEvent($newTrigger->id, $this->room->id));
+        event(new TriggerEvent($this->room->id, $newTrigger->id, 'created'));
         $this->close();
     }
 

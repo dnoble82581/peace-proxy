@@ -15,7 +15,7 @@ class RoomController extends Controller
             'messages:id,message,room_id,created_at,user_id,updated_at',
             // Fetch necessary columns
             'messages.user:id,name', // Fetch user data for each message
-            'subject:id,name,address,city,state,zip,phone,tenant_id,room_id,facebook_url,x_url,instagram_url,snapchat_url,youtube_url,weapons,weapons_details',
+            'subject:id,name,address,city,state,zip,phone,tenant_id,room_id,weapons,weapons_details',
             'subject.demands:id,subject_id,tenant_id,type,deadline,description,title,status,notes',
             'subject.moodLogs:id,subject_id,tenant_id,mood,name,created_at',
             'subject.callLogs',
@@ -36,7 +36,32 @@ class RoomController extends Controller
         ]);
     }
 
-    public function tacticalRoom() {}
+    public function tacticalRoom($roomId)
+    {
+        $room = Room::with([
+            'messages:id,message,room_id,created_at,user_id,updated_at',
+            // Fetch necessary columns
+            'messages.user:id,name', // Fetch user data for each message
+            'subject:id,name,address,city,state,zip,phone,tenant_id,room_id,weapons,weapons_details',
+            'subject.demands:id,subject_id,tenant_id,type,deadline,description,title,status,notes',
+            'subject.moodLogs:id,subject_id,tenant_id,mood,name,created_at',
+            'subject.callLogs',
+            'subject.warnings:id,subject_id,user_id,tenant_id,room_id,warning_type,warning',
+            'subject.documents:id,documentable_id,filename,size,updated_at,extension,type,created_at',
+            'requests',
+        ])->findOrFail($roomId);
+
+        // Perform authorization check directly on the retrieved instance
+        if (auth()->user()->cannot('view', $room)) {
+            abort(403, 'Sorry, You are not authorized to view this room.');
+        }
+
+        Redis::set('room_id', $room->id);
+
+        return view('pages.tactical', [
+            'room' => $room,
+        ]);
+    }
 
     public function store(Request $request)
     {
