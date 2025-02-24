@@ -14,7 +14,6 @@ return new class extends Migration
             $table->text('special_instructions')->nullable();
             $table->string('title')->default('Primary Delivery Plan');
             $table->text('notes')->nullable();
-            $table->nullableMorphs('deliverable');
             $table->foreignId('user_id');
             $table->foreignId('room_id');
             $table->foreignId('tenant_id');

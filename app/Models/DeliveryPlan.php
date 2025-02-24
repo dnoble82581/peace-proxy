@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class DeliveryPlan extends Model
 {
@@ -30,8 +30,13 @@ class DeliveryPlan extends Model
         return $this->morphMany(Document::class, 'documentable');
     }
 
-    public function deliverable(): MorphTo
+    public function requests(): MorphToMany
     {
-        return $this->morphTo();
+        return $this->morphedByMany(SubjectRequest::class, 'deliverable');
+    }
+
+    public function demands(): MorphToMany
+    {
+        return $this->morphedByMany(Demand::class, 'deliverable');
     }
 }

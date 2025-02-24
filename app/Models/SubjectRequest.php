@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class SubjectRequest extends Model
 {
@@ -36,9 +37,9 @@ class SubjectRequest extends Model
         };
     }
 
-    public function deliveryPlans(): MorphMany
+    public function deliveryPlans(): MorphToMany
     {
-        return $this->morphMany(DeliveryPlan::class, 'deliverable');
+        return $this->morphToMany(DeliveryPlan::class, 'deliverable');
     }
 
     public function responses(): MorphMany

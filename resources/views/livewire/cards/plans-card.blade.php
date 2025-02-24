@@ -1,6 +1,7 @@
 <?php
 
 	use App\Events\DeliveryPlanEvent;
+	use App\Events\DemandEvent;
 	use App\Events\DocumentDeletedEvent;
 	use App\Models\DeliveryPlan;
 	use App\Models\Room;
@@ -13,7 +14,7 @@
 
 		public function mount($roomId)
 		{
-			$this->room = Room::findOrFail($roomId)->load('deliveryPlans');
+			$this->room = Room::findOrFail($roomId);
 		}
 
 		public function createDeliveryPlan()
@@ -51,6 +52,8 @@
 			}
 			$deliveryPlanToDelete->delete();
 			event(new DeliveryPlanEvent($this->room->id, null, 'deleted'));
+			event(new DemandEvent($this->room->id, null, 'edited'));
+
 		}
 
 		private function fetchDeliveryPlan($deliveryPlanId):DeliveryPlan

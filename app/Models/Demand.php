@@ -6,7 +6,7 @@ use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Demand extends Model
 {
@@ -19,14 +19,9 @@ class Demand extends Model
         return $this->belongsTo(Subject::class);
     }
 
-    public function deliveryPlans(): MorphMany
+    public function deliveryPlans(): MorphToMany
     {
-        return $this->morphMany(DeliveryPlan::class, 'deliverable');
-    }
-
-    public function responses(): MorphMany
-    {
-        return $this->morphMany(Response::class, 'respondable');
+        return $this->morphToMany(DeliveryPlan::class, 'deliverable');
     }
 
     public function getBadgeColor(): string

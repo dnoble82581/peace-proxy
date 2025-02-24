@@ -1,8 +1,7 @@
 <?php
 
-	use App\Events\DemandDeletedEvent;
 	use App\Events\DemandEvent;
-	use App\Events\DemandUpdatedEvent;
+	use App\Models\DeliveryPlan;
 	use App\Models\Demand;
 	use App\Models\Room;
 	use App\Models\User;
@@ -87,6 +86,13 @@
 			}
 		}
 
+		public function attachDeliveryPlan($planId, $demandId)
+		{
+			$demandToReceive = $this->getDemand($demandId);
+			$demandToReceive->deliveryPlans()->attach($planId);
+			event(new DemandEvent($this->room->id, $demandId, 'edited'));
+		}
+
 		private function getDemand($demandId):Demand
 		{
 			return Demand::findorFail($demandId);
@@ -140,6 +146,7 @@
 					<x-cards.demand-card
 							wire:key="demand-card-{{$demand->id}}"
 							:demand="$demand"
+							:room="$room"
 					/>
 				</div>
 			@endforeach

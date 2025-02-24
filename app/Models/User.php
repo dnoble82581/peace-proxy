@@ -112,11 +112,6 @@ class User extends Authenticatable
         return $this->hasMany(Message::class);
     }
 
-    public function deliveryPlans(): HasMany
-    {
-        return $this->hasMany(DeliveryPlan::class);
-    }
-
     /**
      * Get the attributes that should be cast.
      *

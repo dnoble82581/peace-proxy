@@ -3,6 +3,7 @@
 namespace App\Livewire\Modals;
 
 use App\Events\DeliveryPlanEvent;
+use App\Events\DemandEvent;
 use App\Models\DeliveryPlan;
 use App\Models\Room;
 use App\Services\DocumentProcessor;
@@ -77,6 +78,8 @@ class CreateDeliveryPlan extends Modal
                 $this->handleDocuments($this->deliveryPlan);
             }
             event(new DeliveryPlanEvent($this->room->id, $this->deliveryPlan->id, 'updated'));
+            event(new DemandEvent($this->room->id, null, 'edited'));
+
         } else {
             // Create new delivery plan
             $newDeliveryPlan = $this->room->deliveryPlans()->create([
@@ -94,6 +97,8 @@ class CreateDeliveryPlan extends Modal
                 $this->handleDocuments($newDeliveryPlan);
             }
             event(new DeliveryPlanEvent($this->room->id, null, 'created'));
+            event(new DemandEvent($this->room->id, null, 'edited'));
+
         }
         $this->close();
     }

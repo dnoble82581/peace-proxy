@@ -1,5 +1,5 @@
 @php use Carbon\Carbon; @endphp
-@props(['demand'])
+@props(['demand', 'room'])
 <li
 		x-data="{ details: true }"
 		class="dark:bg-gray-700 rounded shadow">
@@ -36,9 +36,11 @@
 							</button>
 						</x-slot:trigger>
 						<x-slot:content>
-							@if ($demand->deliveryPlans->count())
-								@foreach ($demand->deliveryPlans as $plan)
-									<x-dropdown.dropdown-button value="Add Delivery Plan" />
+							@if ($room->deliveryPlans->count())
+								@foreach ($room->deliveryPlans as $plan)
+									<x-dropdown.dropdown-button
+											wire:click="attachDeliveryPlan({{ $plan->id }}, {{ $demand->id }})"
+											:value="$plan->title" />
 								@endforeach
 							@else
 								<span class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition duration-150 ease-in-out">No Plans Created</span>
@@ -49,7 +51,14 @@
 			</div>
 			<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
 				<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
-					<p class="whitespace-nowrap text-gray-500 dark:text-slate-300">None
+					<p class="whitespace-nowrap text-gray-500 dark:text-slate-300">
+						@if ($demand->deliveryPlans->count())
+							@foreach ($demand->deliveryPlans as $plan)
+								{{ $plan->title }}
+							@endforeach
+						@else
+							None
+						@endif
 					</p>
 				</div>
 			</div>

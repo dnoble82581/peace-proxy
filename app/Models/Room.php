@@ -38,6 +38,11 @@ class Room extends Model
         return $this->hasOne(Subject::class);
     }
 
+    public function deliveryPlans(): HasMany
+    {
+        return $this->hasMany(DeliveryPlan::class);
+    }
+
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class);
@@ -51,11 +56,5 @@ class Room extends Model
     public function rfis(): HasMany
     {
         return $this->hasMany(RequestForInformation::class);
-    }
-
-    public function deliveryPlans(): HasMany
-    {
-        return $this->hasMany(DeliveryPlan::class);
-
     }
 }
