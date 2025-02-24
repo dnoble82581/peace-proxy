@@ -25,6 +25,25 @@
 	<x-textarea
 			label="Delivery Notes"
 			wire:model="notes" />
+	<div class="flex items-center gap-4">
+		@if($old_documents)
+			@foreach($old_documents as $document)
+				<div>
+					<x-heroicons::outline.paper-clip class="w-6 h-6" />
+					<p class="text-xs">{{ $document->type }}</p>
+					<button wire:click="deleteDocument({{ $document->id }})">
+						<x-heroicons::outline.trash class="size-4 text-red-500" />
+					</button>
+					<a
+							class="inline-flex"
+							href="{{ $document->privateUrl() }}"
+							target="_blank">
+						<x-heroicons::outline.envelope-open class="size-4 text-blue-500" />
+					</a>
+				</div>
+			@endforeach
+		@endif
+	</div>
 	<div>
 		<x-label
 				class="mb-2"

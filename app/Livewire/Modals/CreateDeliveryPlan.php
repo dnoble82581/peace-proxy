@@ -5,6 +5,7 @@ namespace App\Livewire\Modals;
 use App\Events\DeliveryPlanEvent;
 use App\Events\DemandEvent;
 use App\Models\DeliveryPlan;
+use App\Models\Document;
 use App\Models\Room;
 use App\Services\DocumentProcessor;
 use Exception;
@@ -34,6 +35,8 @@ class CreateDeliveryPlan extends Modal
 
     #[Validate(['documents' => 'nullable|array', 'documents.*' => 'file|mimes:pdf|max:10240'])]
     public $documents = [];
+
+    public $old_documents = [];
 
     public static function behavior(): array
     {
@@ -123,13 +126,29 @@ class CreateDeliveryPlan extends Modal
             $this->special_instructions = $this->deliveryPlan->special_instructions;
             $this->title = $this->deliveryPlan->title;
             $this->notes = $this->deliveryPlan->notes;
-        }
 
+            if ($this->deliveryPlan->documents->count()) {
+                foreach ($this->deliveryPlan->documents as $document) {
+                    $this->old_documents[] = $document;
+                }
+            }
+        }
     }
 
     private function getRoom($roomId): Room
     {
         return Room::findOrFail($roomId);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function deleteDocument($documentId)
+    {
+        $document = Document::findOrFail($documentId);
+        $documentProcessor = new DocumentProcessor;
+        $documentProcessor->deleteDocument($this->deliveryPlan, $document->filename);
+
     }
 
     public function render()

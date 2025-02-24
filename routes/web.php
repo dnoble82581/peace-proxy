@@ -7,6 +7,7 @@ use App\Http\Controllers\PagesController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\UserController;
+use App\Models\DeliveryPlan;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'pages.welcome');
@@ -20,6 +21,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/documents/user/{user}/{filename}', [DocumentController::class, 'showUserDocument']);
     Route::get('/documents/subject/{subject}/{filename}', [DocumentController::class, 'showSubjectDocument']);
+    Route::get('/documents/deliveryplan/{deliveryplan}/{filename}', function ($deliveryPlanId, $filename) {
+        $deliveryPlan = DeliveryPlan::findOrFail($deliveryPlanId);
+
+        return app(DocumentController::class)->showDeliveryPlanDocument($deliveryPlan, $filename);
+    });
 
     Route::view('/create-negotiation', 'pages.create-negotiation')->name('create.negotiation');
     Route::get('/negotiation/room/{room}', [RoomController::class, 'index'])->name('negotiation.room');

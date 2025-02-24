@@ -29,6 +29,12 @@
 				arguments: ['roomId' => $this->room->id, 'deliveryPlanId' => $deliveryPlanId]);
 		}
 
+		public function showDeliveryPlan($planId)
+		{
+			$this->dispatch('modal.open', component: 'modals.show-delivery-plan',
+				arguments: ['deliveryPlanId' => $planId]);
+		}
+
 		public function deleteDeliveryPlan($deliveryPlanId):void
 		{
 			$deliveryPlanToDelete = $this->fetchDeliveryPlan($deliveryPlanId);
@@ -105,6 +111,7 @@
 					</td>
 					<td class="relative py-2 gap-3 pr-4 pl-3 text-left text-xs font-medium whitespace-nowrap sm:pr-3 flex">
 						<button
+								wire:click="showDeliveryPlan({{ $deliveryPlan->id }})"
 								type="button">
 							<x-heroicons::outline.envelope-open class="w-4 h-4 hover:text-indigo-500 text-indigo-400 cursor-pointer" />
 						</button>

@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DeliveryPlan;
 use App\Models\Document;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Storage;
+use Log;
 
 class DocumentController extends Controller
 {
@@ -26,40 +28,61 @@ class DocumentController extends Controller
 
     private function showDocument($entity, $filename)
     {
-
-        if (! ($entity instanceof User || $entity instanceof Subject)) {
+        if (! ($entity instanceof User || $entity instanceof Subject || $entity instanceof DeliveryPlan)) {
             abort(400, 'Invalid entity type.');
         }
 
-        // find the document from db
+        // Find the document from DB
         $document = $entity->documents()->where('filename', $filename)->first();
         if (! $document) {
             abort(404, 'Document not found.');
         }
 
-        // authorize the user making request
+        // Authorize the user making the request
         if (! request()->user()->can('view', $document)) {
             abort(403, 'You are not authorized to view this document.');
         }
 
+        // Build the file path based on entity type
         if (class_basename($entity) === 'User') {
-            $filePath = '/documents/user/'.$entity->id.'/'.$filename;
+            $filePath = 'documents/user/'.$entity->id.'/'.$filename;
+        } elseif (class_basename($entity) === 'DeliveryPlan') {
+            $filePath = 'documents/deliveryplan/'.$entity->id.'/'.$filename;
         } else {
-            $filePath = '/documents/subject/'.$entity->id.'/'.$filename;
+            $filePath = 'documents/subject/'.$entity->id.'/'.$filename;
         }
-        // build the file path based on entity type
 
-        // stream the file to the browser
+        // Log file path for debugging
+        Log::info("Attempting to access file: {$filePath}");
+
+        // Verify if the file exists on S3
+        if (! Storage::disk('s3')->exists($filePath)) {
+            abort(404, 'File not found on S3.');
+        }
+
+        // Stream the file to the browser
         if ($document->extension === 'pdf') {
+            // Optionally use a signed URL for secure access
+            //            $signedUrl = Storage::disk('s3')->temporaryUrl($filePath, now()->addMinutes(10));
+            //
+            //            return redirect($signedUrl);
+
+            // Or directly stream the content
             return response(Storage::disk('s3')->get($filePath))
                 ->header('Content-Type', 'application/pdf');
         }
 
         return '#';
+
     }
 
     public function showSubjectDocument(Subject $subject, $filename)
     {
         return $this->showDocument($subject, $filename);
+    }
+
+    public function showDeliveryPlanDocument(DeliveryPlan $deliveryPlan, $filename)
+    {
+        return $this->showDocument($deliveryPlan, $filename);
     }
 }
