@@ -53,7 +53,7 @@
 			</div>
 			<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
 				<div class="mt-1 text-xs/5 text-gray-500">
-					@if ($demand->plans->count())
+					@if ($demand->plans()->count())
 						@foreach ($demand->plans as $plan)
 							<div class="gap-x-2 text-xs/5 text-gray-500">
 								<button

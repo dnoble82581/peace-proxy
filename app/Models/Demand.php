@@ -22,7 +22,14 @@ class Demand extends Model
 
     public function plans(): MorphToMany
     {
-        return $this->morphToMany(Plan::class, 'deliverable');
+        return $this->morphToMany(
+            Plan::class,         // The related model
+            'deliverable',       // The polymorphic name ('deliverable_id' + 'deliverable_type')
+            'deliverables',      // The pivot table name
+            'deliverable_id',    // Foreign key for the parent model in the pivot table
+            'plan_id'            // Foreign key for the related model in the pivot table
+        );
+
     }
 
     public function responses(): MorphMany
