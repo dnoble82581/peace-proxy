@@ -2,18 +2,19 @@
 
 namespace App\Livewire\Modals;
 
-use App\Events\ResponseCreatedEvent;
-use App\Models\Room;
-use App\Models\SubjectRequest;
+use App\Events\ResponseEvent;
+use App\Models\Demand;
+use Livewire\Attributes\Validate;
 use WireElements\Pro\Components\Modal\Modal;
 
-class CreateResponseForm extends Modal
+class CreateResponse extends Modal
 {
-    public Room $room;
+    public ?Demand $demand;
 
-    public string $response;
+    public int $roomId;
 
-    public SubjectRequest $subjectRequest;
+    #[Validate('required|string|min:3')]
+    public string $responseBody;
 
     public static function behavior(): array
     {
@@ -34,42 +35,44 @@ class CreateResponseForm extends Modal
         return [
             // Set the modal size to 2xl, you can choose between:
             // xs, sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl, 6xl, 7xl, fullscreen
-            'size' => '2xl',
+            'size' => '4xl',
         ];
     }
 
-    public function mount($roomId, $requestId)
+    public function cancel()
     {
-        $this->room = $this->getRoom($roomId);
-        $this->subjectRequest = $this->getRequest($requestId);
+        $this->close();
     }
 
-    private function getRoom($roomId)
+    public function mount($demandId, $roomId)
     {
-        return Room::findOrFail($roomId);
+        $this->demand = $this->getDemand($demandId);
+        $this->roomId = $roomId;
     }
 
-    private function getRequest($requestId)
+    private function getDemand($demandId): Demand
     {
-        return SubjectRequest::findOrFail($requestId);
+        return Demand::findOrFail($demandId);
     }
 
     public function saveResponse()
     {
-        $this->validate(['response' => 'required|string|max:255']);
-        $this->subjectRequest->responses()->create([
-            'body' => $this->response,
-            'room_id' => $this->room->id,
-            'subject_id' => $this->room->subject_id,
+        $this->validate();
+        $newResponse = $this->demand->responses()->create([
             'user_id' => auth()->user()->id,
-            'tenant_id' => $this->room->tenant_id,
+            'room_id' => $this->roomId,
+            'tenant_id' => $this->demand->tenant_id,
+            'body' => $this->responseBody,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
-        event(new ResponseCreatedEvent($this->room->id));
+
+        event(new ResponseEvent($this->roomId, $newResponse->id, 'created'));
         $this->close();
     }
 
     public function render()
     {
-        return view('livewire.modals.create-response-form');
+        return view('livewire.modals.create-response');
     }
 }

@@ -61,6 +61,13 @@
 					</div>
 				</div>
 
+				{{--				Demands--}}
+				<div x-show="tab === 'demands'">
+					<div class="mt-4 max-h-[50rem] overflow-y-auto sticky top-0 overflow-x-hidden">
+						<livewire:negotiations.negotiation-demands :room="$room" />
+					</div>
+				</div>
+
 				{{--Objectives--}}
 				<div
 						x-show="tab === 'objectives'"

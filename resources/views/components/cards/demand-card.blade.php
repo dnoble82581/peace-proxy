@@ -29,24 +29,26 @@
 				<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300 flex items-center gap-2">
 					Plans</p>
 				<div>
-					<x-dropdown.dropdown>
-						<x-slot:trigger>
-							<button>
-								<x-heroicons::micro.solid.plus class="size-5 text-gray-500" />
-							</button>
-						</x-slot:trigger>
-						<x-slot:content>
-							@if ($room->plans->count())
-								@foreach ($room->plans as $plan)
-									<x-dropdown.dropdown-button
-											wire:click="attachDeliveryPlan({{ $plan->id }}, {{ $demand->id }})"
-											:value="$plan->title" />
-								@endforeach
-							@else
-								<span class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition duration-150 ease-in-out">No Plans Created</span>
-							@endif
-						</x-slot:content>
-					</x-dropdown.dropdown>
+					@can('attach', App\Models\Plan::class)
+						<x-dropdown.dropdown>
+							<x-slot:trigger>
+								<button>
+									<x-heroicons::micro.solid.plus class="size-4 text-gray-500" />
+								</button>
+							</x-slot:trigger>
+							<x-slot:content>
+								@if ($room->plans->count())
+									@foreach ($room->plans as $plan)
+										<x-dropdown.dropdown-button
+												wire:click="attachDeliveryPlan({{ $plan->id }}, {{ $demand->id }})"
+												:value="$plan->title" />
+									@endforeach
+								@else
+									<span class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition duration-150 ease-in-out">No Plans Created</span>
+								@endif
+							</x-slot:content>
+						</x-dropdown.dropdown>
+					@endcan
 				</div>
 			</div>
 			<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
@@ -56,10 +58,12 @@
 							<div class="gap-x-2 text-xs/5 text-gray-500">
 								<button
 										wire:click="showPlan({{ $plan->id }})"
-										class="whitespace-nowrap text-gray-500 dark:text-slate-300">{{ $plan->title }}</button>
-								<button wire:click="detachDeliveryPlan({{ $plan->id }}, {{ $demand->id }})">
-									<x-heroicons::outline.trash class="size-3 text-rose-400" />
-								</button>
+										class="whitespace-nowrap text-blue-500 dark:text-blue-300">{{ $plan->title }}</button>
+								@can('detach', App\Models\Plan::class)
+									<button wire:click="detachDeliveryPlan({{ $plan->id }}, {{ $demand->id }})">
+										<x-heroicons::outline.trash class="size-3 text-rose-400" />
+									</button>
+								@endcan
 							</div>
 						@endforeach
 					@else
@@ -70,12 +74,22 @@
 		</div>
 		<div class="min-w-0 flex-1">
 			<div class="flex items-start gap-x-3">
-				<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300">Responses</p>
+				<div class="flex items-center gap-x-2 text-xs/5 text-gray-500">
+					<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300">Responses</p>
+					@can('create', App\Models\Response::class)
+						<button wire:click="createResponse({{ $demand->id }})">
+							<x-heroicons::micro.solid.plus class="size-4" />
+						</button>
+					@endcan
+				</div>
 			</div>
 			<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
 				<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
-					<p class="whitespace-nowrap text-gray-500 dark:text-slate-300">None
-					</p>
+					@if ($demand->responses()->exists())
+						<button>Responses: {{ $demand->responses()->count() }}</button>
+					@else
+						<p class="whitespace-nowrap text-gray-500 dark:text-slate-300">None</p>
+					@endif
 				</div>
 			</div>
 		</div>

@@ -8,6 +8,7 @@
 	use App\Traits\Searchable;
 	use Illuminate\Auth\Access\AuthorizationException;
 	use Illuminate\Support\Collection;
+	use JetBrains\PhpStorm\NoReturn;
 	use Livewire\Volt\Component;
 
 	new class extends Component {
@@ -29,6 +30,7 @@
 		{
 			return [
 				"echo-presence:demand.{$this->room->id},DemandEvent" => 'refreshDemands',
+				"echo-presence:response.{$this->room->id},ResponseEvent" => 'refreshDemands',
 			];
 		}
 
@@ -86,21 +88,28 @@
 			}
 		}
 
-		public function attachDeliveryPlan($planId, $demandId)
+		public function createResponse($demandId)
+		{
+			$this->dispatch('modal.open', component: 'modals.create-response', arguments: [
+				'demandId' => $demandId, 'roomId' => $this->room->id
+			]);
+		}
+
+		public function attachDeliveryPlan($planId, $demandId):void
 		{
 			$demandToReceive = $this->getDemand($demandId);
 			$demandToReceive->plans()->attach($planId);
 			event(new DemandEvent($this->room->id, $demandId, 'edited'));
 		}
 
-		public function detachDeliveryPlan($planId, $demandId)
+		public function detachDeliveryPlan($planId, $demandId):void
 		{
 			$demandToDetach = $this->getDemand($demandId);
 			$demandToDetach->plans()->detach($planId);
 			event(new DemandEvent($this->room->id, $demandId, 'edited'));
 		}
 
-		public function showPlan($planId)
+		public function showPlan($planId):void
 		{
 			$this->dispatch('modal.open', component: 'modals.show-delivery-plan',
 				arguments: ['deliveryPlanId' => $planId]);

@@ -19,8 +19,7 @@ class HookPolicy
 
     public function create(User $user): bool
     {
-        return $user->title === 'Recorder';
-
+        return $user->role === 'Recorder';
     }
 
     public function update(User $user, Hook $hook): bool {}

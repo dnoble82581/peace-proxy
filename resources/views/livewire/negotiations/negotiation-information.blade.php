@@ -48,7 +48,7 @@
 						<x-heroicons::micro.solid.identification class="w-5 h-5 mr-2" />
 						<span>Information</span>
 					</button>
-					@if(auth()->user()->role === 'Tactical Lead')
+					@can('viewAny', App\Models\Plan::class)
 						<button
 								@click="tab = 'plans'"
 								class="group inline-flex items-center border-b-2 px-1 py-2 text-sm font-medium"
@@ -56,7 +56,7 @@
 							<x-heroicons::micro.solid.identification class="w-5 h-5 mr-2" />
 							<span>Plans</span>
 						</button>
-					@endif
+					@endcan
 				</div>
 				<div>
 					<button
@@ -81,10 +81,10 @@
 		<div x-show="tab === 'negotiation'">
 			<x-cards.negotiations.general-negotiation-card :negotiation="$negotiation" />
 		</div>
-		@if(auth()->user()->role === 'Tactical Lead')
+		@can('viewAny', App\Models\Plan::class)
 			<div x-show="tab === 'plans'">
 				<livewire:cards.plans-card :roomId="$this->room->id" />
 			</div>
-		@endif
+		@endcan
 	</div>
 </div>

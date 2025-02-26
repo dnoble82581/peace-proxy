@@ -107,6 +107,11 @@ class User extends Authenticatable
         return $this->hasMany(Message::class);
     }
 
+    public function responses(): HasMany
+    {
+        return $this->hasMany(Response::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *

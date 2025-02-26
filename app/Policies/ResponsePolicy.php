@@ -16,7 +16,7 @@ class ResponsePolicy
 
     public function create(User $user): bool
     {
-        return $user->hasRole('tactical-lead');
+        return in_array($user->role, ['Tactical Lead', 'Incident Command']);
     }
 
     public function update(User $user, Response $response): bool {}

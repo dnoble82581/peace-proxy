@@ -164,11 +164,13 @@
 
 			<x-slot:rightActions>
 				<x-form-elements.comoponent-search field="search" />
-				<button
-						wire:click="addHook"
-						class="flex items-center">
-					<x-heroicons::mini.solid.plus class="w-5 h-5 text-slate-700 dark:text-slate-300" />
-				</button>
+				@can('create', App\Models\Hook::class)
+					<button
+							wire:click="addHook"
+							class="flex items-center">
+						<x-heroicons::mini.solid.plus class="w-5 h-5 text-slate-700 dark:text-slate-300" />
+					</button>
+				@endcan
 			</x-slot:rightActions>
 		</x-board-elements.category-header>
 	</div>
