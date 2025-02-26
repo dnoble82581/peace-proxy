@@ -22,7 +22,6 @@ class ConversationService
     {
         return Conversation::where('room_id', $roomId)
             ->where('tenant_id', $tenantId)
-            ->where('is_active', true)
             ->whereHas('participants', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })
