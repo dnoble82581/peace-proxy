@@ -7,6 +7,7 @@ use App\Models\Room;
 use App\Models\User;
 use DB;
 use Illuminate\Database\Eloquent\Collection;
+use Throwable;
 
 class ConversationService
 {
@@ -45,6 +46,9 @@ class ConversationService
         );
     }
 
+    /**
+     * @throws Throwable
+     */
     public function createPrivateChat(array $userIds, $roomId, $userId): Conversation
     {
         $authUser = User::findOrfail($userId);

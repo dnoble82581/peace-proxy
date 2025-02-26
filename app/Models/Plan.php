@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
-class DeliveryPlan extends Model
+class Plan extends Model
 {
     use BelongsToTenant, HasFactory;
 

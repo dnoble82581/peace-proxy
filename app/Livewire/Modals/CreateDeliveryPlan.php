@@ -4,8 +4,8 @@ namespace App\Livewire\Modals;
 
 use App\Events\DeliveryPlanEvent;
 use App\Events\DemandEvent;
-use App\Models\DeliveryPlan;
 use App\Models\Document;
+use App\Models\Plan;
 use App\Models\Room;
 use App\Services\DocumentProcessor;
 use Exception;
@@ -17,7 +17,7 @@ class CreateDeliveryPlan extends Modal
 {
     public Room $room;
 
-    public ?DeliveryPlan $deliveryPlan = null;
+    public ?Plan $plan = null;
 
     use WithFileUploads;
 
@@ -67,9 +67,9 @@ class CreateDeliveryPlan extends Modal
     public function saveDeliveryPlan(): void
     {
         $this->validate();
-        if ($this->deliveryPlan) {
+        if ($this->plan) {
             // Update existing delivery plan
-            $this->deliveryPlan->update([
+            $this->plan->update([
                 'delivery_location' => $this->delivery_location,
                 'special_instructions' => $this->special_instructions,
                 'title' => $this->title,
@@ -78,14 +78,14 @@ class CreateDeliveryPlan extends Modal
             ]);
 
             if ($this->documents) {
-                $this->handleDocuments($this->deliveryPlan);
+                $this->handleDocuments($this->plan);
             }
-            event(new DeliveryPlanEvent($this->room->id, $this->deliveryPlan->id, 'updated'));
+            event(new DeliveryPlanEvent($this->room->id, $this->plan->id, 'updated'));
             event(new DemandEvent($this->room->id, null, 'edited'));
 
         } else {
             // Create new delivery plan
-            $newDeliveryPlan = $this->room->deliveryPlans()->create([
+            $newPlan = $this->room->plans()->create([
                 'delivery_location' => $this->delivery_location,
                 'special_instructions' => $this->special_instructions,
                 'title' => $this->title,
@@ -97,7 +97,7 @@ class CreateDeliveryPlan extends Modal
             ]);
 
             if ($this->documents) {
-                $this->handleDocuments($newDeliveryPlan);
+                $this->handleDocuments($newPlan);
             }
             event(new DeliveryPlanEvent($this->room->id, null, 'created'));
             event(new DemandEvent($this->room->id, null, 'edited'));
@@ -115,20 +115,21 @@ class CreateDeliveryPlan extends Modal
         $documentProcessor->processDocuments($this->documents, $newDeliveryPlan, auth()->user()->id);
     }
 
-    public function mount($roomId, $deliveryPlanId = null): void
+    public function mount($roomId, $planId = null): void
     {
+
         $this->room = $this->getRoom($roomId);
 
-        if ($deliveryPlanId) {
-            $this->deliveryPlan = $this->room->deliveryPlans()->findOrFail($deliveryPlanId);
+        if ($planId) {
+            $this->plan = $this->room->plans()->findOrFail($planId);
 
-            $this->delivery_location = $this->deliveryPlan->delivery_location;
-            $this->special_instructions = $this->deliveryPlan->special_instructions;
-            $this->title = $this->deliveryPlan->title;
-            $this->notes = $this->deliveryPlan->notes;
+            $this->delivery_location = $this->plan->delivery_location;
+            $this->special_instructions = $this->plan->special_instructions;
+            $this->title = $this->plan->title;
+            $this->notes = $this->plan->notes;
 
-            if ($this->deliveryPlan->documents->count()) {
-                foreach ($this->deliveryPlan->documents as $document) {
+            if ($this->plan->documents->count()) {
+                foreach ($this->plan->documents as $document) {
                     $this->old_documents[] = $document;
                 }
             }
@@ -143,11 +144,11 @@ class CreateDeliveryPlan extends Modal
     /**
      * @throws Exception
      */
-    public function deleteDocument($documentId)
+    public function deleteDocument($documentId): void
     {
         $document = Document::findOrFail($documentId);
         $documentProcessor = new DocumentProcessor;
-        $documentProcessor->deleteDocument($this->deliveryPlan, $document->filename);
+        $documentProcessor->deleteDocument($this->plan, $document->filename);
 
     }
 

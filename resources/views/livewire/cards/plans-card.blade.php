@@ -3,7 +3,7 @@
 	use App\Events\DeliveryPlanEvent;
 	use App\Events\DemandEvent;
 	use App\Events\DocumentDeletedEvent;
-	use App\Models\DeliveryPlan;
+	use App\Models\Plan;
 	use App\Models\Room;
 	use App\Services\DocumentProcessor;
 	use Livewire\Volt\Component;
@@ -26,7 +26,7 @@
 		public function editDeliveryPlan($deliveryPlanId)
 		{
 			$this->dispatch('modal.open', component: 'modals.create-delivery-plan',
-				arguments: ['roomId' => $this->room->id, 'deliveryPlanId' => $deliveryPlanId]);
+				arguments: ['roomId' => $this->room->id, 'planId' => $deliveryPlanId]);
 		}
 
 		public function showDeliveryPlan($planId)
@@ -38,8 +38,9 @@
 		public function deleteDeliveryPlan($deliveryPlanId):void
 		{
 			$deliveryPlanToDelete = $this->fetchDeliveryPlan($deliveryPlanId);
+//			dd($deliveryPlanToDelete->documents);
 
-			if ($deliveryPlanToDelete->documents()->count()) {
+			if ($deliveryPlanToDelete->documents()->exists()) {
 				foreach ($deliveryPlanToDelete->documents as $document) {
 					try {
 						$documentProcessor = new DocumentProcessor();
@@ -62,9 +63,9 @@
 
 		}
 
-		private function fetchDeliveryPlan($deliveryPlanId):DeliveryPlan
+		private function fetchDeliveryPlan($deliveryPlanId):Plan
 		{
-			return DeliveryPlan::findOrFail($deliveryPlanId);
+			return Plan::findOrFail($deliveryPlanId);
 		}
 
 		public function getListeners()
@@ -83,24 +84,14 @@
 ?>
 
 <div>
-	<x-dropdown.dropdown>
-		<x-slot:trigger>
-			<div class="flex justify-end px-4">
-				<button>
-					<x-heroicons::micro.solid.plus class="w-5 h-5 hover:text-gray-500 text-gray-400 cursor-pointer" />
-				</button>
-			</div>
-		</x-slot:trigger>
-		<x-slot:content>
-			<x-dropdown.dropdown-button
-					value="Create Delivery Plan"
-					wire:click="createDeliveryPlan" />
-			<x-dropdown.dropdown-button value="Create Resolution Plan" />
-		</x-slot:content>
-	</x-dropdown.dropdown>
+	<div class="flex justify-end px-4">
+		<button wire:click="createDeliveryPlan">
+			<x-heroicons::micro.solid.plus class="w-5 h-5 hover:text-gray-500 text-gray-400 cursor-pointer" />
+		</button>
+	</div>
 	<x-table-elements.subject-card-table-layout :labels="['Title', 'Location','Documents', 'Created By', 'Actions']">
 		<x-slot:content>
-			@foreach($this->room->deliveryPlans as $deliveryPlan)
+			@foreach($this->room->plans as $deliveryPlan)
 				<tr class="even:bg-gray-50 dark:even:bg-slate-900">
 					<td class="py-2 pr-3 pl-4 text-xs font-medium whitespace-nowrap dark-light-text sm:pl-3">
 						{{ $deliveryPlan->title }}

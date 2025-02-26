@@ -1,7 +1,7 @@
 <x-form-layouts.form-layout submit="saveDeliveryPlan">
 	<x-errors />
 	<x-slot:header>
-		Create Delivery Plan
+		{{ $this->plan ? 'Edit Plan' : 'Create Plan' }}
 	</x-slot:header>
 	<x-slot:description>
 		Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid amet asperiores, deleniti est exercitationem
@@ -9,7 +9,7 @@
 		vel.
 	</x-slot:description>
 	<x-slot:actions>
-		<x-buttons.primary-button type="submit">create</x-buttons.primary-button>
+		<x-buttons.primary-button type="submit">{{ $this->plan ? 'Save' : 'Create' }}</x-buttons.primary-button>
 		<x-buttons.secondary-button wire:click="$dispatch('modal.close')">cancel</x-buttons.secondary-button>
 	</x-slot:actions>
 
@@ -17,13 +17,13 @@
 			label="Title"
 			wire:model="title" />
 	<x-input
-			label="Delivery Location"
+			label="Location"
 			wire:model="delivery_location" />
 	<x-textarea
 			label="Special Instructions"
 			wire:model="special_instructions" />
 	<x-textarea
-			label="Delivery Notes"
+			label="Notes"
 			wire:model="notes" />
 	<div class="flex items-center gap-4">
 		@if($old_documents)

@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\DeliveryPlan;
+use App\Models\Plan;
 use App\Models\Room;
 use App\Models\Tenant;
 use App\Models\User;
@@ -11,7 +11,7 @@ use Illuminate\Support\Carbon;
 
 class DeliveryPlanFactory extends Factory
 {
-    protected $model = DeliveryPlan::class;
+    protected $model = Plan::class;
 
     public function definition(): array
     {

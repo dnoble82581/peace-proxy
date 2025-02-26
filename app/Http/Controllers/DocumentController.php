@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DeliveryPlan;
 use App\Models\Document;
+use App\Models\Plan;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -28,7 +28,7 @@ class DocumentController extends Controller
 
     private function showDocument($entity, $filename)
     {
-        if (! ($entity instanceof User || $entity instanceof Subject || $entity instanceof DeliveryPlan)) {
+        if (! ($entity instanceof User || $entity instanceof Subject || $entity instanceof Plan)) {
             abort(400, 'Invalid entity type.');
         }
 
@@ -46,8 +46,8 @@ class DocumentController extends Controller
         // Build the file path based on entity type
         if (class_basename($entity) === 'User') {
             $filePath = 'documents/user/'.$entity->id.'/'.$filename;
-        } elseif (class_basename($entity) === 'DeliveryPlan') {
-            $filePath = 'documents/deliveryplan/'.$entity->id.'/'.$filename;
+        } elseif (class_basename($entity) === 'Plan') {
+            $filePath = 'documents/plan/'.$entity->id.'/'.$filename;
         } else {
             $filePath = 'documents/subject/'.$entity->id.'/'.$filename;
         }
@@ -81,7 +81,7 @@ class DocumentController extends Controller
         return $this->showDocument($subject, $filename);
     }
 
-    public function showDeliveryPlanDocument(DeliveryPlan $deliveryPlan, $filename)
+    public function showDeliveryPlanDocument(Plan $deliveryPlan, $filename)
     {
         return $this->showDocument($deliveryPlan, $filename);
     }

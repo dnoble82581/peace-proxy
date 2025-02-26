@@ -7,7 +7,7 @@ use App\Http\Controllers\PagesController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\UserController;
-use App\Models\DeliveryPlan;
+use App\Models\Plan;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'pages.welcome');
@@ -21,8 +21,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/documents/user/{user}/{filename}', [DocumentController::class, 'showUserDocument']);
     Route::get('/documents/subject/{subject}/{filename}', [DocumentController::class, 'showSubjectDocument']);
-    Route::get('/documents/deliveryplan/{deliveryplan}/{filename}', function ($deliveryPlanId, $filename) {
-        $deliveryPlan = DeliveryPlan::findOrFail($deliveryPlanId);
+    Route::get('/documents/plan/{plan}/{filename}', function ($deliveryPlanId, $filename) {
+        $deliveryPlan = Plan::findOrFail($deliveryPlanId);
 
         return app(DocumentController::class)->showDeliveryPlanDocument($deliveryPlan, $filename);
     });
@@ -32,6 +32,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/negotiation/tactical/{room}',
         [RoomController::class, 'tacticalRoom'])->name('tactical.room');
+
+    //    Volt::route('/{tenant}/admin/dashboard', 'pages.admin.admin')->name('admin');
 
     Route::get('/{tenant}/admin/dashboard', [PagesController::class, 'admin'])->name('admin')->middleware('admin');
 

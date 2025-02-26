@@ -33,18 +33,7 @@
 
 				<!-- Navigation Links -->
 				<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-					<x-navigation.nav-link
-							:href="route('dashboard')"
-							:active="request()->routeIs('dashboard')"
-							wire:navigate>
-						{{ __('Dashboard') }}
-					</x-navigation.nav-link>
-					<x-navigation.nav-link
-							:href="route('team')"
-							:active="request()->routeIs('team')"
-							wire:navigate>
-						{{ __('My Team') }}
-					</x-navigation.nav-link>
+
 				</div>
 			</div>
 
@@ -76,13 +65,6 @@
 					</x-slot>
 
 					<x-slot name="content">
-						@if (auth()->user()->privileges === 'admin')
-							<x-dropdown.dropdown-link
-									:href="route('admin', ['tenant' => auth()->user()->tenant->id])"
-									wire:navigate>
-								{{ __('Admin') }}
-							</x-dropdown.dropdown-link>
-						@endif
 						<x-dropdown.dropdown-link
 								:href="route('profile')"
 								wire:navigate>
@@ -156,7 +138,6 @@
 			</div>
 
 			<div class="mt-3 space-y-1">
-
 				<x-navigation.responsive-nav-link
 						:href="route('profile')"
 						wire:navigate>

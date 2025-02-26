@@ -102,11 +102,6 @@ class User extends Authenticatable
         return $this->hasMany(SubjectRequest::class);
     }
 
-    public function responses(): HasMany
-    {
-        return $this->hasMany(MessageResponse::class);
-    }
-
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class);

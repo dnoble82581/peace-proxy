@@ -26,8 +26,8 @@
 		</div>
 		<div class="min-w-0 flex-1">
 			<div class="flex items-start gap-x-3">
-				<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300 flex items-center gap-2">Delivery
-				                                                                                             Plan</p>
+				<p class="text-sm/6 font-semibold text-gray-900 dark:text-slate-300 flex items-center gap-2">
+					Plans</p>
 				<div>
 					<x-dropdown.dropdown>
 						<x-slot:trigger>
@@ -36,8 +36,8 @@
 							</button>
 						</x-slot:trigger>
 						<x-slot:content>
-							@if ($room->deliveryPlans->count())
-								@foreach ($room->deliveryPlans as $plan)
+							@if ($room->plans->count())
+								@foreach ($room->plans as $plan)
 									<x-dropdown.dropdown-button
 											wire:click="attachDeliveryPlan({{ $plan->id }}, {{ $demand->id }})"
 											:value="$plan->title" />
@@ -50,16 +50,21 @@
 				</div>
 			</div>
 			<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
-				<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
-					<p class="whitespace-nowrap text-gray-500 dark:text-slate-300">
-						@if ($demand->deliveryPlans->count())
-							@foreach ($demand->deliveryPlans as $plan)
-								{{ $plan->title }}
-							@endforeach
-						@else
-							None
-						@endif
-					</p>
+				<div class="mt-1 text-xs/5 text-gray-500">
+					@if ($demand->plans->count())
+						@foreach ($demand->plans as $plan)
+							<div class="gap-x-2 text-xs/5 text-gray-500">
+								<button
+										wire:click="showPlan({{ $plan->id }})"
+										class="whitespace-nowrap text-gray-500 dark:text-slate-300">{{ $plan->title }}</button>
+								<button wire:click="detachDeliveryPlan({{ $plan->id }}, {{ $demand->id }})">
+									<x-heroicons::outline.trash class="size-3 text-rose-400" />
+								</button>
+							</div>
+						@endforeach
+					@else
+						None
+					@endif
 				</div>
 			</div>
 		</div>

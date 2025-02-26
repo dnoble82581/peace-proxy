@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('deliverables', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('delivery_plan_id');
+            $table->unsignedBigInteger('plan_id');
             $table->unsignedBigInteger('deliverable_id');
             $table->string('deliverable_type');
             $table->timestamps();

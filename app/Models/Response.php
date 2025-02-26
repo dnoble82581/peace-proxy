@@ -12,7 +12,7 @@ class Response extends Model
 
     protected $guarded = ['id'];
 
-    public function respondable(): MorphTo
+    public function model(): MorphTo
     {
         return $this->morphTo();
     }

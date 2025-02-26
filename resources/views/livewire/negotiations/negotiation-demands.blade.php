@@ -1,7 +1,7 @@
 <?php
 
 	use App\Events\DemandEvent;
-	use App\Models\DeliveryPlan;
+	use App\Models\Plan;
 	use App\Models\Demand;
 	use App\Models\Room;
 	use App\Models\User;
@@ -89,8 +89,21 @@
 		public function attachDeliveryPlan($planId, $demandId)
 		{
 			$demandToReceive = $this->getDemand($demandId);
-			$demandToReceive->deliveryPlans()->attach($planId);
+			$demandToReceive->plans()->attach($planId);
 			event(new DemandEvent($this->room->id, $demandId, 'edited'));
+		}
+
+		public function detachDeliveryPlan($planId, $demandId)
+		{
+			$demandToDetach = $this->getDemand($demandId);
+			$demandToDetach->plans()->detach($planId);
+			event(new DemandEvent($this->room->id, $demandId, 'edited'));
+		}
+
+		public function showPlan($planId)
+		{
+			$this->dispatch('modal.open', component: 'modals.show-delivery-plan',
+				arguments: ['deliveryPlanId' => $planId]);
 		}
 
 		private function getDemand($demandId):Demand

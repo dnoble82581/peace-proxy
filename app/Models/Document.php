@@ -22,8 +22,8 @@ class Document extends Model
     {
         if ($this->documentable_type === 'App\Models\User') {
             return url('/documents/user/'.$this->documentable_id.'/'.$this->filename);
-        } elseif ($this->documentable_type === 'App\Models\DeliveryPlan') {
-            return url('/documents/deliveryplan/'.$this->documentable_id.'/'.$this->filename);
+        } elseif ($this->documentable_type === 'App\Models\Plan') {
+            return url('/documents/plan/'.$this->documentable_id.'/'.$this->filename);
         } else {
             return url('/documents/subject/'.$this->documentable_id.'/'.$this->filename);
         }

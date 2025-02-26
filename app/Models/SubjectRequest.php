@@ -39,7 +39,7 @@ class SubjectRequest extends Model
 
     public function deliveryPlans(): MorphToMany
     {
-        return $this->morphToMany(DeliveryPlan::class, 'deliverable');
+        return $this->morphToMany(Plan::class, 'deliverable');
     }
 
     public function responses(): MorphMany

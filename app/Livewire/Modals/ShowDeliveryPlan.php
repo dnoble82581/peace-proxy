@@ -2,13 +2,13 @@
 
 namespace App\Livewire\Modals;
 
-use App\Models\DeliveryPlan;
+use App\Models\Plan;
 use Illuminate\View\View;
 use WireElements\Pro\Components\Modal\Modal;
 
 class ShowDeliveryPlan extends Modal
 {
-    public DeliveryPlan $deliveryPlan;
+    public Plan $deliveryPlan;
 
     public static function behavior(): array
     {
@@ -38,9 +38,9 @@ class ShowDeliveryPlan extends Modal
         $this->deliveryPlan = $this->getDeliveryPlan($deliveryPlanId);
     }
 
-    private function getDeliveryPlan($deliveryPlanId): DeliveryPlan
+    private function getDeliveryPlan($deliveryPlanId): Plan
     {
-        return DeliveryPlan::findOrFail($deliveryPlanId);
+        return Plan::findOrFail($deliveryPlanId);
     }
 
     public function render(): View

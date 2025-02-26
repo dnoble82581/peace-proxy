@@ -28,13 +28,14 @@
 					container-class="sm:col-span-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg"
 					:tabs="[
                     ['key' => 'map', 'label' => 'Map'],
+                    ['key' => 'demands', 'label' => 'Demands'],
                     ['key' => 'objectives', 'label' => 'Objectives'],
                     ['key' => 'charts', 'label' => 'Charts'],
                     ['key' => 'requests', 'label' => 'Requests']
                 ]"
 					:default-tab="'map'">
 
-				{{--Board--}}
+				{{--Maps--}}
 				<div x-show="tab === 'map'">
 					<div class="space-y-4 max-h-[610px] overflow-y-auto sticky top-0 overflow-x-hidden px-8 py-2">
 						<div class="flex-1 flex gap-3 items-center">
