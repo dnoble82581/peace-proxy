@@ -1,69 +1,75 @@
 <?php
 
-use App\Models\User;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Validation\Rule;
-use Livewire\Volt\Component;
+	use App\Models\User;
+	use Illuminate\Contracts\Auth\MustVerifyEmail;
+	use Illuminate\Support\Facades\Auth;
+	use Illuminate\Support\Facades\Session;
+	use Illuminate\Validation\Rule;
+	use Livewire\Volt\Component;
 
-new class extends Component {
-    public string $name = '';
-    public string $email = '';
+	new class extends Component {
+		public string $name = '';
+		public string $email = '';
+		public string $primary_phone = '';
+		public string $secondary_phone = '';
 
-    /**
-     * Mount the component.
-     */
-    public function mount():void
-    {
-        $this->name = Auth::user()->name;
-        $this->email = Auth::user()->email;
-    }
+		/**
+		 * Mount the component.
+		 */
+		public function mount():void
+		{
+			$this->name = Auth::user()->name;
+			$this->email = Auth::user()->email;
+			$this->primary_phone = Auth::user()->primary_phone;
+			$this->secondary_phone = Auth::user()->secondary_phone;
+		}
 
-    /**
-     * Update the profile information for the currently authenticated user.
-     */
-    public function updateProfileInformation():void
-    {
-        $user = Auth::user();
+		/**
+		 * Update the profile information for the currently authenticated user.
+		 */
+		public function updateProfileInformation():void
+		{
+			$user = Auth::user();
 
-        $validated = $this->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => [
-                'required', 'string', 'lowercase', 'email', 'max:255',
-                Rule::unique(User::class)->ignore($user->id)
-            ],
-        ]);
+			$validated = $this->validate([
+				'name' => ['required', 'string', 'max:255'],
+				'primary_phone' => ['nullable'],
+				'secondary_phone' => ['nullable'],
+				'email' => [
+					'required', 'string', 'lowercase', 'email', 'max:255',
+					Rule::unique(User::class)->ignore($user->id)
+				],
+			]);
 
-        $user->fill($validated);
+			$user->fill($validated);
 
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
+			if ($user->isDirty('email')) {
+				$user->email_verified_at = null;
+			}
 
-        $user->save();
+			$user->save();
 
-        $this->dispatch('profile-updated', name: $user->name);
-    }
+			$this->dispatch('profile-updated', name: $user->name);
+		}
 
-    /**
-     * Send an email verification notification to the current user.
-     */
-    public function sendVerification():void
-    {
-        $user = Auth::user();
+		/**
+		 * Send an email verification notification to the current user.
+		 */
+		public function sendVerification():void
+		{
+			$user = Auth::user();
 
-        if ($user->hasVerifiedEmail()) {
-            $this->redirectIntended(default: route('dashboard', absolute: false));
+			if ($user->hasVerifiedEmail()) {
+				$this->redirectIntended(default: route('dashboard', absolute: false));
 
-            return;
-        }
+				return;
+			}
 
-        $user->sendEmailVerificationNotification();
+			$user->sendEmailVerificationNotification();
 
-        Session::flash('status', 'verification-link-sent');
-    }
-}; ?>
+			Session::flash('status', 'verification-link-sent');
+		}
+	}; ?>
 
 <section>
 	<header>
@@ -132,6 +138,18 @@ new class extends Component {
 					@endif
 				</div>
 			@endif
+		</div>
+		<div>
+			<x-phone
+					wire:model="primary_phone"
+					label="Primary Phone"
+					autocomplete="phone" />
+		</div>
+		<div>
+			<x-phone
+					wire:model="secondary_phone"
+					autocomplete="phone"
+					label="Secondary Phone" />
 		</div>
 
 		<div class="flex items-center gap-4">
