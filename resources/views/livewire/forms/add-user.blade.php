@@ -32,7 +32,7 @@
 			$this->form->create();
 
 			// Redirect to the team management page
-			return redirect('/team');
+			return redirect(route('team'));
 		}
 
 		/**
@@ -42,7 +42,7 @@
 		 */
 		public function cancel():Redirector
 		{
-			return redirect('/team');
+			return redirect(route('team'));
 		}
 
 		/**
@@ -115,45 +115,45 @@
 					class="col-span-6 sm:col-span-2" />
 
 			<!-- Dropdown for the user's status (Active/Inactive) -->
-			<x-select
-					label="Status"
-					wire:model="form.status"
-					class="col-span-6 sm:col-span-2"
-					:options="[
-                    ['name' => 'Active', 'value' => 1],
-                    ['name' => 'Inactive', 'value' => 0],
-                ]"
-					option-label="name"
-					option-value="value" />
+			{{--			<x-select--}}
+			{{--					label="Status"--}}
+			{{--					wire:model="form.status"--}}
+			{{--					class="col-span-6 sm:col-span-2"--}}
+			{{--					:options="[--}}
+			{{--                    ['name' => 'Active', 'value' => 1],--}}
+			{{--                    ['name' => 'Inactive', 'value' => 0],--}}
+			{{--                ]"--}}
+			{{--					option-label="name"--}}
+			{{--					option-value="value" />--}}
 
 			<!-- Input for the user's title -->
-			<x-select
-					label="Privileges"
-					wire:model="form.privileges"
-					class="col-span-6 sm:col-span-2"
-					:options="[
-                    ['name' => 'User', 'value' => 'user'],
-                    ['name' => 'Admin', 'value' => 'admin'],
-                    ['name' => 'Super Admin', 'value' => 'super admin'],
-                ]"
-					option-label="name"
-					option-value="value" />
+			{{--			<x-select--}}
+			{{--					label="Privileges"--}}
+			{{--					wire:model="form.privileges"--}}
+			{{--					class="col-span-6 sm:col-span-2"--}}
+			{{--					:options="[--}}
+			{{--                    ['name' => 'User', 'value' => 'user'],--}}
+			{{--                    ['name' => 'Admin', 'value' => 'admin'],--}}
+			{{--                    ['name' => 'Super Admin', 'value' => 'super admin'],--}}
+			{{--                ]"--}}
+			{{--					option-label="name"--}}
+			{{--					option-value="value" />--}}
 
 			<!-- Dropdown for the user's role -->
-			<x-select
-					label="Role"
-					wire:model="form.role"
-					class="col-span-6 sm:col-span-2"
-					:options="[
-                    ['name' => 'Primary Negotiator', 'value' => 'primary negotiator'],
-                    ['name' => 'Secondary Negotiator', 'value' => 'secondary negotiator'],
-                    ['name' => 'Recorder', 'value' => 'recorder'],
-                    ['name' => 'Tactical User', 'value' => 'tactical user'],
-                    ['name' => 'Tactical Admin', 'value' => 'tactical admin'],
-                    ['name' => 'Tactical Super Admin', 'value' => 'tactical super admin'],
-                ]"
-					option-label="name"
-					option-value="value" />
+			{{--			<x-select--}}
+			{{--					label="Role"--}}
+			{{--					wire:model="form.role"--}}
+			{{--					class="col-span-6 sm:col-span-2"--}}
+			{{--					:options="[--}}
+			{{--                    ['name' => 'Primary Negotiator', 'value' => 'primary negotiator'],--}}
+			{{--                    ['name' => 'Secondary Negotiator', 'value' => 'secondary negotiator'],--}}
+			{{--                    ['name' => 'Recorder', 'value' => 'recorder'],--}}
+			{{--                    ['name' => 'Tactical User', 'value' => 'tactical user'],--}}
+			{{--                    ['name' => 'Tactical Admin', 'value' => 'tactical admin'],--}}
+			{{--                    ['name' => 'Tactical Super Admin', 'value' => 'tactical super admin'],--}}
+			{{--                ]"--}}
+			{{--					option-label="name"--}}
+			{{--					option-value="value" />--}}
 		</div>
 
 		<!-- Avatar file input -->

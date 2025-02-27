@@ -5,7 +5,6 @@ namespace App\Livewire\Forms;
 use App\Models\User;
 use App\Services\DocumentProcessor;
 use Exception;
-use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
@@ -103,7 +102,7 @@ class UserForm extends Form
      *
      * @throws Exception
      */
-    public function create(): Redirector
+    public function create()
     {
         $this->validate();
 
@@ -119,7 +118,6 @@ class UserForm extends Form
             $this->handleFileUploads($user);
         }
 
-        return redirect('/team');
     }
 
     /**
