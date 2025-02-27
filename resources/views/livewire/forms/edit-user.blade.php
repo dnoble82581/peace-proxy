@@ -174,15 +174,18 @@
 				<x-form-elements.input-label for="photo">Avatar</x-form-elements.input-label>
 				<div class="flex items-center">
 					<div class="flex-shrink-0 h-10 w-10 mr-4">
-						{{-- Display either the uploaded avatar, user's current avatar, or a placeholder --}}
-						{{--						<img--}}
-						{{--								class="h-10 w-10 rounded-full"--}}
-						{{--								src="{{$this->getPhotoPlaceholder()}}"--}}
-						{{--								alt="User Photo">--}}
-						<img
-								class="h-10 w-10 rounded-full"
-								src="{{$user->avatarUrl()}}"
-								alt="">
+						@if($this->form->photo)
+							<img
+									class="h-10 w-10 rounded-full"
+									src="{{$this->form->photo->temporaryUrl()}}"
+									alt="">
+						@else
+							<img
+									class="h-10 w-10 rounded-full"
+									src="{{ $user->avatarUrl() }}"
+									alt="">
+						@endif
+
 					</div>
 					<div class="flex items-center gap-3">
 						{{-- File input for photo upload --}}

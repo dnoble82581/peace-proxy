@@ -6,22 +6,29 @@
 	use Illuminate\Support\Facades\Session;
 	use Illuminate\Validation\Rule;
 	use Livewire\Volt\Component;
+	use Livewire\WithFileUploads;
 
 	new class extends Component {
+		use WithFileUploads;
+
 		public string $name = '';
 		public string $email = '';
 		public string $primary_phone = '';
 		public string $secondary_phone = '';
+		public $avatar = '';
+		public User $user;
 
 		/**
 		 * Mount the component.
 		 */
 		public function mount():void
 		{
+			$this->user = Auth::user();
 			$this->name = Auth::user()->name;
 			$this->email = Auth::user()->email;
 			$this->primary_phone = Auth::user()->primary_phone;
 			$this->secondary_phone = Auth::user()->secondary_phone;
+			$this->avatar;
 		}
 
 		/**
@@ -34,6 +41,7 @@
 			$validated = $this->validate([
 				'name' => ['required', 'string', 'max:255'],
 				'primary_phone' => ['nullable'],
+				'avatar' => ['image', 'mimes:jpg'],
 				'secondary_phone' => ['nullable'],
 				'email' => [
 					'required', 'string', 'lowercase', 'email', 'max:255',
@@ -47,9 +55,28 @@
 				$user->email_verified_at = null;
 			}
 
+			if ($this->avatar) {
+				$this->deleteExistingAvatar();
+				Auth::user()->avatar = $this->saveUserAvatar();
+			}
+
 			$user->save();
 
 			$this->dispatch('profile-updated', name: $user->name);
+		}
+
+		private function deleteExistingAvatar():void
+		{
+			if ($this->avatar) {
+				if (Storage::disk('s3-public')->exists(Auth::user()->avatar)) {
+					Storage::disk('s3-public')->delete(Auth::user()->avatar);
+				}
+			}
+		}
+
+		public function saveUserAvatar():string
+		{
+			return $this->avatar->store(Auth::user()->tenant->name.'/avatars/'.Auth::user()->id, 's3-public');
 		}
 
 		/**
@@ -85,6 +112,33 @@
 	<form
 			wire:submit="updateProfileInformation"
 			class="mt-6 space-y-6">
+		<div>
+			<x-form-elements.input-label for="photo">Avatar</x-form-elements.input-label>
+			<div class="flex items-center">
+				<div class="flex-shrink-0 h-10 w-10 mr-4">
+					@if($this->avatar)
+						<img
+								class="h-10 w-10 rounded-full"
+								src="{{$this->avatar->temporaryUrl()}}"
+								alt="">
+					@else
+						<img
+								class="h-10 w-10 rounded-full"
+								src="{{Auth::user()->avatarUrl()}}"
+								alt="">
+					@endif
+
+				</div>
+				<div class="flex items-center gap-3">
+					<x-form-elements.file-input
+							wire-to="avatar"
+							type="file"
+							accept="image/*"
+							class="mt-1" />
+
+				</div>
+			</div>
+		</div>
 		<div>
 			<x-form-elements.input-label
 					for="name"
