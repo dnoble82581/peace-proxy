@@ -13,8 +13,8 @@
 
 		public string $name = '';
 		public string $email = '';
-		public string $primary_phone = '';
-		public string $secondary_phone = '';
+		public ?string $primary_phone;
+		public ?string $secondary_phone;
 		public $avatar = '';
 		public User $user;
 
@@ -26,8 +26,8 @@
 			$this->user = Auth::user();
 			$this->name = Auth::user()->name;
 			$this->email = Auth::user()->email;
-			$this->primary_phone = Auth::user()->primary_phone;
-			$this->secondary_phone = Auth::user()->secondary_phone;
+			$this->primary_phone = Auth::user()->primary_phone ?? '';
+			$this->secondary_phone = Auth::user()->secondary_phone ?? '';
 			$this->avatar;
 		}
 
