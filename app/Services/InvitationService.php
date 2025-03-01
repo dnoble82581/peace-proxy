@@ -6,8 +6,8 @@ use App\Events\InvitationAcceptedEvent;
 use App\Events\InvitationDeclinedEvent;
 use App\Events\InvitationSent;
 use App\Models\Invitation;
-use App\Models\User;
 use Illuminate\Support\Collection;
+use Throwable;
 
 class InvitationService
 {
@@ -72,27 +72,34 @@ class InvitationService
         return $query->first();
     }
 
+    //	ToDO: Fix this function. a group chat is created and then multiple private chats are created.
+
+    /**
+     * @throws Throwable
+     */
     public function acceptInvitation(Invitation $invitation, $roomId): void
     {
+
         // Ensure the user is authorized to accept the invitation
         if ($invitation->user_id !== auth()->id()) {
             abort(403, 'Unauthorized');
         }
 
-        $conversationService = new ConversationService;
-        $newConversation = $conversationService->createPrivateChat([$invitation->user_id], $roomId,
-            auth()->user()->id);
-        $invitation->update(['conversation_id' => $newConversation->id]);
+        //        if ($invitation->invitation_type === 'private') {
+        //            $conversationService = new ConversationService;
+        //            $newConversation = $conversationService->createPrivateChat([$invitation->user_id], $roomId,
+        //                auth()->user()->id);
+        //            $invitation->update(['conversation_id' => $newConversation->id]);
+        //
+        //            //			 Add the user as a participant in the conversation
+        //            $sender = User::findOrFail($invitation->invited_by);
+        //            $target = User::findOrFail($invitation->user_id);
+        //            $usersToAdd = collect([$sender, $target]);
+        //            $conversationService->addParticipantsToConversation($newConversation, $usersToAdd);
+        //            // Mark the invitation as accepted
+        //        }
 
-        //			 Add the user as a participant in the conversation
-        $sender = User::findOrFail($invitation->invited_by);
-        $target = User::findOrFail($invitation->user_id);
-        $usersToAdd = collect([$sender, $target]);
-
-        $conversationService->addParticipantsToConversation($newConversation, $usersToAdd);
-        // Mark the invitation as accepted
         $invitation->update(['status' => 'accepted']);
-
         broadcast(new InvitationAcceptedEvent($invitation));
     }
 

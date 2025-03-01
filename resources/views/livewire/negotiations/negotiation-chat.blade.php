@@ -75,8 +75,6 @@
 		{
 			return [
 				"echo-presence:chat.{$this->room->id},NewMessageEvent" => 'refreshChat',
-				"echo-presence:chat.{$this->room->id},here" => 'handleUserHere',
-				"echo-presence:chat.{$this->room->id},joining" => 'handleUserJoining',
 				"echo-presence:chat.{$this->room->id},leaving" => 'handleUserLeaving',
 				"echo-presence:chat.{$this->room->id},ParticipantLeavesChatEvent" => 'handleParticipantLeft',
 				'echo-private:user.'.auth()->id().',InvitationAcceptedEvent' => 'fetchConversations',
@@ -87,7 +85,7 @@
 		{
 			$this->fetchConversations();
 		}
-		
+
 		public function showResponses($messageId):void
 		{
 			$this->dispatch('modal.open', component: 'modals.message-responses',
@@ -123,43 +121,6 @@
 			$conversationService->addParticipantsToConversation($publicConversation, User::all());
 		}
 
-		public function handleUserHere($users):void
-		{
-			$this->activeUsers = collect($users)->filter(function ($user) {
-				return $user['id'] !== $this->user->id; // Exclude the current user
-			})->map(function ($user) {
-				return [
-					'id' => $user['id'],
-					'name' => $user['name'],
-					'avatar' => $user['avatar'],
-					'role' => $user['role'],
-					'last_active' => now(),
-				];
-			})->toArray();
-		}
-
-		public function handleUserJoining($user):void
-		{
-			if ($user['id'] !== $this->user->id) {
-				$newUser = [
-					'id' => $user['id'],
-					'name' => $user['name'],
-					'avatar' => $user['avatar'],
-					'role' => $user['role'],
-					'last_active' => now(),
-				];
-
-				$this->activeUsers[] = $newUser;
-				$this->activeUsers = collect($this->activeUsers)->unique('id')->toArray();
-			}
-		}
-
-		public function handleUserLeaving($user):void
-		{
-			$this->activeUsers = collect($this->activeUsers)
-				->where('id', '!=', $user['id'])
-				->toArray();
-		}
 
 		public function trackIdleUsers():void
 		{
@@ -211,12 +172,23 @@
 							:class="{ 'bg-indigo-100': conversation === '{{ $conversation->name }}' }">
 						{{ ucfirst($conversation->name) }}
 					</button>
+				@elseif($conversation->type === 'private')
+					<button
+							@click="conversation = '{{ $conversation->name }}'"
+							class="rounded-md px-3 py-2 text-sm font-medium text-indigo-700"
+							:class="{ 'bg-indigo-100': conversation === '{{ $conversation->name }}' }">
+						{{ ucfirst($conversation->getOtherParticipantName()) }}
+					</button>
 				@else
 					<button
 							@click="conversation = '{{ $conversation->name }}'"
 							class="rounded-md px-3 py-2 text-sm font-medium text-indigo-700"
 							:class="{ 'bg-indigo-100': conversation === '{{ $conversation->name }}' }">
 						{{ ucfirst($conversation->getOtherParticipantName()) }}
+						<span class="text-gray-500">
+                        ({{ $conversation->getOtherParticipantCount() }} more)
+                    </span>
+
 					</button>
 				@endif
 			@endforeach
@@ -231,74 +203,20 @@
 				<x-heroicons::micro.solid.plus class="w-5 h-5 text-gray-400 dark:text-gray-300" />
 			</button>
 			<!-- Main Dropdown Content -->
+
 			<div
 					x-show="open"
 					@click.away="open = false"
-					class="absolute z-50 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-700 ltr:origin-top-right rtl:origin-top-left end-0 ring-1 ring-black ring-opacity-5"
-			>
-				<!-- Dropdown Option 2 with Submenu -->
-				<div
-						class="relative"
-						x-data="{ submenu: false }">
-					<x-dropdown.dropdown-button
-							@click="submenu = !submenu"
-							class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
-						<div class="flex items-center justify-between">
-							<span>
-							New Conversation
-							</span>
-							<span>
-								<x-heroicons::solid.chevron-right class="w-3 h-3 text-gray-900 dark:text-gray-300" />
-							</span>
-						</div>
-					</x-dropdown.dropdown-button>
-					<!-- Submenu Dropdown -->
-					<div
-							x-show="submenu"
-							class="absolute left-full ml-3 top-0 w-80 bg-white rounded shadow-lg ring-1 ring-black ring-opacity-5"
-							@click.away="submenu = false">
-						@if(empty(!$activeUsers))
-							@foreach ($activeUsers as $user)
-								@if ($user['id'] !== auth()->id())
-									<!-- Exclude the current user -->
-									<x-dropdown.dropdown-button
-											wire:click="sendUsersInvite([{{$user['id']}}])"
-											class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-										<div class="flex items-center justify-between">
-											<div class="flex items-center space-x-2">
-												<img
-														class="w-8 h-8 rounded-full"
-														src="{{ $user['avatar'] }}"
-														alt="User Avatar">
-												<div>
-													<div>{{ $user['name'] }}</div>
-													<span class="block text-xs text-gray-500">{{ $user['role'] }}</span>
-												</div>
-											</div>
-											@if (session('user_message_'. $user['id']))
-												<div class="text-emerald-400 text-xs font-semibold">
-													{{ session('message') }}
-													<div class="text-xs font-normal text-gray-500">Waiting for reply
-													</div>
-												</div>
-											@endif
-										</div>
-									</x-dropdown.dropdown-button>
-								@endif
-							@endforeach
-						@else
-							<div class="text-start text-sm leading-5 text-gray-700 px-4 py-2 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
-								No Users Yet
-							</div>
-						@endif
+					class="absolute z-50 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-700 ltr:origin-top-right rtl:origin-top-left end-0 ring-1 ring-black ring-opacity-5">
+				<livewire:dropdowns.sub-menu
+						:active-users="$activeUsers"
+						:room="$room"
+						button-label="New Conversation" />
 
-					</div>
-				</div>
-				<!-- Dropdown Option 3 -->
-				<x-dropdown.dropdown-button
-						class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-					Group Conversation
-				</x-dropdown.dropdown-button>
+				<livewire:dropdowns.sub-menu
+						:active-users="$activeUsers"
+						:room="$room"
+						button-label="New Group Chat" />
 			</div>
 		</div>
 
@@ -313,6 +231,9 @@
 
 				{{-- Message List --}}
 				@if($conversation->type === 'public')
+					<h3 class="font-bold text-lg mb-3">
+						Conversation: {{ ucfirst($conversation->name) }}</h3>
+				@elseif($conversation->type === 'group')
 					<h3 class="font-bold text-lg mb-3">
 						Conversation: {{ ucfirst($conversation->name) }}</h3>
 				@else

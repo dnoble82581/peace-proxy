@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\BelongsToTenant;
+use Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -52,6 +53,16 @@ class Conversation extends Model
         return $otherParticipant && $otherParticipant->user
             ? $otherParticipant->user->name
             : 'Unknown';
+    }
+
+    public function getOtherParticipantCount(): int
+    {
+        $authUserId = Auth::id();
+
+        // Get users linked to conversation participants, excluding the authenticated user
+        return $this->participants
+            ->where('user_id', '!=', $authUserId) // Exclude the authenticated user at the query level
+            ->count(); // Count the remaining participants
     }
 
     public function invitations(): HasMany

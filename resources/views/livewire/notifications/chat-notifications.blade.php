@@ -82,7 +82,7 @@
 			@else
 				@foreach ($pendingInvitations as $invitation)
 					<div class="p-2">
-						<span class="text-sm block">Invitation to: {{ $invitation->conversation ? $invitation->conversation->type : 'private' }} By </span>
+						<span class="text-sm block">Invitation to: {{ $invitation->invitation_type ?: 'private' }} by </span>
 						<span class="block text-xs">{{ $invitation->inviter->name }}</span>
 						<hr class="my-2">
 						<div class="flex justify-between text-sm mt-3">

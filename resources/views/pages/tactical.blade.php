@@ -1,5 +1,4 @@
 <x-tactical-layout>
-	{{--	<livewire:alerts.tactical-alerts :room="$room" />--}}
 	<div class="pt-4 overflow-hidden pb-8 px-4">
 		<div class="flex items-center gap-3">
 			<div class="flex-1">

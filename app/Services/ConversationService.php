@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Conversation;
 use App\Models\Room;
 use App\Models\User;
+use Auth;
 use DB;
 use Illuminate\Database\Eloquent\Collection;
 use Throwable;
@@ -22,6 +23,7 @@ class ConversationService
     {
         return Conversation::where('room_id', $roomId)
             ->where('tenant_id', $tenantId)
+            ->where('is_active', true)
             ->whereHas('participants', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })
@@ -93,19 +95,25 @@ class ConversationService
 
     public function addParticipantsToConversation($conversation, $users): void
     {
+        $authUserId = Auth::id();
+        $users = collect($users)->push($authUserId);
+
         $existingParticipants = DB::table('conversation_participants')
             ->where('conversation_id', $conversation->id)
             ->pluck('user_id')
             ->toArray();
 
         $filteredUsers = $users->filter(function ($user) use ($existingParticipants) {
-            return ! in_array($user->id, $existingParticipants);
+            // Ensure $user is an ID (fetch the "id" property if it's an object)
+            $userId = is_object($user) ? $user->id : $user;
+
+            return ! in_array($userId, $existingParticipants);
         });
 
-        $bulkInsert = $filteredUsers->map(function ($user) use ($conversation) {
+        $bulkInsert = $filteredUsers->map(function ($userId) use ($conversation) {
             return [
                 'conversation_id' => $conversation->id,
-                'user_id' => $user->id,
+                'user_id' => $userId,
                 'tenant_id' => $conversation->tenant_id,
                 'created_at' => now(),
                 'updated_at' => now(),
