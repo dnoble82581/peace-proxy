@@ -3,14 +3,12 @@
 namespace App\Livewire\Modals\Forms;
 
 use App\Events\DocumentCreatedEvent;
-use App\Models\RiskAssessmentQuestions;
-use App\Models\RiskAssessmentResponses;
+use App\Models\RiskAssessmentQuestion;
 use App\Models\Subject;
 use App\Services\DocumentProcessor;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use WireElements\Pro\Components\Modal\Modal;
 
@@ -21,6 +19,8 @@ class OnSceneRiskAssessment extends Modal
     public Subject $subject;
 
     public array $responses = [];
+
+    //    public int $yesCount = 0;
 
     public static function behavior(): array
     {
@@ -48,13 +48,18 @@ class OnSceneRiskAssessment extends Modal
     public function mount($subjectId)
     {
         // Load all the questions when the form is mounted
-        $this->questions = RiskAssessmentQuestions::all();
+        $this->questions = RiskAssessmentQuestion::all();
         $this->subject = Subject::find($subjectId);
 
         // Initialize the `responses` array
         foreach ($this->questions as $question) {
-            $this->responses[$question->id] = $question->type === 'multiple-choice' ? [] : null;
+            $this->responses[$question->id] = $question->type === 'multiple-choice' ? [] : 'No';
         }
+    }
+
+    public function getYesCountProperty(): int
+    {
+        return collect($this->responses)->filter(fn ($response) => $response === 'Yes')->count();
     }
 
     /**
@@ -63,34 +68,41 @@ class OnSceneRiskAssessment extends Modal
     public function submit(): void
     {
         $this->validate(['responses.*' => 'required']);
+        $riskAssessment = $this->subject->riskAssessments()->create([
+            'result' => 0, 'tenant_id' => $this->subject->tenant_id,
+        ]);
 
         foreach ($this->responses as $questionId => $response) {
-            RiskAssessmentResponses::create([
-                'risk_assessment_questions_id' => $questionId,
-                'user_id' => Auth::id(),
-                'tenant_id' => auth()->user()->tenant_id, // Nullable in case of guest users
+            $riskAssessment->responses()->create([
+                'risk_assessment_question_id' => $questionId,
                 'response' => is_array($response) ? json_encode($response) : $response,
-                'subject_id' => $this->subject->id,
-                // Encode multiple responses as JSON
+                'tenant_id' => $this->subject->tenant_id,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
+
+            $riskAssessment->update(['result' => $this->yesCount]);
         }
 
         $pdfData = [
             'questions' => $this->questions,
             'responses' => $this->responses,
+            'subject' => $this->subject,
         ];
 
         $pdf = Pdf::loadView('pdfs.on-scene-risk-assessment', $pdfData);
 
         // Save PDF to storage (optional)
         $documentProcessor = new DocumentProcessor;
-        $documentProcessor->processDocuments($pdf, $this->subject, auth()->user()->id);
+        $documentProcessor->processDocuments($pdf, $this->subject, auth()->user()->id, 'Risk Assessment');
 
         session()->flash('success', 'Survey submitted and saved as PDF!');
         $this->reset('responses'); // Clear all responses
 
         $this->subject->update(['risk_assessment' => true]);
+
         event(new DocumentCreatedEvent($this->subject->room_id));
+
         $this->close();
 
         // Allow the user to download the PDF directly
@@ -99,7 +111,6 @@ class OnSceneRiskAssessment extends Modal
 
     public function render(): View
     {
-        return view('livewire.modals.forms.on-scene-risk-assessment')->with('riskAssessmentQuestions',
-            $this->questions);
+        return view('livewire.modals.forms.on-scene-risk-assessment');
     }
 }

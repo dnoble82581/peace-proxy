@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Document;
+use App\Models\Negotiation;
 use App\Models\Plan;
 use App\Models\Subject;
 use App\Models\User;
@@ -28,7 +29,7 @@ class DocumentController extends Controller
 
     private function showDocument($entity, $filename)
     {
-        if (! ($entity instanceof User || $entity instanceof Subject || $entity instanceof Plan)) {
+        if (! ($entity instanceof User || $entity instanceof Subject || $entity instanceof Plan || $entity instanceof Negotiation)) {
             abort(400, 'Invalid entity type.');
         }
 
@@ -48,6 +49,8 @@ class DocumentController extends Controller
             $filePath = 'documents/user/'.$entity->id.'/'.$filename;
         } elseif (class_basename($entity) === 'Plan') {
             $filePath = 'documents/plan/'.$entity->id.'/'.$filename;
+        } elseif (class_basename($entity) === 'Negotiation') {
+            $filePath = 'documents/negotiation/'.$entity->id.'/'.$filename;
         } else {
             $filePath = 'documents/subject/'.$entity->id.'/'.$filename;
         }
@@ -74,6 +77,11 @@ class DocumentController extends Controller
 
         return '#';
 
+    }
+
+    public function showNegotiationDocument(Negotiation $negotiation, $filename)
+    {
+        return $this->showDocument($negotiation, $filename);
     }
 
     public function showSubjectDocument(Subject $subject, $filename)

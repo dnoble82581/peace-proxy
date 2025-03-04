@@ -97,6 +97,11 @@ class User extends Authenticatable
         return $this->role === $role;
     }
 
+    public function resolutions(): HasMany
+    {
+        return $this->hasMany(Resolution::class);
+    }
+
     public function requests(): HasMany
     {
         return $this->hasMany(SubjectRequest::class);

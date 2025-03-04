@@ -3,6 +3,7 @@
 	use App\Events\ConversationInvitation;
 	use App\Events\InvitationSent;
 	use App\Events\NewMessageEvent;
+	use App\Events\ParticipantLeavesChatEvent;
 	use App\Models\Conversation;
 	use App\Models\ConversationParticipant;
 	use App\Models\Invitation;
@@ -97,15 +98,14 @@
 			// Find the "public" conversation in the $conversations collection
 			$publicConversation = $this->conversations->firstWhere('name', 'public');
 
-			// If a public conversation exists, set it as the default
 			if ($publicConversation) {
+				// Set the explicitly found public conversation as default
 				$this->defaultConversation = $publicConversation;
 			} else {
-				// Handle the case where a public conversation doesn't exist gracefully
-				$this->defaultConversation = null;
+				// Fallback to the first conversation in the collection if none is marked public
+				$this->defaultConversation = $this->conversations->first();
 			}
 		}
-
 
 		public function createGroupChats():void
 		{
@@ -117,8 +117,8 @@
 				'tenant_id' => $this->room->tenant_id,
 				'initiator_id' => $this->user->id,
 			];
-			$publicConversation = $conversationService->createGroupChat($defaultPublicConversation);
-			$conversationService->addParticipantsToConversation($publicConversation, User::all());
+			$this->defaultConversation = $conversationService->createGroupChat($defaultPublicConversation);
+			$conversationService->addParticipantsToConversation($this->defaultConversation, User::all());
 		}
 
 
@@ -137,7 +137,8 @@
 		{
 			$conversation = Conversation::findOrFail($conversationId);
 			$conversation->update(['is_active' => false]);
-			event(new \App\Events\ParticipantLeavesChatEvent($this->room->id));
+			$this->fetchConversations();
+			event(new ParticipantLeavesChatEvent($this->room->id));
 		}
 
 		public function sendUsersInvite(array $userIds):void
@@ -158,7 +159,7 @@
 ?>
 
 <div
-		x-data="{ conversation: '{{ $conversations->isNotEmpty() ? $conversations->first()->type : '' }}' }"
+		x-data="{ conversation: '{{ $defaultConversation->name ?? '' }}' }"
 		class="bg-white dark:bg-gray-800 dark-light-text shadow-lg rounded-b-lg rounded-t-lg">
 
 	{{--	Conversation Tabs as Buttons--}}
@@ -185,10 +186,9 @@
 							class="rounded-md px-3 py-2 text-sm font-medium text-indigo-700"
 							:class="{ 'bg-indigo-100': conversation === '{{ $conversation->name }}' }">
 						{{ ucfirst($conversation->getOtherParticipantName()) }}
-						<span class="text-gray-500">
-                        ({{ $conversation->getOtherParticipantCount() }} more)
+						<span class="text-gray-500 text-xs">
+                        (+ {{ $conversation->getOtherParticipantCount() }})
                     </span>
-
 					</button>
 				@endif
 			@endforeach
@@ -234,8 +234,21 @@
 					<h3 class="font-bold text-lg mb-3">
 						Conversation: {{ ucfirst($conversation->name) }}</h3>
 				@elseif($conversation->type === 'group')
-					<h3 class="font-bold text-lg mb-3">
-						Conversation: {{ ucfirst($conversation->name) }}</h3>
+					<div class="flex items-center justify-between space-x-4">
+						<div>
+							<h3 class="font-bold text-lg mb-3">
+								Conversation: {{ ucfirst($conversation->name) }}</h3>
+						</div>
+						<div class="mb-3">
+							<button
+									wire:click="leaveConversation({{ $conversation->id }})"
+									type="button"
+									class="text-xs text-gray-500 hover:text-gray-600 flex items-center gap-1 font-semibold">
+								<span>Leave</span>
+								<x-heroicons::micro.solid.arrow-right class="w-3 h-3" />
+							</button>
+						</div>
+					</div>
 				@else
 					<div class="flex items-center justify-between space-x-4">
 						<div>

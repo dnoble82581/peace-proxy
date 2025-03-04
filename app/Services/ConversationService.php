@@ -32,19 +32,43 @@ class ConversationService
 
     public function createGroupChat(array $data): Conversation
     {
-        return Conversation::firstOrCreate(
-            [
-                'type' => $data['type'],
-                'name' => $data['name'],
-                'room_id' => $data['room_id'],
-                'tenant_id' => $data['tenant_id'],
-            ],
-            [
-                'initiator_id' => $data['initiator_id'],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
-        );
+        $existingConversation = Conversation::where([
+            'type' => $data['type'],
+            'name' => $data['name'],
+            'room_id' => $data['room_id'],
+            'tenant_id' => $data['tenant_id'],
+        ])->first();
+        // If an existing conversation is found, return it
+        if ($existingConversation) {
+            $existingConversation->update(['is_active' => true]);
+
+            return $existingConversation;
+        }
+
+        // Otherwise, create a new conversation
+        return Conversation::create([
+            'type' => $data['type'],
+            'name' => $data['name'],
+            'room_id' => $data['room_id'],
+            'tenant_id' => $data['tenant_id'],
+            'initiator_id' => $data['initiator_id'],
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        //        return Conversation::firstOrCreate(
+        //            [
+        //                'type' => $data['type'],
+        //                'name' => $data['name'],
+        //                'room_id' => $data['room_id'],
+        //                'tenant_id' => $data['tenant_id'],
+        //            ],
+        //            [
+        //                'initiator_id' => $data['initiator_id'],
+        //                'created_at' => now(),
+        //                'updated_at' => now(),
+        //            ]
+        //        );
     }
 
     /**

@@ -9,12 +9,10 @@ class RoleSeeder extends Seeder
 {
     public function run(): void
     {
-        Role::create(
-            [
-                'name' => 'Team Coordinator',
-                'description' => 'Coordinates the response to a crisis incident.',
-            ]
-        );
+        Role::create([
+            'name' => 'Team Coordinator',
+            'description' => 'Coordinates the response to a crisis incident.',
+        ]);
         Role::create([
             'name' => 'Team Leader',
             'description' => 'Leads a team of responders.',
@@ -50,6 +48,14 @@ class RoleSeeder extends Seeder
         Role::create([
             'name' => 'Incident Command',
             'description' => 'Incident commander is responsible for the overall response to the incident and approves all actions.',
+        ]);
+        Role::create([
+            'name' => 'Dispatch Lead',
+            'description' => 'Primary dispatch contact for the incident.',
+        ]);
+        Role::create([
+            'name' => 'Dispatch User',
+            'description' => 'Secondary dispatch contact for the incident.',
         ]);
     }
 }

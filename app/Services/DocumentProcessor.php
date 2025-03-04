@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DocumentProcessor
 {
@@ -27,7 +28,7 @@ class DocumentProcessor
      *
      * @throws Exception
      */
-    public function processDocuments($documents, Model $model, int $userId): array
+    public function processDocuments($documents, Model $model, int $userId, string $type): array
     {
         $processedDocuments = [];
 
@@ -40,7 +41,7 @@ class DocumentProcessor
             $this->storeDocument($document, $model, $filename);
 
             $documentData = [
-                'type' => $document instanceof UploadedFile ? 'Document' : 'Risk Assessment',
+                'type' => $type,
                 'user_id' => $userId,
                 'filename' => $filename,
                 'extension' => $document instanceof UploadedFile
@@ -101,6 +102,22 @@ class DocumentProcessor
         }
 
         throw new Exception('Invalid document type provided for storage.');
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function downloadDocument(
+        Model $model,
+        string $filename
+    ): StreamedResponse {
+        $filePath = '/documents/'.strtolower(class_basename($model)).'/'.$model->id.'/'.$filename;
+
+        if (Storage::disk($this->disk)->exists($filePath)) {
+            return Storage::disk($this->disk)->download($filePath, $filename);
+        }
+
+        throw new Exception('Document not found in storage.');
     }
 
     /**

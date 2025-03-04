@@ -2,26 +2,33 @@
 
 	use App\Events\DocumentDeletedEvent;
 	use App\Models\Document;
+	use App\Models\Negotiation;
 	use App\Models\Subject;
 	use App\Services\DocumentProcessor;
 	use Livewire\Volt\Component;
-	use function Livewire\Volt\{state};
 
 	new class extends Component {
-
-		public string $flashMessage = 'Some message';
-
+		public Negotiation $negotiation;
 		public Subject $subject;
 
-		public function mount($subject):void
+		public function createForm()
 		{
-			$this->subject = $subject;
+			$this->dispatch('modal.open', component: 'modals.create-resolution-form',
+				arguments: ['negotiationId' => $this->negotiation->id, 'subjectId' => $this->subject->id]);
 		}
 
-		public function createForm():void
+		public function getListeners():array
 		{
-			$this->dispatch('modal.open', component: 'modals.forms.on-scene-risk-assessment',
-				arguments: ['subjectId' => $this->subject->id]);
+			return [
+				"echo-presence:document.{$this->subject->room_id},DocumentDeletedEvent" => 'refresh',
+				"echo-presence:document.{$this->subject->room_id},DocumentCreatedEvent" => 'refresh',
+			];
+		}
+
+		public function mount($negotiationId, $subjectId):void
+		{
+			$this->negotiation = Negotiation::findOrFail($negotiationId);
+			$this->subject = Subject::findOrFail($subjectId);
 		}
 
 		public function downloadDocument(Document $document)
@@ -37,8 +44,7 @@
 			}
 		}
 
-
-		public function deleteDocument($documentId):void
+		public function deleteDocument($documentId)
 		{
 			$documentToDelete = Document::findOrFail($documentId);
 			$documentProcessor = new DocumentProcessor();
@@ -46,7 +52,7 @@
 			try {
 				// Delegate deletion to DocumentProcessor
 				$isDeleted = $documentProcessor->deleteDocument(
-					$this->subject,
+					$this->negotiation,
 					$documentToDelete->filename
 				);
 
@@ -64,15 +70,6 @@
 				$this->flashMessage = 'Error: '.$e->getMessage();
 			}
 		}
-
-
-		public function getListeners():array
-		{
-			return [
-				"echo-presence:document.{$this->subject->room_id},DocumentDeletedEvent" => 'refresh',
-				"echo-presence:document.{$this->subject->room_id},DocumentCreatedEvent" => 'refresh',
-			];
-		}
 	}
 
 ?>
@@ -81,14 +78,13 @@
 	<div class="flex justify-end px-4">
 		<x-dropdown.dropdown>
 			<x-slot:trigger>
-				<button
-						type="button">
+				<button type="button">
 					<x-heroicons::micro.solid.plus class="w-5 h-5 hover:text-gray-500 text-gray-400 cursor-pointer" />
 				</button>
 			</x-slot:trigger>
 			<x-slot:content>
 				<x-dropdown.dropdown-button wire:click="createForm">
-					Risk Assessment
+					Resolution
 				</x-dropdown.dropdown-button>
 			</x-slot:content>
 		</x-dropdown.dropdown>
@@ -96,10 +92,10 @@
 	<ul
 			role="list"
 			class="divide-y divide-gray-100">
-		@if($subject->documents->count())
+		@if($negotiation->documents->count())
 			<x-table-elements.subject-card-table-layout :labels="['File Name', 'Type', 'Size', 'Created At', 'Actions' ]">
 				<x-slot:content>
-					@foreach($subject->documents as $document)
+					@foreach($negotiation->documents as $document)
 						<tr class="even:bg-gray-50 dark:even:bg-slate-900">
 							<td class="py-2 pr-3 pl-4 text-xs font-medium whitespace-nowrap dark-light-text sm:pl-3">
 								{{ $document->filename }}

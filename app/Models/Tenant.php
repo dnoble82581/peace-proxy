@@ -2,25 +2,16 @@
 
 namespace App\Models;
 
+use App\Traits\ChangePercentageCalculator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Tenant extends Model
 {
-    use HasFactory;
+    use ChangePercentageCalculator, HasFactory;
 
     protected $guarded = ['id'];
-
-    public function users(): HasMany
-    {
-        return $this->hasMany(User::class);
-    }
-
-    public function negotiations(): HasMany
-    {
-        return $this->hasMany(Negotiation::class);
-    }
 
     public function rooms(): HasMany
     {
@@ -60,5 +51,47 @@ class Tenant extends Model
     public function rfis(): HasMany
     {
         return $this->hasMany(RequestForInformation::class);
+    }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(Document::class);
+    }
+
+    public function resolutions(): HasMany
+    {
+        return $this->hasMany(Resolution::class);
+    }
+
+    public function getRecentUsers(int $duration): int
+    {
+        return $this->users()->where('created_at', '>=', now()->subDays($duration))->count();
+    }
+
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
+    }
+
+    public function getRecentNegotiations(int $duration): int
+    {
+        return $this->negotiations()
+            ->where('created_at', '>=', now()->subDays($duration))
+            ->count();
+    }
+
+    public function negotiations(): HasMany
+    {
+        return $this->hasMany(Negotiation::class);
+    }
+
+    public function getNegotiationPercentageChange(): float
+    {
+        return $this->calculatePercentageChange($this->negotiations());
+    }
+
+    public function getUserPercentageChange(): float
+    {
+        return $this->calculatePercentageChange($this->users());
     }
 }

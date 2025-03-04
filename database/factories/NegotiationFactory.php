@@ -24,10 +24,10 @@ class NegotiationFactory extends Factory
             'initial_complainant' => $this->faker->word(),
             'initial_complaint' => $this->faker->word(),
             'start_time' => Carbon::now(),
-            'end_time' => Carbon::now(),
+            'end_time' => null,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
-
+            'duration' => null,
             'user_id' => User::factory(),
             'tenant_id' => 1,
         ];

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Tenant;
 use App\Models\User;
 
 class PagesController extends Controller
@@ -22,6 +23,9 @@ class PagesController extends Controller
 
     public function admin($tenantId)
     {
-        return view('pages.admin');
+        $team = User::all();
+        $tenant = Tenant::findorFail($tenantId);
+
+        return view('pages.admin')->with(['team' => $team, 'tenant' => $tenant]);
     }
 }

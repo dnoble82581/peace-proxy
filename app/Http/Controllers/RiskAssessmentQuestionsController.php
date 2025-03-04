@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\RiskAssessmentQuestions;
+use App\Models\RiskAssessmentQuestion;
 use Illuminate\Http\Request;
 
 class RiskAssessmentQuestionsController extends Controller
 {
     public function index()
     {
-        return RiskAssessmentQuestions::all();
+        return RiskAssessmentQuestion::all();
     }
 
     public function store(Request $request)
@@ -20,15 +20,15 @@ class RiskAssessmentQuestionsController extends Controller
             'options' => ['nullable'],
         ]);
 
-        return RiskAssessmentQuestions::create($data);
+        return RiskAssessmentQuestion::create($data);
     }
 
-    public function show(RiskAssessmentQuestions $riskAssessmentQuestions)
+    public function show(RiskAssessmentQuestion $riskAssessmentQuestions)
     {
         return $riskAssessmentQuestions;
     }
 
-    public function update(Request $request, RiskAssessmentQuestions $riskAssessmentQuestions)
+    public function update(Request $request, RiskAssessmentQuestion $riskAssessmentQuestions)
     {
         $data = $request->validate([
             'question_text' => ['required'],
@@ -41,7 +41,7 @@ class RiskAssessmentQuestionsController extends Controller
         return $riskAssessmentQuestions;
     }
 
-    public function destroy(RiskAssessmentQuestions $riskAssessmentQuestions)
+    public function destroy(RiskAssessmentQuestion $riskAssessmentQuestions)
     {
         $riskAssessmentQuestions->delete();
 

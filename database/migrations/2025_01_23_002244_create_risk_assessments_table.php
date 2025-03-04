@@ -8,10 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('risk_assessment_questions', function (Blueprint $table) {
+        Schema::create('risk_assessments', function (Blueprint $table) {
             $table->id();
-            $table->string('question_text');
-            $table->enum('type', ['single-choice', 'multiple-choice', 'text'])->default('single-choice');
+            $table->foreignId('subject_id')->constrained()->onDelete('cascade');
+            $table->foreignId('tenant_id')->constrained()->onDelete('cascade');
+            $table->integer('result');
             $table->timestamps();
         });
     }

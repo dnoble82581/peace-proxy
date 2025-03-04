@@ -87,7 +87,7 @@ class SubMenu extends Component
 
         return $conversationService->createGroupChat([
             'type' => 'group',
-            'name' => 'Group Chat',
+            'name' => 'group',
             'initiator_id' => $this->user->id,
             'room_id' => $this->room->id,
             'is_active' => true,

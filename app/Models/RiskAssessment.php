@@ -6,20 +6,21 @@ use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class RiskAssessmentResponses extends Model
+class RiskAssessment extends Model
 {
     use BelongsToTenant, HasFactory;
 
     protected $guarded = ['id'];
 
-    public function riskAssessmentQuestions(): BelongsTo
+    public function subject(): BelongsTo
     {
-        return $this->belongsTo(RiskAssessmentQuestions::class);
+        return $this->belongsTo(Subject::class);
     }
 
-    public function user(): BelongsTo
+    public function responses(): HasMany
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(RiskAssessmentResponse::class);
     }
 }

@@ -31,7 +31,7 @@
 									type="radio"
 									id="q{{ $question->id }}_yes"
 									name="question-{{ $question->id }}"
-									wire:model="responses.{{ $question->id }}"
+									wire:model.live="responses.{{ $question->id }}"
 									value="Yes"
 							/>
 						</div>
@@ -43,7 +43,7 @@
 									type="radio"
 									id="q{{ $question->id }}_no"
 									name="question-{{ $question->id }}"
-									wire:model="responses.{{ $question->id }}"
+									wire:model.live="responses.{{ $question->id }}"
 									value="No"
 							/>
 						</div>
@@ -61,5 +61,9 @@
 				@endif
 			</div>
 		@endforeach
+		<div class="mt-4 px-4 py-2 bg-gray-100 border border-gray-300 rounded">
+			<p class="font-bold">Total "Yes" Responses: {{ $this->yesCount }}</p>
+		</div>
+
 	</x-form-layouts.form-layout>
 </div>

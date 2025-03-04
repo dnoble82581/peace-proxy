@@ -95,6 +95,9 @@ class NegotiationForm extends Form
             'subject_phone' => $this->subject_phone,
             'user_id' => $this->getUserId(),
             'tenant_id' => $this->getTenantId(),
+            'start_time' => now(),
+            'end_time' => null,
+            'duration' => null,
         ]);
     }
 
