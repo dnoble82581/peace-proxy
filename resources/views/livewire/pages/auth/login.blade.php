@@ -20,7 +20,7 @@
 			$this->form->authenticate();
 			$user = auth()->user();
 			$user->update(['role' => '']);
-			
+
 			Session::regenerate();
 
 			$this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
@@ -36,41 +36,16 @@
 	<form wire:submit="login">
 		<!-- Email Address -->
 		<div>
-			<x-form-elements.input-label
-					for="email"
-					:value="__('Email')" />
-			<x-form-elements.text-input
-					wire:model="form.email"
-					id="email"
-					class="block mt-1 w-full"
-					type="email"
-					name="email"
-					required
-					autofocus
-					autocomplete="username" />
-			<x-form-elements.input-error
-					:messages="$errors->get('form.email')"
-					class="mt-2" />
+			<x-input
+					label="Email"
+					wire:model="form.email" />
 		</div>
 
 		<!-- Password -->
 		<div class="mt-4">
-			<x-form-elements.input-label
-					for="password"
-					:value="__('Password')" />
-
-			<x-form-elements.text-input
-					wire:model="form.password"
-					id="password"
-					class="block mt-1 w-full"
-					type="password"
-					name="password"
-					required
-					autocomplete="current-password" />
-
-			<x-form-elements.input-error
-					:messages="$errors->get('form.password')"
-					class="mt-2" />
+			<x-password
+					label="Password"
+					wire:model="form.password" />
 		</div>
 
 		<!-- Remember Me -->
@@ -95,6 +70,12 @@
 						href="{{ route('password.request') }}"
 						wire:navigate>
 					{{ __('Forgot your password?') }}
+				</a>
+				<a
+						class="underline text-sm text-gray-600 ml-5 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+						href="{{ route('register') }}"
+						wire:navigate>
+					{{ __('Need an Account?') }}
 				</a>
 			@endif
 

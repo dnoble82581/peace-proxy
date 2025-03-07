@@ -96,6 +96,49 @@
 				<div
 						x-show="tab === 'dashboard'"
 						class="px-4 sm:px-6 lg:px-8">
+
+					<div>
+						<h3 class="text-base font-semibold text-gray-700">Subscriptions</h3>
+						<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+							<div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow-sm">
+								<div class="px-4 py-5 sm:p-6 space-y-1">
+									<h3>{{ $tenant->tenant_name }}</h3>
+									<p class="text-sm text-gray-500">
+										{{ $tenant->tenant_email }}
+									</p>
+									<p class="text-sm text-gray-500">
+										{{ $tenant->getPhoneAttribute($tenant->primary_phone) }}
+									</p>
+									<p class="text-sm text-gray-500">
+										{{ $tenant->address_line1 }}
+									</p>
+									<p class="text-sm text-gray-500">
+										{{ $tenant->address_line2 }}
+									</p>
+									<p class="text-sm text-gray-500">
+										<span>{{ $tenant->address_city }}</span>
+										<span>{{ $tenant->address_state }}</span>
+										<span>{{ $tenant->address_postal_code }}</span>
+									</p>
+									<p class="text-sm text-gray-500">
+										{{ $tenant->address_country }}
+									</p>
+								</div>
+								<div class="px-4 py-4 sm:px-6">
+									<!-- Content goes here -->
+									<!-- We use less vertical padding on card footers at all sizes than on headers or body sections -->
+								</div>
+							</div>
+							<div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow-sm">
+								
+								<div class="px-4 py-4 sm:px-6">
+									<!-- Content goes here -->
+									<!-- We use less vertical padding on card footers at all sizes than on headers or body sections -->
+								</div>
+							</div>
+						</div>
+					</div>
+
 					<div>
 						<h3 class="text-base font-semibold text-gray-700">Last 30 days</h3>
 

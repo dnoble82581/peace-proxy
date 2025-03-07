@@ -6,15 +6,17 @@ use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UserController;
 use App\Models\Plan;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'pages.welcome');
+Route::view('/', 'pages.welcome')->name('home');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/leave-impersonation',
         [ImpersonationController::class, 'leave'])->name('leave-impersonation');
+
     Route::view('dashboard/team', 'pages.team')->name('team');
     Route::view('create-user', 'pages.create-user')->name('create.user');
     Route::get('dashboard/team/edit-user/{id}', [UserController::class, 'update'])->name('edit.user');
@@ -55,10 +57,12 @@ Route::middleware(['auth'])->group(function () {
         return view('pdfs.on-scene-risk-assessment');
     })->name('risk.assessment');
 
+    Route::get('/dashboard/pricing', [SubscriptionController::class, 'showPricing'])->name('auth.pricing');
+
 });
 
 Route::view('dashboard', 'pages.dashboard')
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'verified', App\Http\Middleware\SubscribedMiddleware::class])
     ->name('dashboard');
 
 Route::view('profile', 'pages.profile')

@@ -1,5 +1,6 @@
 <?php
 
+	use App\Enums\UserPrivileges;
 	use App\Livewire\Forms\UserForm;
 	use App\Models\User;
 	use Livewire\Features\SupportRedirects\Redirector;
@@ -20,6 +21,8 @@
 		 */
 		public UserForm $form;
 
+		public array $userPrivileges = [];
+
 		/**
 		 * Handles the form submission, creates a new team member,
 		 * and redirects to the team management page.
@@ -33,6 +36,11 @@
 
 			// Redirect to the team management page
 			return redirect(route('team'));
+		}
+
+		public function mount():void
+		{
+			$this->userPrivliges = UserPrivileges::cases();
 		}
 
 		/**
@@ -114,46 +122,43 @@
 					wire:model="form.secondary_phone"
 					class="col-span-6 sm:col-span-2" />
 
-			<!-- Dropdown for the user's status (Active/Inactive) -->
-			{{--			<x-select--}}
-			{{--					label="Status"--}}
-			{{--					wire:model="form.status"--}}
-			{{--					class="col-span-6 sm:col-span-2"--}}
-			{{--					:options="[--}}
-			{{--                    ['name' => 'Active', 'value' => 1],--}}
-			{{--                    ['name' => 'Inactive', 'value' => 0],--}}
-			{{--                ]"--}}
-			{{--					option-label="name"--}}
-			{{--					option-value="value" />--}}
+			<x-select
+					label="User Privileges"
+					name="privileges"
+					wire:model="form.privileges"
+					class="col-span-6 sm:col-span-2">
+				@foreach($this->userPrivileges as $privilege)
+					<x-select.option
+							label="{{ $privilege->name }}"
+							value="{{ $privilege->name }}"
+							description="{{ $privilege->metaData()['description']}}" />
+				@endforeach
+			</x-select>
 
-			<!-- Input for the user's title -->
-			{{--			<x-select--}}
-			{{--					label="Privileges"--}}
-			{{--					wire:model="form.privileges"--}}
-			{{--					class="col-span-6 sm:col-span-2"--}}
-			{{--					:options="[--}}
-			{{--                    ['name' => 'User', 'value' => 'user'],--}}
-			{{--                    ['name' => 'Admin', 'value' => 'admin'],--}}
-			{{--                    ['name' => 'Super Admin', 'value' => 'super admin'],--}}
-			{{--                ]"--}}
-			{{--					option-label="name"--}}
-			{{--					option-value="value" />--}}
+			<x-select
+					label="Status"
+					wire:model="form.status"
+					class="col-span-6 sm:col-span-2"
+					:options="[
+					['label' => 'Active', 'value' => 1],
+					['label' => 'Inactive', 'value' => 0],
+			]"
+					option-label="label"
+					option-value="value" />
 
-			<!-- Dropdown for the user's role -->
-			{{--			<x-select--}}
-			{{--					label="Role"--}}
-			{{--					wire:model="form.role"--}}
-			{{--					class="col-span-6 sm:col-span-2"--}}
-			{{--					:options="[--}}
-			{{--                    ['name' => 'Primary Negotiator', 'value' => 'primary negotiator'],--}}
-			{{--                    ['name' => 'Secondary Negotiator', 'value' => 'secondary negotiator'],--}}
-			{{--                    ['name' => 'Recorder', 'value' => 'recorder'],--}}
-			{{--                    ['name' => 'Tactical User', 'value' => 'tactical user'],--}}
-			{{--                    ['name' => 'Tactical Admin', 'value' => 'tactical admin'],--}}
-			{{--                    ['name' => 'Tactical Super Admin', 'value' => 'tactical super admin'],--}}
-			{{--                ]"--}}
-			{{--					option-label="name"--}}
-			{{--					option-value="value" />--}}
+			<x-password
+					label="Password"
+					name="password"
+					wire:model="form.password"
+					class="col-span-6 sm:col-span-2" />
+
+			<x-password
+					label="Password Confirmation"
+					name="password_confirmation"
+					wire:model="form.password_confirmation"
+					class="col-span-6 sm:col-span-2" />
+
+
 		</div>
 
 		<!-- Avatar file input -->

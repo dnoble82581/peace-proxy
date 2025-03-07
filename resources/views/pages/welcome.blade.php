@@ -54,8 +54,8 @@
 						href="#"
 						class="text-sm/6 font-semibold text-white">Features</a>
 				<a
-						href="#"
-						class="text-sm/6 font-semibold text-white">Marketplace</a>
+						href="{{ route('subscriptions.pricing') }}"
+						class="text-sm/6 font-semibold text-white">Pricing</a>
 				<a
 						href="#"
 						class="text-sm/6 font-semibold text-white">Company</a>
@@ -113,8 +113,8 @@
 									href="#"
 									class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800">Features</a>
 							<a
-									href="#"
-									class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800">Marketplace</a>
+									href="{{ route('subscriptions.pricing') }}"
+									class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800">Pricing</a>
 							<a
 									href="#"
 									class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-800">Company</a>

@@ -6,10 +6,11 @@ use App\Traits\ChangePercentageCalculator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Cashier\Billable;
 
 class Tenant extends Model
 {
-    use ChangePercentageCalculator, HasFactory;
+    use Billable, ChangePercentageCalculator, HasFactory;
 
     protected $guarded = ['id'];
 
@@ -41,6 +42,11 @@ class Tenant extends Model
     public function requests(): HasMany
     {
         return $this->hasMany(SubjectRequest::class);
+    }
+
+    public function getPhoneAttribute($value): ?string
+    {
+        return $value ? preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '($1) $2-$3', $value) : null;
     }
 
     public function conversations(): HasMany

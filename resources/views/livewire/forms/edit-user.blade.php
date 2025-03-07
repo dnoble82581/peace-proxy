@@ -1,5 +1,6 @@
 <?php
 
+	use App\Enums\UserPrivileges;
 	use App\Livewire\Forms\UserForm;
 	use App\Models\User;
 	use LaravelIdea\Helper\App\Models\_IH_User_C;
@@ -23,6 +24,8 @@
 		 * @var User The team member being updated.
 		 */
 		public User $user;
+
+		public array $userPrivileges = [];
 
 		/**
 		 * @var array List of available roles with labels and values.
@@ -54,6 +57,8 @@
 				$this->user = $user;
 				$this->form->setForm($this->user); // Initializes the form with user data.
 			}
+			$this->userPrivileges = UserPrivileges::cases();
+
 		}
 
 		/**
@@ -152,20 +157,30 @@
 					option-value="value" />
 
 			{{-- Input for the user's title --}}
-			<x-input
-					label="Title"
-					wire:model="form.title"
-					placeholder="Title"
+			<x-select
+					label="User Privileges"
+					name="privileges"
+					wire:model="form.privileges"
+					class="col-span-6 sm:col-span-2">
+				@foreach($this->userPrivileges as $privilege)
+					<x-select.option
+							label="{{ $privilege->name }}"
+							value="{{ $privilege->value }}"
+							description="{{ $privilege->metaData()['description']}}" />
+				@endforeach
+			</x-select>
+
+			<x-password
+					label="Password"
+					name="password"
+					wire:model="form.password"
 					class="col-span-6 sm:col-span-2" />
 
-			{{-- Dropdown for the user's role (e.g., Admin, User) --}}
-			<x-select
-					label="Role"
-					wire:model="form.role"
-					class="col-span-6 sm:col-span-2"
-					:options="$roles"
-					option-label="name"
-					option-value="value" />
+			<x-password
+					label="Password Confirmation"
+					name="password_confirmation"
+					wire:model="form.password_confirmation"
+					class="col-span-6 sm:col-span-2" />
 		</div>
 
 		{{-- File input for avatar upload with preview --}}

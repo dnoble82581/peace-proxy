@@ -32,9 +32,9 @@ class User extends Authenticatable
         'primary_phone',
         'secondary_phone',
         'avatar',
+        'privileges',
         'role',
         'status',
-        'title',
     ];
 
     /**

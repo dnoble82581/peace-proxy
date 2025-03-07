@@ -2,11 +2,12 @@
 
 namespace App\Livewire\Forms;
 
+use App\Models\Tenant;
 use App\Models\User;
 use App\Services\DocumentProcessor;
 use Exception;
 use Illuminate\Support\Facades\Storage;
-use Livewire\Attributes\Validate;
+use Illuminate\Validation\Rules;
 use Livewire\Form;
 
 // ToDo: fix validation here
@@ -18,98 +19,68 @@ use Livewire\Form;
  */
 class UserForm extends Form
 {
-    /**
-     * The user model instance being edited.
-     */
     public ?User $user;
 
-    /**
-     * Uploaded photo/avatar file.
-     *
-     * @var mixed
-     */
-    #[Validate(['nullable', 'image', 'max:1024'])]
+    public ?Tenant $tenant;
+
     public $photo;
 
-    /**
-     * User's name.
-     *
-     * @var string
-     */
-    #[Validate(['required'])]
     public $name = '';
 
-    /**
-     * User's email address.
-     *
-     * @var string
-     */
     public $email = '';
 
-    /**
-     * User's primary phone number.
-     *
-     * @var string|null
-     */
-    #[Validate(['nullable'])]
     public $primary_phone = '';
 
-    /**
-     * User's secondary phone number.
-     *
-     * @var string|null
-     */
-    #[Validate(['nullable'])]
     public $secondary_phone = '';
 
-    /**
-     * User's avatar file path stored in the system.
-     *
-     * @var string|null
-     */
-    #[Validate(['nullable'])]
-    public $avatar = '';
+    public $avatar;
 
-    /**
-     * User's role in the system.
-     *
-     * @var string
-     */
-    #[Validate(['nullable'])]
     public $role = '';
 
-    /**
-     * User's title or job position.
-     *
-     * @var string|null
-     */
-    #[Validate(['nullable'])]
-    public $privliges = 'user';
+    public $privileges = 'user';
 
-    /**
-     * User's account status (active/inactive).
-     *
-     * @var bool
-     */
-    #[Validate(['boolean'])]
-    public $status = false;
+    public $status = true;
 
-    #[Validate(['file', 'max:10000', 'mimes:pdf', 'nullable'])]
     public $application;
+
+    public $password;
+
+    public $password_confirmation;
 
     /**
      * Create a new user in the system using the form's data.
      *
      * @throws Exception
      */
-    public function create()
+    public function create(?Tenant $tenant = null): User
     {
-        $this->validate();
+        if ($tenant) {
+            $this->tenant = $tenant;
+            $this->privileges = 'admin';
+        }
+
+        $this->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'primary_phone' => ['nullable', 'string', 'max:255'],
+            'secondary_phone' => ['nullable', 'string', 'max:255'],
+            'avatar' => ['nullable', 'image', 'max:1024'],
+            'role' => ['nullable', 'string', 'max:255'],
+            'privileges' => ['required', 'string', 'max:255'],
+            'status' => ['nullable', 'boolean'],
+            'application' => ['nullable', 'file', 'max:10000', 'mimes:pdf'],
+            'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
+
+        ]);
 
         $userData = $this->collectUserData();
 
-        if ($this->photo) {
+        if ($this->avatar) {
             $userData['avatar'] = $this->saveUserAvatar();
+        }
+
+        if ($this->tenant) {
+            $userData['tenant_id'] = $this->tenant->id;
         }
 
         $user = User::create($userData);
@@ -118,6 +89,7 @@ class UserForm extends Form
             $this->handleFileUploads($user);
         }
 
+        return $user;
     }
 
     /**
@@ -132,9 +104,11 @@ class UserForm extends Form
             'secondary_phone' => $this->secondary_phone,
             'avatar' => $this->avatar,
             'role' => $this->role,
-            'privileges' => $this->privliges,
+            'privileges' => $this->privileges,
             'status' => $this->status,
-            'password' => $this->user ?? bcrypt('Password'), // Only set password for new users
+            'tenant_id' => $this->tenant->id ?? null,
+            'password' => $this->user->password ?? bcrypt($this->password), // Only set password for new users
+            'password_confirmation' => $this->user->password ?? bcrypt($this->password_confirmation),
         ];
     }
 
@@ -145,7 +119,7 @@ class UserForm extends Form
      */
     public function saveUserAvatar(): string
     {
-        return $this->photo->store($this->user->tenant->name.'/avatars/'.$this->user->id, 's3-public');
+        return $this->photo->store($this->user->tenant->tenant_name.'/avatars/'.$this->user->id, 's3-public');
     }
 
     /**
@@ -160,7 +134,7 @@ class UserForm extends Form
     private function handleFileUploads(User $user): void
     {
         $documentProcessor = new DocumentProcessor;
-        $documentProcessor->processDocuments($this->application, $user, auth()->user()->id);
+        $documentProcessor->processDocuments($this->application, $user, auth()->user()->id, 'application');
     }
 
     /**
@@ -213,6 +187,8 @@ class UserForm extends Form
             'secondary_phone' => $user->secondary_phone,
             'avatar' => $user->avatar,
             'role' => $user->role,
+            'password' => $user->password,
+            'privileges' => $user->privileges,
             'title' => $user->title,
             'status' => $user->status,
         ]);

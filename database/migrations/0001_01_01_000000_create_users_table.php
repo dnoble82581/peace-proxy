@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('primary_phone')->nullable();
             $table->string('secondary_phone')->nullable();
             $table->string('avatar')->nullable();
-            $table->string('privileges')->default('user');
+            $table->string('privileges');
             $table->string('role')->nullable();
             $table->boolean('status')->default(true);
             $table->timestamp('email_verified_at')->nullable();

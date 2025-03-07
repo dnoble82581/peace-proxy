@@ -8,6 +8,8 @@
 	use Livewire\Attributes\Validate;
 	use Livewire\Volt\Component;
 	use Livewire\WithPagination;
+	use Illuminate\Http\Request;
+
 
 	new class extends Component {
 		use WithPagination;

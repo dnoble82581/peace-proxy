@@ -37,7 +37,7 @@
 					<span class="text-sm dark-light-text capitalize">{{ auth()->user()->role }}</span>
 				</div>
 				<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex sm:items-center">
-					<span class="text-sm dark-light-text capitalize">{{ auth()->user()->tenant ? auth()->user()->tenant->name : '' }}</span>
+					<span class="text-sm dark-light-text capitalize">{{ auth()->user()->tenant ? auth()->user()->tenant->tenant_name : '' }}</span>
 				</div>
 			</div>
 
