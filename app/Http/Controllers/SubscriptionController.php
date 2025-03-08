@@ -35,6 +35,7 @@ class SubscriptionController extends Controller
      */
     public function subscribe(Request $request)
     {
+
         $stripeService = new StripeService;
         $subscription = $stripeService->createSubscription($request->user()->tenant, $request->user(),
             $request->price_id);
@@ -45,7 +46,14 @@ class SubscriptionController extends Controller
     /**
      * @throws Exception
      */
-    public function billingPortal(Request $request) {}
+    public function billingPortal(Request $request)
+    {
+        // Ensure the user is authenticated
+        $user = $request->user()->tenant;
+
+        return $user->redirectToBillingPortal(route('admin', $user));
+
+    }
 
     // Redirect to Stripe Billing Portal
 

@@ -14,6 +14,10 @@ class Tenant extends Model
 
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'trial_ends_at' => 'datetime',
+    ];
+
     public function rooms(): HasMany
     {
         return $this->hasMany(Room::class);

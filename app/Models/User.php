@@ -87,6 +87,11 @@ class User extends Authenticatable
         return $this->hasMany(Objective::class);
     }
 
+    public function smsMessages(): HasMany
+    {
+        return $this->hasMany(TextMessage::class, 'sender_id');
+    }
+
     public function conversations(): HasMany
     {
         return $this->hasMany(Conversation::class);

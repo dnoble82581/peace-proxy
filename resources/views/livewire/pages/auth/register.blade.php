@@ -27,10 +27,10 @@
 		public function register():void
 		{
 			$this->tenant = $this->tenantForm->create();
-
 			$this->user = $this->userForm->create($this->tenant);
 
-			$this->createStripeCustomer();
+			$stripeService = new StripeService;
+			$stripeService->createStripeCustomer($this->tenant, $this->user);
 
 			event(new Registered($this->user));
 

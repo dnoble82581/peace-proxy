@@ -9,12 +9,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class Subject extends Model
 {
-    use BelongsToTenant, HasFactory;
+    use BelongsToTenant, HasFactory, Notifiable;
 
     protected $guarded = ['id'];
 
@@ -80,6 +81,16 @@ class Subject extends Model
     public function getPhoneAttribute($value): ?string
     {
         return $value ? preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '($1) $2-$3', $value) : null;
+    }
+
+    public function smsMessages()
+    {
+        return $this->hasMany(TextMessage::class, 'sender_id');
+    }
+
+    public function routeNotificationForVonage(): string
+    {
+        return '+13195947290'; // Replace with your column name for phone numbers
     }
 
     public function getAge($date = null): int

@@ -2,6 +2,7 @@
 
 	use App\Models\Room;
 	use App\Models\Subject;
+	use App\Notifications\SendSMSNotification;
 	use Livewire\Features\SupportRedirects\Redirector;
 	use Livewire\Volt\Component;
 	use function Livewire\Volt\{state};
@@ -32,7 +33,10 @@
 			];
 		}
 
-		public function callSubject() {}
+		public function callSubject()
+		{
+			new SendSMSNotification('13195947290');
+		}
 
 		public function textSubject() {}
 	}
@@ -75,12 +79,20 @@
 						alt="Temporary Subject Image">
 			@endif
 			<div class="mt-3 flex justify-between gap-2 px-1">
-				<button wire:click="callSubject">
-					<x-heroicons::micro.solid.phone-arrow-up-right class="w-6 h-6 text-teal-500" />
-				</button>
-				<button>
-					<x-heroicons::outline.chat-bubble-left-ellipsis class="w-6 h-6 text-teal-500" />
-				</button>
+				<form
+						action="{{ route('send.sms') }}"
+						method="POST"
+						class="text-center">
+					@csrf
+					<button
+							type="submit"
+							class="bg-blue-600 text-white p-1 rounded-lg hover:bg-blue-700">
+						<x-heroicons::micro.solid.chat-bubble-bottom-center class="w-6 h-6" />
+					</button>
+					@if (session('message'))
+						<p class="text-green-600 mt-2">{{ session('message') }}</p>
+					@endif
+				</form>
 			</div>
 		</div>
 		<div class="text-sm dark-light-text">

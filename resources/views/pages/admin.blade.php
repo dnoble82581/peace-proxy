@@ -7,7 +7,7 @@
   <body class="h-full">
   ```
 -->
-	<div x-data="{tab: 'dashboard'}">
+	<div x-data="{tab: 'negotiations'}">
 		<!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. -->
 		<div
 				class="relative z-50 lg:hidden"
@@ -89,18 +89,13 @@
 			<main
 					class="py-10">
 				<div
-						x-show="tab === 'team'"
-						class="px-4 sm:px-6 lg:px-8">
-					<livewire:teams.show-team />
-				</div>
-				<div
 						x-show="tab === 'dashboard'"
 						class="px-4 sm:px-6 lg:px-8">
 
 					<div>
-						<h3 class="text-base font-semibold text-gray-700">Subscriptions</h3>
-						<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-							<div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow-sm">
+						<h3 class="text-base font-semibold text-gray-700 mb-4">Subscriptions</h3>
+						<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-4">
+							<div class="overflow-hidden rounded-lg bg-white shadow-sm">
 								<div class="px-4 py-5 sm:p-6 space-y-1">
 									<h3>{{ $tenant->tenant_name }}</h3>
 									<p class="text-sm text-gray-500">
@@ -125,28 +120,53 @@
 									</p>
 								</div>
 								<div class="px-4 py-4 sm:px-6">
-									<!-- Content goes here -->
-									<!-- We use less vertical padding on card footers at all sizes than on headers or body sections -->
+									<x-buttons.small-primary
+											type="button"
+											class="bg-indigo-500">Edit Tenant
+									</x-buttons.small-primary>
 								</div>
 							</div>
-							<div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow-sm">
-								
+							<div class="overflow-hidden rounded-lg bg-white shadow-sm h-64">
+								<div class="px-4 py-5 space-y-2.5 sm:p-6">
+									<div class="flex items-center text-sm justify-between">
+										<p class="text-gray-500">Subscription Name:</p>
+										<span class="text-gray-900 font-semibold">{{ $subscriptionInfo['subscriptionName'] }}</span>
+									</div>
+									<div class="flex text-sm items-center justify-between">
+										<p class="text-gray-500">Trial Began:</p>
+										<span class="text-gray-900 font-semibold">{{ $subscriptionInfo['subscriptionTrialBegan'] }}</span>
+									</div>
+									<div class="flex text-sm items-center justify-between">
+										<p class="text-gray-500">Trial Ends:</p>
+										<span class="text-gray-900 font-semibold">{{ $subscriptionInfo['subscriptionTrialEnd'] }}</span>
+									</div>
+									<div class="flex text-sm items-center justify-between">
+										<p class="text-gray-500">Next Invoice Amount:</p>
+										<span class="text-gray-900 font-semibold">${{ $subscriptionInfo['nextInvoiceAmount'] }}</span>
+									</div>
+									<div class="flex text-sm items-center justify-between">
+										<p class="text-sm text-gray-500">Next Invoice Due Date:</p>
+										<span class="text-gray-900 font-semibold">{{ $subscriptionInfo['nextInvoiceDue'] }}</span>
+									</div>
+
+
+								</div>
 								<div class="px-4 py-4 sm:px-6">
-									<!-- Content goes here -->
-									<!-- We use less vertical padding on card footers at all sizes than on headers or body sections -->
+									<a
+											href="{{route('subscriptions.billing.portal')}}"
+											class="rounded bg-indigo-500 px-2 py-1 text-xs font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors ease-in-out">Edit
+									                                                                                                                                                                                                                                       Subscription</a>
 								</div>
 							</div>
+
 						</div>
 					</div>
 
 					<div>
 						<h3 class="text-base font-semibold text-gray-700">Last 30 days</h3>
-
 						<dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-
 							<x-admin.small-team-data-card :tenant="$tenant" />
 							<x-admin.small-negotiation-data-card :tenant="$tenant" />
-
 							<div class="relative overflow-hidden rounded-lg bg-white px-4 pt-5 pb-12 shadow-sm sm:px-6 sm:pt-6">
 								<dt>
 									<div class="absolute rounded-md bg-indigo-500 p-3">
@@ -173,7 +193,85 @@
 							</div>
 						</dl>
 					</div>
+				</div>
+				<div
+						x-show="tab === 'team'"
+						class="px-4 sm:px-6 lg:px-8">
+					<livewire:teams.show-team />
+				</div>
+				{{--				ToDO: Refactor this into a livewire component and make the rows sortable--}}
+				<div
+						x-show="tab === 'negotiations'"
+						class="px-4 sm:px-6 lg:px-8">
+					<div class="px-4 sm:px-6 lg:px-8">
+						<div class="sm:flex sm:items-center">
+							<div class="sm:flex-auto">
+								<h1 class="text-base font-semibold text-gray-900">Negotiations</h1>
+								<p class="mt-2 text-sm text-gray-700">A list of all the users in your account including
+								                                      their name, title, email and role.</p>
+							</div>
+						</div>
+						<div class="mt-8 flow-root">
+							<div class="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
+								<div class="inline-block min-w-full py-2 align-middle">
+									<table class="min-w-full border-separate border-spacing-0">
+										<thead>
+										<tr>
+											<th
+													scope="col"
+													class="sticky top-0 z-10 border-b border-gray-300 bg-white/75 py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter sm:pl-6 lg:pl-8">
+												Name
+											</th>
+											<th
+													scope="col"
+													class="sticky top-0 z-10 hidden border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter sm:table-cell">
+												Title
+											</th>
+											<th
+													scope="col"
+													class="sticky top-0 z-10 hidden border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter lg:table-cell">
+												Email
+											</th>
+											<th
+													scope="col"
+													class="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter">
+												Role
+											</th>
+											<th
+													scope="col"
+													class="sticky top-0 z-10 border-b border-gray-300 bg-white/75 py-3.5 pr-4 pl-3 backdrop-blur-sm backdrop-filter sm:pr-6 lg:pr-8">
+												<span class="sr-only">Edit</span>
+											</th>
+										</tr>
+										</thead>
+										<tbody>
+										<tr>
+											<td class="border-b border-gray-200 py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6 lg:pl-8">
+												Lindsay Walton
+											</td>
+											<td class="hidden border-b border-gray-200 px-3 py-4 text-sm whitespace-nowrap text-gray-500 sm:table-cell">
+												Front-end Developer
+											</td>
+											<td class="hidden border-b border-gray-200 px-3 py-4 text-sm whitespace-nowrap text-gray-500 lg:table-cell">
+												lindsay.walton@example.com
+											</td>
+											<td class="border-b border-gray-200 px-3 py-4 text-sm whitespace-nowrap text-gray-500">
+												Member
+											</td>
+											<td class="relative border-b border-gray-200 py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-8 lg:pr-8">
+												<a
+														href="#"
+														class="text-indigo-600 hover:text-indigo-900">Edit<span class="sr-only">, Lindsay Walton</span></a>
+											</td>
+										</tr>
 
+										<!-- More people... -->
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</main>
 		</div>

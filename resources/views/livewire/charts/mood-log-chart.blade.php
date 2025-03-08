@@ -70,12 +70,11 @@
 
 ?>
 
-{{-- ToDO: Fix this or put it back the way it was. --}}
 
-<!-- Frontend Markup -->
+		<!-- Frontend Markup -->
 <div
 		wire:ignore
-		class="bg-white dark:bg-gray-800">
+		class="bg-white dark:bg-gray-800 px-10">
 	<!-- Chart Canvas -->
 	<canvas id="moodChart"></canvas>
 

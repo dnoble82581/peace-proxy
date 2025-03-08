@@ -2,36 +2,73 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Negotiation;
 use App\Models\Tenant;
 use App\Models\User;
-use Stripe\StripeClient;
+use App\Services\StripeService;
+use Illuminate\Support\Facades\Cache;
 
 class PagesController extends Controller
 {
+    private StripeService $stripeService;
+
+    // Use dependency injection to initialize StripeService
+    public function __construct(StripeService $stripeService)
+    {
+        $this->stripeService = $stripeService;
+    }
+
+    /**
+     * Edit a specific user by ID.
+     */
     public function editUser(int $userId)
     {
-        if ($userId) {
-            $user = User::findorFail($userId);
-        }
+        $user = User::findOrFail($userId); // Directly call findOrFail
 
-        return view('pages.update-user')->with('user', $user);
+        return view('pages.update-user', compact('user'));
     }
 
-    public function editSubject($roomId)
+    /**
+     * Show edit subject page based on room ID.
+     */
+    public function editSubject(int $roomId)
     {
-        return view('pages.subject.edit-subject')->with('roomId', $roomId);
+        return view('pages.subject.edit-subject', compact('roomId'));
     }
 
-    public function admin($tenantId)
+    /**
+     * Show admin page for a specific tenant.
+     */
+    public function admin(int $tenantId)
     {
-        $stripe = new StripeClient(config('stripe.secret_key')); // Your Stripe secret key
-
-        // Retrieve customer subscriptions based on their Stripe customer ID
-
+        $tenant = Tenant::findOrFail($tenantId);
         $team = User::all();
-        $tenant = Tenant::findorFail($tenantId);
-        $subscriptions = $stripe->subscriptions->all(['customer' => $tenant->stripe_id]);
+        $negotiations = Negotiation::query()
+            ->with('associates')
+            ->get();
 
-        return view('pages.admin')->with(['team' => $team, 'tenant' => $tenant, 'subscriptions' => $subscriptions]);
+        // Use the injected stripeService to fetch Stripe-related data
+        $subscriptionInfo = Cache::remember("tenant_{$tenantId}_subscription_info", now()->addMinutes(15),
+            function () use ($tenant) {
+                return [
+                    'subscriptionName' => $this->stripeService->getSubscriptionName($tenant->stripe_id) ?? 'No Subscription',
+                    'subscriptionTrialEnd' => $this->stripeService->getTrialEndDate($tenant->stripe_id),
+                    'subscriptionTrialBegan' => $this->stripeService->getTrialStartDate($tenant->stripe_id),
+                    'nextInvoiceAmount' => $this->stripeService->getNextInvoiceAmount($tenant->stripe_id),
+                    'nextInvoiceDue' => $this->stripeService->getNextInvoiceDueDate($tenant->stripe_id),
+                ];
+            });
+
+        return view('pages.admin', compact('team', 'tenant', 'subscriptionInfo', 'negotiations'));
+    }
+
+    /**
+     * Show dashboard page for the authenticated user's tenant.
+     */
+    public function dashboard()
+    {
+        $negotiations = Negotiation::all(); // Use request()->user()
+
+        return view('pages.dashboard', compact('negotiations'));
     }
 }
