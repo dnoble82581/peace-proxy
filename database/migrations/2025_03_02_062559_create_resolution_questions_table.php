@@ -11,9 +11,11 @@ return new class extends Migration
         Schema::create('resolution_questions', function (Blueprint $table) {
             $table->id();
             $table->string('question_text');
+
             $table->enum('type',
                 ['single-choice', 'multiple-choice', 'text', 'date-time'])->default('single-choice');
             $table->json('options')->nullable(); //
+            $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->timestamps();
         });
     }

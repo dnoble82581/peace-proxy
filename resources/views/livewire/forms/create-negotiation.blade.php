@@ -11,6 +11,11 @@
 			$this->form->save();
 			return redirect(route('dashboard'));
 		}
+
+		public function cancel()
+		{
+			return $this->redirect(route('dashboard'));
+		}
 	}
 
 ?>
@@ -117,6 +122,6 @@
 				wire:loading
 				wiretarget="form.save" />
 		<x-buttons.primary-button>Save</x-buttons.primary-button>
-		<x-buttons.secondary-button>Cancel</x-buttons.secondary-button>
+		<x-buttons.secondary-button wire:click="cancel">Cancel</x-buttons.secondary-button>
 	</div>
 </x-form-layouts.form-layout>

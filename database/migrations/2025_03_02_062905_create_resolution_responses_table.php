@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('resolution_id')->constrained()->onDelete('cascade');
             $table->foreignId('resolution_question_id')->constrained()->onDelete('cascade');
+            $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->string('response');
             $table->timestamps();
         });

@@ -2,6 +2,7 @@
 
 	use App\Events\UserLoggedInEvent;
 	use App\Livewire\Forms\LoginForm;
+	use App\Services\StripeService;
 	use Illuminate\Support\Facades\Session;
 	use Livewire\Attributes\Layout;
 	use Livewire\Volt\Component;
@@ -19,8 +20,13 @@
 
 			$this->form->authenticate();
 			$user = auth()->user();
-			$user->update(['role' => '']);
 
+			if (!$user->tenant->stripe_id) {
+				$stripeService = new StripeService();
+				$stripeService->createStripeCustomer($user->tenant, $user);
+			}
+			
+			$user->update(['role' => '']);
 			Session::regenerate();
 
 			$this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);

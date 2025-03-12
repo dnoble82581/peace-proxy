@@ -1,5 +1,6 @@
 <?php
 
-use App\Http\Controllers\PagesController;
+use Livewire\Volt\Volt;
 
-Route::get('/{tenant}/admin/dashboard', [PagesController::class, 'admin'])->name('admin')->middleware('admin');
+Volt::route('/{tenantId}/admin/dashboard', 'pages.admin')->name('admin');
+// Route::get('/{tenant}/admin/dashboard', [PagesController::class, 'admin'])->name('admin')->middleware('admin');

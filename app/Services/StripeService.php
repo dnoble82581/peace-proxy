@@ -95,7 +95,7 @@ class StripeService
             ->allowPromotionCodes()
             ->checkout([
                 'success_url' => route('dashboard'),
-                'cancel_url' => route('dashboard'),
+                'cancel_url' => route('auth.pricing'),
             ]);
     }
 

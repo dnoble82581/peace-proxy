@@ -73,6 +73,16 @@ class Tenant extends Model
         return $this->hasMany(Resolution::class);
     }
 
+    public function resolutionResponses(): HasMany
+    {
+        return $this->hasMany(ResolutionResponse::class);
+    }
+
+    public function resolutionQuestions(): HasMany
+    {
+        return $this->hasMany(ResolutionQuestion::class);
+    }
+
     public function getRecentUsers(int $duration): int
     {
         return $this->users()->where('created_at', '>=', now()->subDays($duration))->count();

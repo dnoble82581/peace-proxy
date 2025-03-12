@@ -13,7 +13,7 @@ class NegotiationForm extends Form
     // Default constants for improving value readability
     public const DEFAULT_SUBJECT_NAME = 'John Doe';
 
-    public const DEFAULT_STATUS = 'Pending';
+    public const DEFAULT_STATUS = 'Active';
 
     public const DEFAULT_TYPE = 'Live';
 

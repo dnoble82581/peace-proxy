@@ -4,19 +4,25 @@
 	use App\Models\Document;
 	use App\Models\Negotiation;
 	use App\Models\Subject;
+	use App\Models\Tenant;
+	use App\Models\User;
 	use App\Services\DocumentProcessor;
 	use Livewire\Volt\Component;
+	use WireElements\Pro\Concerns\InteractsWithConfirmationModal;
+
 
 	new class extends Component {
+		use InteractsWithConfirmationModal;
+
 		public Negotiation $negotiation;
 		public Subject $subject;
 
-		public function createForm()
+		public function createForm():void
 		{
 			$this->dispatch('modal.open', component: 'modals.create-resolution-form',
 				arguments: ['negotiationId' => $this->negotiation->id, 'subjectId' => $this->subject->id]);
 		}
-
+		
 		public function getListeners():array
 		{
 			return [

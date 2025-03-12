@@ -16,7 +16,7 @@ class CheckIsAdmin
     public function handle(Request $request, Closure $next): Response
     {
         if (auth()->check() && auth()->user()->isAdmin()) {
-            return $next($request);
+            return redirect()->route('admin')->with($request->user()->tenant);
         }
 
         return redirect()->route('login');

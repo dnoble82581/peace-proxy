@@ -47,6 +47,9 @@ class StripeListener
                             'trial_ends_at' => $trialEndsAt,
                         ]);
                     } else {
+                        $tenant->update([
+                            'trial_ends_at' => $trialEndsAt,
+                        ]);
                         Log::info('No default payment method found for tenant.');
                     }
                 } catch (Exception $e) {

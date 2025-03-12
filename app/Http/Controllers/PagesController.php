@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Negotiation;
-use App\Models\Tenant;
 use App\Models\User;
 use App\Services\StripeService;
-use Illuminate\Support\Facades\Cache;
 
 class PagesController extends Controller
 {
@@ -39,28 +37,7 @@ class PagesController extends Controller
     /**
      * Show admin page for a specific tenant.
      */
-    public function admin(int $tenantId)
-    {
-        $tenant = Tenant::findOrFail($tenantId);
-        $team = User::all();
-        $negotiations = Negotiation::query()
-            ->with('associates')
-            ->get();
-
-        // Use the injected stripeService to fetch Stripe-related data
-        $subscriptionInfo = Cache::remember("tenant_{$tenantId}_subscription_info", now()->addMinutes(15),
-            function () use ($tenant) {
-                return [
-                    'subscriptionName' => $this->stripeService->getSubscriptionName($tenant->stripe_id) ?? 'No Subscription',
-                    'subscriptionTrialEnd' => $this->stripeService->getTrialEndDate($tenant->stripe_id),
-                    'subscriptionTrialBegan' => $this->stripeService->getTrialStartDate($tenant->stripe_id),
-                    'nextInvoiceAmount' => $this->stripeService->getNextInvoiceAmount($tenant->stripe_id),
-                    'nextInvoiceDue' => $this->stripeService->getNextInvoiceDueDate($tenant->stripe_id),
-                ];
-            });
-
-        return view('pages.admin', compact('team', 'tenant', 'subscriptionInfo', 'negotiations'));
-    }
+    public function admin(int $tenantId) {}
 
     /**
      * Show dashboard page for the authenticated user's tenant.

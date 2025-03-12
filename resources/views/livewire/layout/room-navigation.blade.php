@@ -70,7 +70,7 @@
 					<x-slot name="content">
 						@if (auth()->user()->privileges === 'admin')
 							<x-dropdown.dropdown-link
-									:href="route('admin', ['tenant' => auth()->user()->tenant->id])"
+									:href="route('admin', ['tenantId' => auth()->user()->tenant->id])"
 									wire:navigate>
 								{{ __('Admin') }}
 							</x-dropdown.dropdown-link>

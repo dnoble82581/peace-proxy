@@ -21,6 +21,17 @@
 					@switch($question->type)
 						@case('single-choice')
 							@if (!empty($question->options))
+								@if($question['text'] === 'Was an Interpreter Used?')
+									@foreach ($question->options as $option)
+										<div>
+											<x-radio
+													name="responses[{{ $question->id }}]"
+													wire:model="responses.{{ $question->id }}"
+													value="{{ $option['text'] }}"
+													:label="$option['text']" />
+										</div>
+									@endforeach
+								@endif
 								@foreach ($question->options as $option)
 									<div>
 										<x-radio
@@ -50,14 +61,13 @@
 							@break
 
 						@case('text')
-							<x-textarea
+							<x-input
 									x-show="showText"
 									name="responses[{{ $question->id }}]"
 									class="w-full"
 									wire:model="responses.{{ $question->id }}"
 									placeholder="Your response" />
 							@break
-
 						@default
 							<p class="text-sm text-red-500">Unsupported question type.</p>
 					@endswitch

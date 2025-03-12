@@ -88,6 +88,7 @@ class CreateResolutionForm extends Modal
                         $resolution->responses()->create([
                             'resolution_question_id' => $questionId,
                             'response' => $option,
+                            'tenant_id' => $this->subject->tenant_id,
                             'subject_id' => $this->subject->id,
                         ]);
                     }
@@ -98,6 +99,7 @@ class CreateResolutionForm extends Modal
                     $resolution->responses()->create([
                         'resolution_question_id' => $questionId,
                         'response' => $response, // The date-time string will be stored as-is
+                        'tenant_id' => $this->subject->tenant_id,
                         'subject_id' => $this->subject->id,
                     ]);
                 }
@@ -106,6 +108,7 @@ class CreateResolutionForm extends Modal
                 if (! empty($response)) {
                     $resolution->responses()->create([
                         'resolution_question_id' => $questionId,
+                        'tenant_id' => $this->subject->tenant_id,
                         'response' => $response,
                         'subject_id' => $this->subject->id,
                     ]);
