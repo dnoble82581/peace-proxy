@@ -32,9 +32,8 @@
 	@endif
 
 	<!-- Page Content -->
-	<main>
-		{{ $slot }}
-	</main>
+	{{ $slot }}
+	
 </div>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 @livewireScripts
