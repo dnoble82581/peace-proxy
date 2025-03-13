@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\TenantLogoService;
 use App\Traits\ChangePercentageCalculator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -46,6 +47,11 @@ class Tenant extends Model
     public function requests(): HasMany
     {
         return $this->hasMany(SubjectRequest::class);
+    }
+
+    public function logoUrl(): string
+    {
+        return (new TenantLogoService)->getLogoUrl($this);
     }
 
     public function getPhoneAttribute($value): ?string
@@ -103,11 +109,6 @@ class Tenant extends Model
     public function negotiations(): HasMany
     {
         return $this->hasMany(Negotiation::class);
-    }
-
-    public function getNegotiationPercentageChange(): float
-    {
-        return $this->calculatePercentageChange($this->negotiations());
     }
 
     public function getUserPercentageChange(): float

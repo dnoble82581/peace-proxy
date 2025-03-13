@@ -31,6 +31,8 @@ class TenantForm extends Form
 
     public string $tenant_logo = '';
 
+    public $logo;
+
     public string $tax_exempt = '';
 
     public string $tax_id = '';
@@ -70,7 +72,8 @@ class TenantForm extends Form
             'tenant_email' => 'required|email',
             'primary_phone' => 'required|nullable',
             'secondary_phone' => 'nullable',
-            'tenant_logo' => 'nullable|image|max:1024',
+            'logo' => 'required|image|max:1024',
+            'tenant_logo' => 'nullable|string',
             'address_line1' => 'required',
             'address_line2' => 'nullable',
             'address_city' => 'required',
@@ -84,8 +87,8 @@ class TenantForm extends Form
 
         $tenantData = $this->collectTenantData();
 
-        if ($this->tenant_logo) {
-            $tenantData['tenant_logo'] = $this->saveTenantLogo();
+        if ($this->logo) {
+            $tenantData['tenant_logo'] = $this->saveTenantLogo($this->logo);
         }
 
         return Tenant::create($tenantData);
@@ -112,8 +115,8 @@ class TenantForm extends Form
 
     }
 
-    private function saveTenantLogo()
+    private function saveTenantLogo($logo)
     {
-        return $this->tenant_logo->store($this->tenant_name.'/logos/'.$this->tenant_name, 's3-public');
+        return $logo->store('logos', 's3-public');
     }
 }

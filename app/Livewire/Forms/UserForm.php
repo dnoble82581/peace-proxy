@@ -75,7 +75,7 @@ class UserForm extends Form
 
         $userData = $this->collectUserData();
 
-        if ($this->avatar) {
+        if ($this->photo) {
             $userData['avatar'] = $this->saveUserAvatar();
         }
 
@@ -119,7 +119,7 @@ class UserForm extends Form
      */
     public function saveUserAvatar(): string
     {
-        return $this->photo->store($this->user->tenant->tenant_name.'/avatars/'.$this->user->id, 's3-public');
+        return $this->photo->store('avatars', 's3-public');
     }
 
     /**

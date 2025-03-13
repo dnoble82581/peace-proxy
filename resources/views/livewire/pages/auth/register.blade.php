@@ -87,10 +87,10 @@
 
 				<div class="flex gap-2 items-center">
 					<div>
-						@if($this->userForm->avatar)
+						@if($this->userForm->photo)
 							<img
 									class="rounded-full size-14 object-cover"
-									src="{{ $this->userForm->avatar->temporaryUrl() }}"
+									src="{{ $this->userForm->photo->temporaryUrl() }}"
 									alt="User Avatar">
 						@else
 							<x-svg-images.image-placeholder
@@ -102,7 +102,7 @@
 						<x-form-elements.file-input
 								class="ml-4"
 								label="Upload Avatar"
-								wire:model="userForm.avatar" />
+								wire:model="userForm.photo" />
 					</div>
 				</div>
 
@@ -149,14 +149,41 @@
 							wire:model="tenantForm.secondary_phone"
 							icon="phone" />
 				</div>
-				<x-input
-						label="Business Address Line 1"
-						wire:model="tenantForm.address_line1"
-						icon="map-pin" />
-				<x-input
-						label="Business Address Line 2"
-						wire:model="tenantForm.address_line2"
-						icon="map-pin" />
+				<x-dividers.form-divider class=py-2>Avatar - Optional</x-dividers.form-divider>
+
+				<div class="flex gap-2 items-center">
+					<div>
+						@if($this->tenantForm->logo)
+							<img
+									class="rounded-full size-14 object-cover"
+									src="{{ $this->tenantForm->logo->temporaryUrl() }}"
+									alt="User Avatar">
+						@else
+							<x-svg-images.image-placeholder
+									rounded="rounded-full"
+									class="size-14" />
+						@endif
+					</div>
+					<div>
+						<x-form-elements.file-input
+								class="ml-4"
+								label="Upload Avatar"
+								wire:model="tenantForm.logo" />
+					</div>
+				</div>
+
+				<x-dividers.form-divider class=py-2>Avatar - Optional</x-dividers.form-divider>
+
+				<div class="flex gap-2">
+					<x-input
+							label="Business Address Line 1"
+							wire:model="tenantForm.address_line1"
+							icon="map-pin" />
+					<x-input
+							label="Business Address Line 2"
+							wire:model="tenantForm.address_line2"
+							icon="map-pin" />
+				</div>
 
 				<x-input
 						label="Business City"

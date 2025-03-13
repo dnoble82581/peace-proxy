@@ -160,7 +160,8 @@ class SubjectForm extends Form
     private function processDocuments(): void
     {
         $documentProcessor = new DocumentProcessor;
-        $documentProcessor->processDocuments($this->documentsToUpload, $this->subject, auth()->user()->id);
+        $documentProcessor->processDocuments($this->documentsToUpload, $this->subject, auth()->user()->id,
+            'Application');
     }
 
     private function syncSocialMedia(): void
