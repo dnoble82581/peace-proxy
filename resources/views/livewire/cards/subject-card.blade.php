@@ -2,11 +2,10 @@
 
 	use App\Models\Room;
 	use App\Models\Subject;
-	use App\Notifications\SendSMSNotification;
+	use App\Services\ConversationService;
 	use Livewire\Features\SupportRedirects\Redirector;
 	use Livewire\Volt\Component;
 	use function Livewire\Volt\{state};
-	use Twilio\Rest\Client;
 
 
 	new class extends Component {
@@ -33,12 +32,14 @@
 			];
 		}
 
-		public function callSubject()
-		{
-			new SendSMSNotification('13195947290');
-		}
 
-		public function textSubject() {}
+		public function createSMSConversation()
+		{
+			$conversationService = new ConversationService();
+			$newConversation = $conversationService->createSmsConversation($this->subject->phone, $this->room->id,
+				auth()->user()->id);
+			$this->dispatch('smsConversationCreated');
+		}
 	}
 ?>
 
@@ -79,20 +80,12 @@
 						alt="Temporary Subject Image">
 			@endif
 			<div class="mt-3 flex justify-between gap-2 px-1">
-				<form
-						action="{{ route('send.sms') }}"
-						method="POST"
-						class="text-center">
-					@csrf
-					<button
-							type="submit"
-							class="bg-blue-600 text-white p-1 rounded-lg hover:bg-blue-700">
-						<x-heroicons::micro.solid.chat-bubble-bottom-center class="w-6 h-6" />
-					</button>
-					@if (session('message'))
-						<p class="text-green-600 mt-2">{{ session('message') }}</p>
-					@endif
-				</form>
+				<x-buttons.small-primary
+						class="bg-teal-500"
+						wire:click="createSMSConversation">
+					<x-heroicons::micro.solid.chat-bubble-bottom-center class="w-6 h-6" />
+				</x-buttons.small-primary>
+
 			</div>
 		</div>
 		<div class="text-sm dark-light-text">

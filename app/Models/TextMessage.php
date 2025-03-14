@@ -11,6 +11,11 @@ class TextMessage extends Model
 
     protected $guarded = ['id'];
 
+    public function conversation()
+    {
+        return $this->belongsTo(Conversation::class, 'conversation_id');
+    }
+
     protected function casts(): array
     {
         return [

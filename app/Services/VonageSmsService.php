@@ -18,7 +18,7 @@ class VonageSmsService
         $this->client = new Client($basic);
     }
 
-    public function sendMessage($recipient, $messageContent)
+    public function sendMessage($recipient, $messageContent, $conversationId = null)
     {
         $from = config('vonage.api_from');
 
@@ -34,6 +34,8 @@ class VonageSmsService
                 'sender' => $from,
                 'recipient' => $recipient->routeNotificationForVonage(),
                 'sender_id' => auth()->user()->id,
+                'conversation_id' => $conversationId,
+                'room_id' => $recipient->room_id,
                 'recipient_id' => $recipient->id,
                 'message_content' => $messageContent,
                 'message_status' => $message->getStatus() === 0 ? 'delivered' : 'failed',

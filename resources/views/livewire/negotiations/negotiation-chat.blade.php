@@ -9,14 +9,18 @@
 	use App\Models\Invitation;
 	use App\Models\Message;
 	use App\Models\Room;
+	use App\Models\TextMessage;
 	use App\Models\User;
 	use App\Services\ConversationService;
+	use App\Services\VonageSmsService;
 	use Illuminate\Support\Collection;
 	use Livewire\Attributes\Validate;
 	use Livewire\Volt\Component;
 	use App\Services\MessageService;
 	use Livewire\Attributes\On;
 	use App\Services\InvitationService;
+	use Symfony\Component\Mailer\Event\MessageEvent;
+
 
 	new class extends Component {
 
@@ -29,18 +33,18 @@
 
 		public Room $room;
 		public string $sortBy = '';
-
 		public User $user;
+		public Collection $smsMessages;
 
 		public function mount(Room $room):void
 		{
 			$this->room = $room;
 			$this->user = auth()->user();
 			$this->createGroupChats();
-
 			$this->fetchConversations();
 		}
 
+		#[On('smsConversationCreated')]
 		public function fetchConversations():void
 		{
 			$conversationService = new ConversationService;
@@ -57,6 +61,14 @@
 			$messageService->broadcastMessage($message);
 			$this->newMessage = '';
 
+		}
+
+		public function sendSMSMessage($conversationId)
+		{
+			$smsService = new VonageSmsService();
+			$smsService->sendMessage($this->room->subject, $this->newMessage, $conversationId);
+			event(new NewMessageEvent($this->newMessage));
+			$this->newMessage = '';
 		}
 
 		private function createMessage($currentConversationId):Message
@@ -121,7 +133,6 @@
 			$conversationService->addParticipantsToConversation($this->defaultConversation, User::all());
 		}
 
-
 		public function trackIdleUsers():void
 		{
 			$idleThreshold = now()->subMinutes(5);
@@ -179,6 +190,13 @@
 							class="rounded-md px-3 py-2 text-sm font-medium text-indigo-700"
 							:class="{ 'bg-indigo-100': conversation === '{{ $conversation->name }}' }">
 						{{ ucfirst($conversation->getOtherParticipantName()) }}
+					</button>
+				@elseif($conversation->type === 'sms')
+					<button
+							@click="conversation = '{{ $conversation->name }}'"
+							class="rounded-md px-3 py-2 text-sm font-medium text-indigo-700"
+							:class="{ 'bg-indigo-100': conversation === '{{ $conversation->name }}' }">
+						{{ $conversation->name }}
 					</button>
 				@else
 					<button
@@ -249,6 +267,22 @@
 							</button>
 						</div>
 					</div>
+				@elseif($conversation->type === 'sms')
+					<div class="flex items-center justify-between space-x-4">
+						<div>
+							<h3 class="font-bold text-lg mb-3">
+								Conversation: {{ $this->room->subject->name }}</h3>
+						</div>
+						<div class="mb-3">
+							<button
+									wire:click="leaveConversation({{ $conversation->id }})"
+									type="button"
+									class="text-xs text-gray-500 hover:text-gray-600 flex items-center gap-1 font-semibold">
+								<span>Leave</span>
+								<x-heroicons::micro.solid.arrow-right class="w-3 h-3" />
+							</button>
+						</div>
+					</div>
 				@else
 					<div class="flex items-center justify-between space-x-4">
 						<div>
@@ -266,7 +300,6 @@
 						</div>
 					</div>
 				@endif
-
 				<div
 						id="messages-container"
 						class="flex flex-col overflow-y-auto {{ auth()->user()->cannot('createMessage', $conversation) ? 'h-[46rem]' : 'h-[35rem]' }} bg-gray-100 dark:bg-gray-600 rounded-lg p-4">
@@ -306,6 +339,40 @@
 									</div>
 								</div>
 							@endforeach
+							@foreach ($conversation->textMessages as $message)
+								@php
+									$isOwnMessage = auth()->id() === $message->sender_id;
+								@endphp
+								<div class="flex items-start {{ $isOwnMessage ? '' : 'ml-8' }} gap-2.5">
+									<img
+											class="w-8 h-8 rounded-full"
+											src="{{ auth()->user()->avatarUrl() }}"
+											alt="User Avatar">
+									<div class="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 {{ $isOwnMessage ? 'bg-slate-200' : 'bg-white' }} rounded-e-xl rounded-es-xl dark:bg-gray-700">
+										<div class="flex items-center space-x-2 rtl:space-x-reverse">
+											<span class="text-sm font-semibold text-gray-900 dark:text-white"></span>
+											<span class="text-sm font-normal text-gray-500 dark:text-gray-400"></span>
+										</div>
+										<p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{ $message->message_content }}</p>
+										<span class="text-xs font-normal text-gray-500 dark:text-gray-400 capitalize">{{ $message->message_status }}</span>
+									</div>
+									<div>
+										<x-dropdown.dropdown>
+											<x-slot:trigger>
+												<button
+														type="button"
+														class="bg-white rounded p-0.5">
+													<x-heroicons::solid.ellipsis-vertical class="w-5 h-5 text-gray-400 dark:text-gray-300" />
+												</button>
+											</x-slot:trigger>
+											<x-slot:content>
+												<x-dropdown.dropdown-button value="Reply" />
+												<x-dropdown.dropdown-button value="Like" />
+											</x-slot:content>
+										</x-dropdown.dropdown>
+									</div>
+								</div>
+							@endforeach
 						@endcan
 					</div>
 				</div>
@@ -313,18 +380,33 @@
 				{{-- Message Input (if allowed to send messages) --}}
 				@can('createMessage', $conversation)
 					<div class="bg-gray-100 dark:bg-gray-600 rounded-lg p-4 mt-4">
-						<form wire:submit.prevent="sendMessage({{ $conversation->id }})">
+						@if($conversation->type === 'sms')
+							<form wire:submit.prevent="sendSMSMessage({{ $conversation->id }})">
                             <textarea
 		                            wire:model.defer="newMessage"
 		                            class="w-full p-2 rounded-lg border-gray-300"
 		                            rows="3"
 		                            placeholder="Type your message here..."></textarea>
-							<button
-									type="submit"
-									class="px-4 py-2 mt-2 text-white bg-blue-500 rounded-lg">
-								Send Message
-							</button>
-						</form>
+								<button
+										type="submit"
+										class="px-4 py-2 mt-2 text-white bg-blue-500 rounded-lg">
+									Send Message
+								</button>
+							</form>
+						@else
+							<form wire:submit.prevent="sendMessage({{ $conversation->id }})">
+                            <textarea
+		                            wire:model.defer="newMessage"
+		                            class="w-full p-2 rounded-lg border-gray-300"
+		                            rows="3"
+		                            placeholder="Type your message here..."></textarea>
+								<button
+										type="submit"
+										class="px-4 py-2 mt-2 text-white bg-blue-500 rounded-lg">
+									Send Message
+								</button>
+							</form>
+						@endif
 					</div>
 				@endcan
 			</div>

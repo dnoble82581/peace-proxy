@@ -19,6 +19,12 @@ class Conversation extends Model
         return $this->hasMany(Message::class);
     }
 
+    // Relationship to SMS Messages
+    public function textMessages(): HasMany
+    {
+        return $this->hasMany(TextMessage::class, 'conversation_id');
+    }
+
     public function participants(): HasMany
     {
         return $this->hasMany(ConversationParticipant::class);

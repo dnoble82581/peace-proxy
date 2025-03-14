@@ -45,7 +45,9 @@ class SmsController extends Controller
         // Unique ID for the message
         TextMessage::create([
             'sender' => $from,
-            'sender_id' => 10,
+            'sender_id' => $subject->id,
+            'roomId' => $subject->room_id,
+            'conversationId' => null,
             'recipient_id' => 1,
             'recipient' => $to,
             'message_content' => $messageContent,
