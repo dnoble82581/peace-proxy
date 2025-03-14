@@ -52,7 +52,8 @@ class SmsController extends Controller
 
         // Assign room_id and conversation_id
         $roomId = $subject->room_id; // Retrieve room_id if related properly
-        $conversation = $subject->conversations()->where('is_active', true)->first();
+        $conversation = $subject->conversations()->where('name',
+            $phoneNumberService->formatToE164($subject->phone))->first();
         $conversationId = $conversation ? $conversation->id : null;
 
         Log::info('room_id: '.$roomId.' conversation_id: '.$conversationId);
