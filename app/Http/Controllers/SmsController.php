@@ -20,7 +20,7 @@ class SmsController extends Controller
 
     public function sendSms(Request $request)
     {
-        $recipient = Subject::find(21); // Ensure this is valid
+        $recipient = Subject::find(10); // Ensure this is valid
         $messageContent = 'Some great message';
 
         $this->vonageSMSService->sendMessage($recipient, $messageContent);
@@ -44,8 +44,8 @@ class SmsController extends Controller
         // Unique ID for the message
         TextMessage::create([
             'sender' => $from,
-            'sender_id' => 21,
-            'recipient_id' => 280,
+            'sender_id' => 10,
+            'recipient_id' => 1,
             'recipient' => $to,
             'message_content' => $messageContent,
             'message_status' => 'received',

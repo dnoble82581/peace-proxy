@@ -100,7 +100,7 @@
 
 						<!-- Active: "bg-gray-50 outline-hidden", Not Active: "" -->
 						<a
-								href="#"
+								href="{{ route('profile') }}"
 								class="block px-3 py-1 text-sm/6 text-gray-900"
 								role="menuitem"
 								tabindex="-1"

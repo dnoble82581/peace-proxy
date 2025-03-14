@@ -73,12 +73,14 @@
 					<!-- Primary Phone -->
 					<x-phone
 							label="Primary Phone"
+							:mask="['(###) ###-####', '+# ### ###-####', '+## ## ####-####']"
 							wire:model="userForm.primary_phone"
 							icon="phone" />
 
 					<x-phone
 							label="Secondary Phone"
 							wire:model="userForm.secondary_phone"
+							:mask="['(###) ###-####', '+# ### ###-####', '+## ## ####-####']"
 							icon="phone" />
 				</div>
 
@@ -140,13 +142,15 @@
 						wire:model="tenantForm.tenant_email"
 						icon="envelope" />
 				<div class="flex gap-2">
-					<x-input
+					<x-phone
 							label="Business Primary Phone"
 							wire:model="tenantForm.primary_phone"
+							:mask="['(###) ###-####', '+# ### ###-####', '+## ## ####-####']"
 							icon="phone" />
-					<x-input
+					<x-phone
 							label="Business Secondary Phone"
 							wire:model="tenantForm.secondary_phone"
+							:mask="['(###) ###-####', '+# ### ###-####', '+## ## ####-####']"
 							icon="phone" />
 				</div>
 				<x-dividers.form-divider class=py-2>Avatar - Optional</x-dividers.form-divider>
