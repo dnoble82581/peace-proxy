@@ -3,6 +3,7 @@
 namespace App\Livewire\Forms;
 
 use App\Models\Tenant;
+use App\Services\PhoneNumberService;
 use Livewire\Form;
 
 class TenantForm extends Form
@@ -94,13 +95,13 @@ class TenantForm extends Form
         return Tenant::create($tenantData);
     }
 
-    private function collectTenantData(): array
+    private function collectTenantData(PhoneNumberService $phoneNumberService): array
     {
         return [
             'tenant_name' => $this->tenant_name,
             'tenant_email' => $this->tenant_email,
-            'primary_phone' => $this->primary_phone,
-            'secondary_phone' => $this->secondary_phone,
+            'primary_phone' => $phoneNumberService->formatToE164($this->primary_phone),
+            'secondary_phone' => $phoneNumberService->formatToE164($this->secondary_phone),
             'tenant_logo' => $this->tenant_logo,
             'address_line1' => $this->address_line1,
             'address_line2' => $this->address_line2,

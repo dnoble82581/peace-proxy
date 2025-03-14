@@ -5,6 +5,7 @@ namespace App\Livewire\Forms;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Services\DocumentProcessor;
+use App\Services\PhoneNumberService;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules;
@@ -95,13 +96,13 @@ class UserForm extends Form
     /**
      * Collect validated user data from the form for creation or updating.
      */
-    private function collectUserData(): array
+    private function collectUserData(PhoneNumberService $phoneNumberService): array
     {
         return [
             'name' => $this->name,
             'email' => $this->email,
-            'primary_phone' => $this->primary_phone,
-            'secondary_phone' => $this->secondary_phone,
+            'primary_phone' => $phoneNumberService->formatToE164($this->primary_phone),
+            'secondary_phone' => $phoneNumberService->formatToE164($this->secondary_phone),
             'avatar' => $this->avatar,
             'role' => $this->role,
             'privileges' => $this->privileges,
