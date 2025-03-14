@@ -95,8 +95,10 @@ class TenantForm extends Form
         return Tenant::create($tenantData);
     }
 
-    private function collectTenantData(PhoneNumberService $phoneNumberService): array
+    private function collectTenantData(): array
     {
+        $phoneNumberService = new PhoneNumberService;
+
         return [
             'tenant_name' => $this->tenant_name,
             'tenant_email' => $this->tenant_email,

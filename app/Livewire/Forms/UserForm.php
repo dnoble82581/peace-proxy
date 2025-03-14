@@ -96,8 +96,10 @@ class UserForm extends Form
     /**
      * Collect validated user data from the form for creation or updating.
      */
-    private function collectUserData(PhoneNumberService $phoneNumberService): array
+    private function collectUserData(): array
     {
+        $phoneNumberService = new PhoneNumberService;
+
         return [
             'name' => $this->name,
             'email' => $this->email,
