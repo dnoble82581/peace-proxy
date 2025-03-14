@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::table('text_messages', function (Blueprint $table) {
             $table->foreignId('conversation_id')->nullable()->after('id');
             $table->foreignId('room_id')->nullable()->after('conversation_id');
+            $table->foreignId('subject_id')->nullable()->after('conversation_id');
         });
     }
 };

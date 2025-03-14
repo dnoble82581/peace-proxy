@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('room_id'); // The room this conversation belongs to.
             $table->boolean('is_active')->default(true);
             $table->foreignId('tenant_id'); // The room this conversation belongs to.
+            $table->foreignId('subject_id')->nullable();
             $table->timestamps();
         });
     }
