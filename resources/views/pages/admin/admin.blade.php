@@ -7,7 +7,7 @@
   <body class="h-full">
   ```
 -->
-	<div x-data="{tab: 'negotiations'}">
+	<div x-data="{tab: 'dashboard'}">
 		<!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. -->
 		@include('pages.partials.admin._responsive-sidebar')
 

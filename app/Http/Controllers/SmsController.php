@@ -20,7 +20,8 @@ class SmsController extends Controller
 
     public function sendSms(Request $request)
     {
-        $recipient = Subject::find(10); // Ensure this is valid
+
+        $recipient = Subject::find(1); // Ensure this is valid
         $messageContent = 'Some great message';
 
         $this->vonageSMSService->sendMessage($recipient, $messageContent);
