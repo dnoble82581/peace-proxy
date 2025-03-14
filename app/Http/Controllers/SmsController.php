@@ -42,7 +42,7 @@ class SmsController extends Controller
         $messageId = $request->messageId;
 
         // Find the Subject associated with the sender's phone number
-        $subject = Subject::where('phone', $from)->first();
+        $subject = Subject::where('phone', $phoneNumberService->formatToE164($from))->first();
 
         if (! $subject) {
             Log::warning("No subject found for phone number: $from");

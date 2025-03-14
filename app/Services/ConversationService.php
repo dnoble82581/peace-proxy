@@ -134,6 +134,7 @@ class ConversationService
                 'name' => $phoneNumber, // Use the phone number as the conversation name
                 'room_id' => $room->id,
                 'tenant_id' => $room->tenant_id,
+                'subject_id' => $room->subject->id,
                 'initiator_id' => $authUser->id,
                 'is_active' => true,
                 'created_at' => now(),
