@@ -28,6 +28,11 @@ class Subject extends Model
         return $this->hasMany(Hook::class);
     }
 
+    public function conversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class);
+    }
+
     public function triggers(): HasMany
     {
         return $this->hasMany(Trigger::class);

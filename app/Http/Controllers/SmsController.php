@@ -52,7 +52,9 @@ class SmsController extends Controller
 
         // Assign room_id and conversation_id
         $roomId = $subject->room_id; // Retrieve room_id if related properly
-        $conversationId = 4; // Replace with logic for determining conversation_id dynamically, if needed
+        $conversation = $subject->conversations()->where('is_active', true)->first();
+        $conversationId = $conversation ? $conversation->id : null;
+
         Log::info('room_id: '.$roomId.' conversation_id: '.$conversationId);
         // Create the TextMessage record
         TextMessage::create([
