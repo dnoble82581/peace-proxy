@@ -65,9 +65,12 @@
 
 		public function sendSMSMessage($conversationId)
 		{
+			$messageService = new MessageService();
+			$message = $this->createMessage($conversationId);
+
 			$smsService = new VonageSmsService();
-			$smsService->sendMessage($this->room->subject, $this->newMessage, $conversationId);
-			event(new NewMessageEvent($this->newMessage));
+			$smsService->sendMessage($this->room->subject, $message->message, $conversationId);
+			event(new NewMessageEvent($message));
 			$this->newMessage = '';
 		}
 
