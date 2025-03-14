@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('city');
             $table->string('state');
             $table->string('zip')->nullable();
-            $table->string('status')->default('pending');
+            $table->string('status')->default('open');
+            $table->string('resolution')->nullable();
             $table->string('initial_complainant')->nullable();
             $table->longText('initial_complaint')->nullable();
             $table->string('subject_name')->default('John Doe');

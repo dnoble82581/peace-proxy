@@ -32,7 +32,7 @@
 					type="search"
 					name="search"
 					aria-label="Search"
-					class="col-start-1 row-start-1 block size-full bg-white pl-8 text-base text-gray-900 border-none placeholder:text-gray-400 sm:text-sm/6"
+					class="col-start-1 row-start-1 block size-full bg-white pl-8 text-base border-none text-gray-900 outline-hidden placeholder:text-gray-400 sm:text-sm/6"
 					placeholder="Search">
 			<svg
 					class="pointer-events-none col-start-1 row-start-1 size-5 self-center text-gray-400"
@@ -72,67 +72,53 @@
 					aria-hidden="true"></div>
 
 			<!-- Profile dropdown -->
-			<x-dropdown.dropdown>
-				<x-slot:trigger>
-					<button
-							type="button"
-							class="-m-1.5 flex items-center p-1.5"
-							id="user-menu-button"
-							aria-expanded="false"
-							aria-haspopup="true">
+			<div class="relative">
+				<x-dropdown.dropdown>
+					<x-slot:trigger>
+						<button
+								type="button"
+								class="-m-1.5 flex items-center p-1.5"
+								id="user-menu-button"
+								aria-expanded="false"
+								aria-haspopup="true">
+							<span class="sr-only">Open user menu</span>
 
-						<img
-								class="size-8 rounded-full bg-gray-50"
-								src="{{ $this->user->avatarUrl() }}"
-								alt="">
-						<span class="hidden lg:flex lg:items-center">
-                                 <span
-		                                 class="ml-4 text-sm/6 font-semibold text-gray-900"
-		                                 aria-hidden="true">{{ $this->user->name }}</span>
-                               <x-heroicons::micro.solid.chevron-down class="ml-2 w-5 h-5 text-gray-400" />
-                                </span>
-					</button>
-				</x-slot:trigger>
-				<x-slot:content>
-					<div
-							class="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 ring-1 shadow-lg ring-gray-900/5 focus:outline-hidden"
-							role="menu"
-							aria-orientation="vertical"
-							aria-labelledby="user-menu-button"
-							tabindex="-1">
-						<span class="sr-only">Open user menu</span>
+							<img
+									class="size-8 rounded-full bg-gray-50"
+									src="{{ $tenant->logoUrl() }}"
+									alt="">
+							<span class="hidden lg:flex lg:items-center">
+                <span
+		                class="ml-4 text-sm/6 font-semibold text-gray-900"
+		                aria-hidden="true">{{ $user->name }}</span>
+
+               <x-heroicons::micro.solid.chevron-down class="w-5 h-5 ml-2 text-gray-400" />
+              </span>
+						</button>
+					</x-slot:trigger>
+					<x-slot:content>
+
 						<!-- Active: "bg-gray-50 outline-hidden", Not Active: "" -->
 						<a
-								href="{{ route('profile') }}"
+								href="#"
 								class="block px-3 py-1 text-sm/6 text-gray-900"
 								role="menuitem"
 								tabindex="-1"
 								id="user-menu-item-0">Your profile</a>
-						<button
-								wire:click="logout"
-								class="block px-3 py-1 text-sm/6 text-gray-900"
-								role="menuitem"
-								tabindex="-1"
-								id="user-menu-item-1">Log out
-						</button>
-					</div>
-				</x-slot:content>
-			</x-dropdown.dropdown>
-			<div
-					class="relative">
+						<form
+								method="POST"
+								action="{{ route('logout') }}">
+							@csrf
+							<button
+									type="submit"
+									class="block px-3 py-1 text-sm text-gray-900"
+									role="menuitem"
+									id="user-menu-item-1">Sign out
+							</button>
+						</form>
 
-
-				<!--
-				  Dropdown menu, show/hide based on menu state.
-
-				  Entering: "transition ease-out duration-100"
-					From: "transform opacity-0 scale-95"
-					To: "transform opacity-100 scale-100"
-				  Leaving: "transition ease-in duration-75"
-					From: "transform opacity-100 scale-100"
-					To: "transform opacity-0 scale-95"
-				-->
-
+					</x-slot:content>
+				</x-dropdown.dropdown>
 			</div>
 		</div>
 	</div>

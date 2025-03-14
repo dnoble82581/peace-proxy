@@ -20,7 +20,12 @@ class NegotiationFactory extends Factory
             'city' => $this->faker->city(),
             'state' => $this->faker->word(),
             'zip' => $this->faker->postcode(),
-            'status' => $this->faker->word(),
+            'status' => $this->faker->randomElement(['Active', 'Resolved', 'Canceled']),
+            'resolution' => $this->faker->randomElement([
+                'Negotiated Surrender', 'Tactical Intervention', 'Combination', 'Suicide', 'Attempted Suicide',
+                'Escape', 'LEO Withdrawal', 'Voluntary Surrender', 'Exchange Agreement', 'Safe Passage Agreement',
+                'Distraction and Capture', 'Sniper Intervention', 'Breach and Assault',
+            ]),
             'initial_complainant' => $this->faker->word(),
             'initial_complaint' => $this->faker->word(),
             'start_time' => Carbon::now(),

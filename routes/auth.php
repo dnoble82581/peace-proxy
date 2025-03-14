@@ -18,6 +18,14 @@ Route::middleware('guest')->group(function () {
         ->name('password.reset');
 });
 
+Route::post('/logout', function () {
+    Auth::logout();
+    request()->session()->invalidate(); // Invalidate the session
+    request()->session()->regenerateToken(); // Regenerate the CSRF token
+
+    return redirect('/login'); // Redirect to the login screen
+})->name('logout');
+
 Route::middleware('auth')->group(function () {
     Volt::route('verify-email', 'pages.auth.verify-email')
         ->name('verification.notice');

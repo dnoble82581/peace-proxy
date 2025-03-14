@@ -1,4 +1,3 @@
-<!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. -->
 <div
 		class="relative z-50 lg:hidden"
 		role="dialog"
@@ -61,9 +60,12 @@
 			</div>
 
 			<!-- Sidebar component, swap this element with another sidebar if you like -->
-			<div class="flex grow flex-col gap-y-5 overflow-y-auto bg-indigo-600 px-6 pb-4">
+			<div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-4 ring-1 ring-white/10">
 				<div class="flex h-16 shrink-0 items-center">
-					<x-svg-images.application-logo class="shrink-0 h-10 w-auto fill-white" />
+					<img
+							class="h-8 w-auto"
+							src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
+							alt="Your Company">
 				</div>
 				<nav class="flex flex-1 flex-col">
 					<ul
@@ -74,12 +76,12 @@
 									role="list"
 									class="-mx-2 space-y-1">
 								<li>
-									<!-- Current: "bg-indigo-700 text-white", Default: "text-indigo-200 hover:text-white hover:bg-indigo-700" -->
+									<!-- Current: "bg-gray-800 text-white", Default: "text-gray-400 hover:text-white hover:bg-gray-800" -->
 									<a
 											href="#"
-											class="group flex gap-x-3 rounded-md bg-indigo-700 p-2 text-sm/6 font-semibold text-white">
+											class="group flex gap-x-3 rounded-md bg-gray-800 p-2 text-sm/6 font-semibold text-white">
 										<svg
-												class="size-6 shrink-0 text-white"
+												class="size-6 shrink-0"
 												fill="none"
 												viewBox="0 0 24 24"
 												stroke-width="1.5"
@@ -97,9 +99,9 @@
 								<li>
 									<a
 											href="#"
-											class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-indigo-200 hover:bg-indigo-700 hover:text-white">
+											class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-400 hover:bg-gray-800 hover:text-white">
 										<svg
-												class="size-6 shrink-0 text-indigo-200 group-hover:text-white"
+												class="size-6 shrink-0"
 												fill="none"
 												viewBox="0 0 24 24"
 												stroke-width="1.5"
@@ -117,9 +119,9 @@
 								<li>
 									<a
 											href="#"
-											class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-indigo-200 hover:bg-indigo-700 hover:text-white">
+											class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-400 hover:bg-gray-800 hover:text-white">
 										<svg
-												class="size-6 shrink-0 text-indigo-200 group-hover:text-white"
+												class="size-6 shrink-0"
 												fill="none"
 												viewBox="0 0 24 24"
 												stroke-width="1.5"
@@ -137,9 +139,9 @@
 								<li>
 									<a
 											href="#"
-											class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-indigo-200 hover:bg-indigo-700 hover:text-white">
+											class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-400 hover:bg-gray-800 hover:text-white">
 										<svg
-												class="size-6 shrink-0 text-indigo-200 group-hover:text-white"
+												class="size-6 shrink-0"
 												fill="none"
 												viewBox="0 0 24 24"
 												stroke-width="1.5"
@@ -157,9 +159,9 @@
 								<li>
 									<a
 											href="#"
-											class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-indigo-200 hover:bg-indigo-700 hover:text-white">
+											class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-400 hover:bg-gray-800 hover:text-white">
 										<svg
-												class="size-6 shrink-0 text-indigo-200 group-hover:text-white"
+												class="size-6 shrink-0"
 												fill="none"
 												viewBox="0 0 24 24"
 												stroke-width="1.5"
@@ -177,9 +179,9 @@
 								<li>
 									<a
 											href="#"
-											class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-indigo-200 hover:bg-indigo-700 hover:text-white">
+											class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-400 hover:bg-gray-800 hover:text-white">
 										<svg
-												class="size-6 shrink-0 text-indigo-200 group-hover:text-white"
+												class="size-6 shrink-0"
 												fill="none"
 												viewBox="0 0 24 24"
 												stroke-width="1.5"
@@ -201,29 +203,43 @@
 							</ul>
 						</li>
 						<li>
-							<div class="text-xs/6 font-semibold text-indigo-200">Your teams</div>
+							<div class="text-xs/6 font-semibold text-gray-400">Your teams</div>
 							<ul
 									role="list"
 									class="-mx-2 mt-2 space-y-1">
-								@foreach($members as $member)
-									<li>
-										<!-- Current: "bg-indigo-700 text-white", Default: "text-indigo-200 hover:text-white hover:bg-indigo-700" -->
-										<a
-												href="#"
-												class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-indigo-200 hover:bg-indigo-700 hover:text-white">
-											<span class="flex size-6 shrink-0 items-center justify-center rounded-lg border border-indigo-400 bg-indigo-500 text-[0.625rem] font-medium text-white">H</span>
-											<span class="truncate">Heroicons</span>
-										</a>
-									</li>
-								@endforeach
+								<li>
+									<!-- Current: "bg-gray-800 text-white", Default: "text-gray-400 hover:text-white hover:bg-gray-800" -->
+									<a
+											href="#"
+											class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-400 hover:bg-gray-800 hover:text-white">
+										<span class="flex size-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-[0.625rem] font-medium text-gray-400 group-hover:text-white">H</span>
+										<span class="truncate">Heroicons</span>
+									</a>
+								</li>
+								<li>
+									<a
+											href="#"
+											class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-400 hover:bg-gray-800 hover:text-white">
+										<span class="flex size-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-[0.625rem] font-medium text-gray-400 group-hover:text-white">T</span>
+										<span class="truncate">Tailwind Labs</span>
+									</a>
+								</li>
+								<li>
+									<a
+											href="#"
+											class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-400 hover:bg-gray-800 hover:text-white">
+										<span class="flex size-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-[0.625rem] font-medium text-gray-400 group-hover:text-white">W</span>
+										<span class="truncate">Workcation</span>
+									</a>
+								</li>
 							</ul>
 						</li>
 						<li class="mt-auto">
 							<a
 									href="#"
-									class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-indigo-200 hover:bg-indigo-700 hover:text-white">
+									class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-400 hover:bg-gray-800 hover:text-white">
 								<svg
-										class="size-6 shrink-0 text-indigo-200 group-hover:text-white"
+										class="size-6 shrink-0"
 										fill="none"
 										viewBox="0 0 24 24"
 										stroke-width="1.5"

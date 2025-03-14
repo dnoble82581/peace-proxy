@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Negotiation;
+use App\Models\Tenant;
 use App\Models\User;
 use App\Services\StripeService;
 
@@ -37,7 +38,18 @@ class PagesController extends Controller
     /**
      * Show admin page for a specific tenant.
      */
-    public function admin(int $tenantId) {}
+    public function admin(int $tenantId)
+    {
+        $user = auth()->user();
+        $tenant = Tenant::query()
+            ->with([
+                'users', 'rooms', 'subjects', 'conversations', 'rfis', 'documents', 'resolutions',
+                'resolutions.responses', 'negotiations',
+            ])
+            ->findOrFail($tenantId);
+
+        return view('pages.admin.admin', compact('tenant', 'user'));
+    }
 
     /**
      * Show dashboard page for the authenticated user's tenant.
