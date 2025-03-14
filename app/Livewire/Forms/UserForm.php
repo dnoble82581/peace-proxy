@@ -19,9 +19,9 @@ use Livewire\Form;
  */
 class UserForm extends Form
 {
-    public ?User $user;
+    public ?User $user = null;
 
-    public ?Tenant $tenant;
+    public ?Tenant $tenant = null;
 
     public $photo;
 
