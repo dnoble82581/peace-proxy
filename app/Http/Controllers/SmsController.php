@@ -64,7 +64,7 @@ class SmsController extends Controller
             'room_id' => $roomId,
             'subject_id' => $subject->id,
             'conversation_id' => $conversationId,
-            'recipient_id' => auth()->user()->id, // Assuming you're saving a default recipient_id
+            'recipient_id' => 1, // Assuming you're saving a default recipient_id
             'recipient' => $to,
             'message_content' => $messageContent,
             'message_status' => 'received', // You can dynamically assign statuses if needed
