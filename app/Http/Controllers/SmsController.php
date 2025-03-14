@@ -36,28 +36,41 @@ class SmsController extends Controller
 
         // Extract key data from Vonage's payload
         $from = $phoneNumberService->formatToE164($request->msisdn);
-        $to = $phoneNumberService->formatToE164($request->to); // Sender's phone number
+        $to = $phoneNumberService->formatToE164($request->to); // Receiving phone number
         $messageContent = $request->text; // The message content
         $time_stamp = $request->input('message-timestamp');
         $messageId = $request->messageId;
+
+        // Find the Subject associated with the sender's phone number
         $subject = Subject::where('phone', $from)->first();
 
-        // Unique ID for the message
+        if (! $subject) {
+            Log::warning("No subject found for phone number: $from");
+
+            return response()->json(['status' => 'error', 'message' => 'Sender not recognized.'], 400);
+        }
+
+        // Assign room_id and conversation_id
+        $roomId = $subject->room_id; // Retrieve room_id if related properly
+        $conversationId = 4; // Replace with logic for determining conversation_id dynamically, if needed
+        Log::info('room_id: '.$roomId.' conversation_id: '.$conversationId);
+        // Create the TextMessage record
         TextMessage::create([
             'sender' => $from,
             'sender_id' => $subject->id,
-            'roomId' => $subject->room_id,
-            'conversationId' => 4,
-            'recipient_id' => 1,
+            'room_id' => $roomId,
+            'conversation_id' => $conversationId,
+            'recipient_id' => 1, // Assuming you're saving a default recipient_id
             'recipient' => $to,
             'message_content' => $messageContent,
-            'message_status' => 'received',
+            'message_status' => 'received', // You can dynamically assign statuses if needed
             'message_type' => 'received',
             'message_id' => $messageId,
             'sent_at' => $time_stamp,
         ]);
 
-        // Log the incoming message into the database
+        // Log the successful save
+        Log::info("Message received from $from and saved to database.");
 
         // Return a 200 response to Vonage
         return response()->json(['status' => 'received'], 200);
@@ -66,8 +79,6 @@ class SmsController extends Controller
     protected function replyToSender($to, $message)
     {
         Log::info("Replying to $to with $message");
-        //        $user = new User; // Temporary user object
-        //        $user->phone_number = $to;
-        //        $user->notify(new GenericReply($message));
+
     }
 }
