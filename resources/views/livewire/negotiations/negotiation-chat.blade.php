@@ -91,7 +91,7 @@
 		{
 			return [
 				"echo-presence:chat.{$this->room->id},NewMessageEvent" => 'refreshChat',
-				"echo-private:chat-sms.{$this->room->id},NewTextEvent" => 'refreshChat',
+				"echo-private:chat-sms.{$this->room->id},NewTextEvent" => 'refresh',
 				"echo-presence:chat.{$this->room->id},leaving" => 'handleUserLeaving',
 				"echo-presence:chat.{$this->room->id},ParticipantLeavesChatEvent" => 'handleParticipantLeft',
 				'echo-private:user.'.auth()->id().',InvitationAcceptedEvent' => 'fetchConversations',
