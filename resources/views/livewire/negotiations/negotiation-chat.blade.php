@@ -91,7 +91,7 @@
 		{
 			return [
 				"echo-presence:chat.{$this->room->id},NewMessageEvent" => 'refreshChat',
-				"echo-private:chat-sms.{$this->room->id},NewTextEvent" => 'refresh',
+				"echo-private:chat-sms.'.{$this->room->id},NewTextEvent" => 'refresh',
 				"echo-presence:chat.{$this->room->id},leaving" => 'handleUserLeaving',
 				"echo-presence:chat.{$this->room->id},ParticipantLeavesChatEvent" => 'handleParticipantLeft',
 				'echo-private:user.'.auth()->id().',InvitationAcceptedEvent' => 'fetchConversations',
@@ -109,6 +109,7 @@
 				arguments: ['messageId' => $messageId]);
 		}
 
+		#[On('chat-closed')]
 		public function resetToPublicConversation():void
 		{
 			// Find the "public" conversation in the $conversations collection
@@ -153,7 +154,6 @@
 			$conversation = Conversation::findOrFail($conversationId);
 			$conversation->update(['is_active' => false]);
 			$this->fetchConversations();
-			event(new ParticipantLeavesChatEvent($this->room->id));
 		}
 
 		public function sendUsersInvite(array $userIds):void
