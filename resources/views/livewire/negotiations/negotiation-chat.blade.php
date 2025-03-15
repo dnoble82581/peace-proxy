@@ -321,13 +321,13 @@
 												alt="User Avatar">
 									@else
 										<x-avatar />
-										@php
-											$image = $message->senderable->images()->first()->image;
-										@endphp
-										<img
-												src="{{ $message->senderable->imageUrl($image) }}"
-												class="w-24 h-24 rounded"
-												alt="Subject Image">
+										{{--										@php--}}
+										{{--											$image = $message->senderable->images()->first()->image;--}}
+										{{--										@endphp--}}
+										{{--										<img--}}
+										{{--												src="{{ $message->senderable->imageUrl($image) }}"--}}
+										{{--												class="w-24 h-24 rounded"--}}
+										{{--												alt="Subject Image">--}}
 									@endif
 
 									<div class="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 {{ $isOwnMessage ? 'bg-slate-200' : 'bg-white' }} rounded-e-xl rounded-es-xl dark:bg-gray-700">
