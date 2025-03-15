@@ -63,13 +63,13 @@
 
 		}
 
-		public function sendSMSMessage($conversationId)
+		public function sendSMSMessage($conversationId):void
 		{
 			$messageService = new MessageService();
 			$message = $this->createMessage($conversationId);
 
 			$smsService = new VonageSmsService();
-			$smsService->sendMessage($this->room->subject, $message->message, $conversationId);
+			$smsService->sendMessage($message, $this->room->subject);
 			event(new NewMessageEvent($message));
 			$this->newMessage = '';
 		}
@@ -313,51 +313,28 @@
 									$isOwnMessage = auth()->id() === $message->user_id;
 								@endphp
 								<div class="flex items-start {{ $isOwnMessage ? '' : 'ml-8' }} gap-2.5">
-									<img
-											class="w-8 h-8 rounded-full"
-											src="{{ $message->user->avatarUrl() }}"
-											alt="User Avatar">
+									@if($message->senderable_type === 'App\Models\User')
+										<img
+												class="w-8 h-8 rounded-full"
+												src="{{ $message->senderable->avatarUrl() }}"
+												alt="User Avatar">
+									@else
+										@php
+											$image = $message->senderable->images()->first()->image;
+										@endphp
+										<img
+												src="{{ $message->senderable->imageUrl($image) }}"
+												class="w-24 h-24 rounded"
+												alt="Subject Image">
+									@endif
+
 									<div class="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 {{ $isOwnMessage ? 'bg-slate-200' : 'bg-white' }} rounded-e-xl rounded-es-xl dark:bg-gray-700">
 										<div class="flex items-center space-x-2 rtl:space-x-reverse">
-											<span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $message->user->name }}</span>
+											<span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $message->senderable->name }}</span>
 											<span class="text-sm font-normal text-gray-500 dark:text-gray-400">{{ $message->created_at->diffForHumans() }}</span>
 										</div>
 										<p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{ $message->message }}</p>
 										<span class="text-xs font-normal text-gray-500 dark:text-gray-400">Delivered</span>
-									</div>
-									<div>
-										<x-dropdown.dropdown>
-											<x-slot:trigger>
-												<button
-														type="button"
-														class="bg-white rounded p-0.5">
-													<x-heroicons::solid.ellipsis-vertical class="w-5 h-5 text-gray-400 dark:text-gray-300" />
-												</button>
-											</x-slot:trigger>
-											<x-slot:content>
-												<x-dropdown.dropdown-button value="Reply" />
-												<x-dropdown.dropdown-button value="Like" />
-											</x-slot:content>
-										</x-dropdown.dropdown>
-									</div>
-								</div>
-							@endforeach
-							@foreach ($conversation->textMessages as $message)
-								@php
-									$isOwnMessage = auth()->id() === $message->sender_id;
-								@endphp
-								<div class="flex items-start {{ $isOwnMessage ? '' : 'ml-8' }} gap-2.5">
-									<img
-											class="w-8 h-8 rounded-full"
-											src="{{ auth()->user()->avatarUrl() }}"
-											alt="User Avatar">
-									<div class="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 {{ $isOwnMessage ? 'bg-slate-200' : 'bg-white' }} rounded-e-xl rounded-es-xl dark:bg-gray-700">
-										<div class="flex items-center space-x-2 rtl:space-x-reverse">
-											<span class="text-sm font-semibold text-gray-900 dark:text-white"></span>
-											<span class="text-sm font-normal text-gray-500 dark:text-gray-400"></span>
-										</div>
-										<p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{ $message->message_content }}</p>
-										<span class="text-xs font-normal text-gray-500 dark:text-gray-400 capitalize">{{ $message->message_status }}</span>
 									</div>
 									<div>
 										<x-dropdown.dropdown>

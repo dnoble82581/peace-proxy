@@ -2,8 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\TextMessage;
+use App\Models\Message;
+use App\Models\Subject;
 use Exception;
+use Log;
+use Throwable;
 use Vonage\Client;
 use Vonage\Client\Credentials\Basic;
 use Vonage\SMS\Message\SMS;
@@ -18,44 +21,43 @@ class VonageSmsService
         $this->client = new Client($basic);
     }
 
-    public function sendMessage($recipient, $messageContent, $conversationId = null)
+    /**
+     * @throws Exception
+     */
+    public function sendMessage(Message $message, Subject $subject): void
     {
         $from = config('vonage.api_from');
+        $recipient = $subject;
 
         try {
             $response = $this->client->sms()->send(
-                new SMS($recipient->routeNotificationForVonage(), $from, $messageContent)
+                new SMS($recipient->routeNotificationForVonage(), $from, $message->message)
             );
 
-            $message = $response->current();
-
-            // Log the message details into the database
-            return TextMessage::create([
-                'sender' => $from,
-                'recipient' => $recipient->routeNotificationForVonage(),
-                'sender_id' => auth()->user()->id,
-                'conversation_id' => $conversationId,
-                'room_id' => $recipient->room_id,
-                'recipient_id' => $recipient->id,
-                'message_content' => $messageContent,
-                'message_status' => $message->getStatus() === 0 ? 'delivered' : 'failed',
-                'message_type' => 'sent',
-                'message_id' => $message->getMessageId(),
-                'sent_at' => now(),
+            // Update message status after successful send
+            $message->update([
+                'message_status' => 'sent',
+                'message_type' => 'text',
             ]);
 
-        } catch (Exception $e) {
-            // Log the failure in case of an exception
-            return TextMessage::create([
-                'sender' => $from,
+        } catch (Throwable $e) {
+            // Log the exception for debugging purposes
+            Log::error('Failed to send SMS', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
                 'recipient' => $recipient->routeNotificationForVonage(),
-                'sender_id' => auth()->user()->id,
-                'recipient_id' => $recipient->id,
-                'message_content' => $messageContent,
+                'message_content' => $message->message,
+            ]);
+
+            // Update the message status to failed
+            $message->update([
                 'message_status' => 'failed',
-                'message_type' => 'sent',
-                'sent_at' => now(),
+                'message_type' => 'text',
             ]);
+
+            // Optionally, you could rethrow or handle specific exceptions further
+            throw new Exception('Message sending failed: '.$e->getMessage(), 0, $e);
         }
+
     }
 }

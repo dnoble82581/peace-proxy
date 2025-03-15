@@ -107,14 +107,14 @@ class User extends Authenticatable
         return $this->hasMany(Resolution::class);
     }
 
+    public function messages(): MorphMany
+    {
+        return $this->morphMany(Message::class, 'senderable');
+    }
+
     public function requests(): HasMany
     {
         return $this->hasMany(SubjectRequest::class);
-    }
-
-    public function messages(): HasMany
-    {
-        return $this->hasMany(Message::class);
     }
 
     public function responses(): HasMany

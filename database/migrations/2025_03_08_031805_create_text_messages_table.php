@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('message_id')->nullable(); // Vonage message ID
             $table->timestamp('sent_at')->nullable(); // Timestamp for when the message was sent
             $table->unsignedBigInteger('sender_id');
+            $table->unsignedBigInteger('senderable_id');
+            $table->string('senderable_type');
             $table->unsignedBigInteger('recipient_id');
             $table->timestamps(); // created_at and updated_at
         });

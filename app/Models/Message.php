@@ -6,6 +6,7 @@ use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Message extends Model
 {
@@ -13,14 +14,9 @@ class Message extends Model
 
     protected $guarded = ['id'];
 
-    public function user(): BelongsTo
+    public function senderable(): MorphTo
     {
-        return $this->belongsTo(User::class);
-    }
-
-    public function tenant(): BelongsTo
-    {
-        return $this->belongsTo(Tenant::class);
+        return $this->morphTo();
     }
 
     public function room(): BelongsTo

@@ -33,6 +33,11 @@ class Subject extends Model
         return $this->hasMany(Conversation::class);
     }
 
+    public function messages(): MorphMany
+    {
+        return $this->morphMany(Message::class, 'senderable');
+    }
+
     public function triggers(): HasMany
     {
         return $this->hasMany(Trigger::class);
@@ -86,11 +91,6 @@ class Subject extends Model
     public function getPhoneAttribute($value): ?string
     {
         return $value ? preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '($1) $2-$3', $value) : null;
-    }
-
-    public function smsMessages()
-    {
-        return $this->hasMany(TextMessage::class, 'sender_id');
     }
 
     public function routeNotificationForVonage(): string

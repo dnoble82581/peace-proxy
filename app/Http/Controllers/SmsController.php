@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Subject;
-use App\Models\TextMessage;
+use App\Services\MessageService;
 use App\Services\PhoneNumberService;
 use App\Services\VonageSmsService;
 use Illuminate\Http\Request;
@@ -16,17 +16,6 @@ class SmsController extends Controller
     public function __construct(VonageSMSService $vonageSMSService)
     {
         $this->vonageSMSService = $vonageSMSService;
-    }
-
-    public function sendSms(Request $request)
-    {
-
-        $recipient = Subject::find(1); // Ensure this is valid
-        $messageContent = 'Some great message';
-
-        $this->vonageSMSService->sendMessage($recipient, $messageContent);
-
-        return redirect()->back()->with('message', 'SMS sent successfully!');
     }
 
     public function receiveSms(Request $request, PhoneNumberService $phoneNumberService)
@@ -56,22 +45,17 @@ class SmsController extends Controller
             $phoneNumberService->formatToE164($subject->phone))->first();
         $conversationId = $conversation ? $conversation->id : null;
 
+        $messageService = new MessageService;
+        $newMessage = $messageService->createMessage($subject->room, $subject, $messageContent, $conversationId);
+        $newMessage->update([
+            'recipient' => $to,
+            'message_status' => 'received',
+            'message_type' => 'text',
+            'message_id' => $messageId,
+        ]);
+
         Log::info('room_id: '.$roomId.' conversation_id: '.$conversationId);
         // Create the TextMessage record
-        TextMessage::create([
-            'sender' => $from,
-            'sender_id' => $subject->id,
-            'room_id' => $roomId,
-            'subject_id' => $subject->id,
-            'conversation_id' => $conversationId,
-            'recipient_id' => 1, // Assuming you're saving a default recipient_id
-            'recipient' => $to,
-            'message_content' => $messageContent,
-            'message_status' => 'received', // You can dynamically assign statuses if needed
-            'message_type' => 'received',
-            'message_id' => $messageId,
-            'sent_at' => $time_stamp,
-        ]);
 
         // Log the successful save
         Log::info("Message received from $from and saved to database.");

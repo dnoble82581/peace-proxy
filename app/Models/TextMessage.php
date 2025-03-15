@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class TextMessage extends Model
 {
@@ -11,9 +13,14 @@ class TextMessage extends Model
 
     protected $guarded = ['id'];
 
-    public function conversation()
+    public function conversation(): BelongsTo
     {
         return $this->belongsTo(Conversation::class, 'conversation_id');
+    }
+
+    public function senderable(): MorphTo
+    {
+        return $this->morphTo();
     }
 
     protected function casts(): array
