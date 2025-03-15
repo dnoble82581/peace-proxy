@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewTextEvent;
 use App\Models\Subject;
 use App\Services\MessageService;
 use App\Services\PhoneNumberService;
@@ -53,6 +54,8 @@ class SmsController extends Controller
             'message_type' => 'text',
             'message_id' => $messageId,
         ]);
+
+        broadcast(new NewTextEvent($newMessage));
 
         Log::info('room_id: '.$roomId.' conversation_id: '.$conversationId);
         // Create the TextMessage record
