@@ -49,7 +49,7 @@ class SmsController extends Controller
         $newMessage = $messageService->createMessage($subject->room, $subject, $messageContent, $conversationId);
         $newMessage->update([
             'recipient' => $to,
-            'message_status' => 'received',
+            'message_status' => 'delivered',
             'message_type' => 'text',
             'message_id' => $messageId,
         ]);
