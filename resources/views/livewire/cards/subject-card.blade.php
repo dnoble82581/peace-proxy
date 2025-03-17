@@ -32,12 +32,14 @@
 			];
 		}
 
-
-		public function createSMSConversation()
+		public function createSMSConversation():void
 		{
 			$conversationService = new ConversationService();
 			$newConversation = $conversationService->createSmsConversation($this->subject->phone, $this->room->id,
 				auth()->user()->id);
+			if (!$newConversation->is_active) {
+				$newConversation->update(['is_active' => true]);
+			}
 			$this->dispatch('smsConversationCreated');
 		}
 	}

@@ -34,7 +34,7 @@ class Demand extends Model
 
     public function responses(): MorphMany
     {
-        return $this->morphMany(Response::class, 'model');
+        return $this->morphMany(Response::class, 'respondable');
     }
 
     public function getBadgeColor(): string

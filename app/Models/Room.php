@@ -40,11 +40,6 @@ class Room extends Model
         return $this->hasMany(Message::class);
     }
 
-    public function requests(): HasMany
-    {
-        return $this->hasMany(SubjectRequest::class);
-    }
-
     public function rfis(): HasMany
     {
         return $this->hasMany(RequestForInformation::class);

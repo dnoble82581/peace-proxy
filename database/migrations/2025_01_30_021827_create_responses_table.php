@@ -11,8 +11,7 @@ return new class extends Migration
         Schema::create('responses', function (Blueprint $table) {
             $table->id();
             $table->text('body');
-            $table->morphs('model');
-            $table->foreignId('user_id');
+            $table->morphs('respondable');
             $table->foreignId('room_id');
             $table->foreignId('tenant_id');
             $table->timestamps();

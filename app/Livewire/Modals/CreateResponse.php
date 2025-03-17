@@ -59,7 +59,8 @@ class CreateResponse extends Modal
     {
         $this->validate();
         $newResponse = $this->demand->responses()->create([
-            'user_id' => auth()->user()->id,
+            //            'resppondable_id' => auth()->user()->id,
+            //			'resppondable_type' => 'App\Models\User',
             'room_id' => $this->roomId,
             'tenant_id' => $this->demand->tenant_id,
             'body' => $this->responseBody,

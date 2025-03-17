@@ -103,19 +103,16 @@
 				<div
 						class="mt-4"
 						x-show="tab === 'requests'"
-						x-data="{list: 'subject'}">
+						x-data="{list: 'RFI'}">
 
 					<x-buttons.button-group
 							:buttons="[
-									['key' => 'subject', 'label' => 'Subject Requests'],
 									['key' => 'information', 'label' => 'RFI'],
 						]"
 							click-handler="list"
 							class="ml-8" />
 
-					<div x-show="list === 'subject'">
-						<livewire:cards.request-card :room="$room" />
-					</div>
+
 					<div x-show="list === 'information'">
 						<livewire:cards.rfi-card :room="$room" />
 					</div>

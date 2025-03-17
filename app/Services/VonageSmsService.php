@@ -26,6 +26,9 @@ class VonageSmsService
      */
     public function sendMessage(Message $message, Subject $subject): void
     {
+
+        log::info('Keys', ['pubic' => config('vonage.api_key'), 'secret' => config('vonage.api_secret')]);
+
         $from = config('vonage.api_from');
         $recipient = $subject;
 
@@ -55,8 +58,6 @@ class VonageSmsService
                 'message_type' => 'text',
             ]);
 
-            // Optionally, you could rethrow or handle specific exceptions further
-            throw new Exception('Message sending failed: '.$e->getMessage(), 0, $e);
         }
 
     }

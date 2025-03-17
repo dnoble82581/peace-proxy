@@ -19,7 +19,6 @@ class RoomController extends Controller
             'subject.callLogs',
             'subject.warnings:id,subject_id,user_id,tenant_id,room_id,warning_type,warning',
             'subject.documents:id,documentable_id,filename,size,updated_at,extension,type,created_at',
-            'requests',
         ])->findOrFail($roomId);
 
         // Perform authorization check directly on the retrieved instance
@@ -37,7 +36,7 @@ class RoomController extends Controller
     public function tacticalRoom($roomId)
     {
         $room = Room::with([
-            'messages:id,message,room_id,created_at,user_id,updated_at',
+            'messages:id,message,room_id,senderable_id,senderable_type,created_at,updated_at',
             // Fetch necessary columns
             'messages.user:id,name', // Fetch user data for each message
             'subject:id,name,address,city,state,zip,phone,tenant_id,room_id,weapons,weapons_details',
@@ -46,7 +45,6 @@ class RoomController extends Controller
             'subject.callLogs',
             'subject.warnings:id,subject_id,user_id,tenant_id,room_id,warning_type,warning',
             'subject.documents:id,documentable_id,filename,size,updated_at,extension,type,created_at',
-            'requests',
         ])->findOrFail($roomId);
 
         // Perform authorization check directly on the retrieved instance
