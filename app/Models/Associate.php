@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Observers\AssociateObserver;
 use App\Traits\BelongsToTenant;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Storage;
 
+#[ObservedBy(AssociateObserver::class)]
 class Associate extends Model
 {
     use BelongsToTenant, HasFactory;
@@ -18,11 +22,6 @@ class Associate extends Model
     public function negotiation(): BelongsTo
     {
         return $this->belongsTo(Negotiation::class);
-    }
-
-    public function socialMedia(): HasMany
-    {
-        //        return $this->hasMany(SocialMediaService::class);
     }
 
     public function subject(): BelongsTo
@@ -43,6 +42,11 @@ class Associate extends Model
     public function imageUrl($image): string
     {
         return Storage::disk('s3-public')->url($image);
+    }
+
+    public function logs(): MorphMany
+    {
+        return $this->morphMany(NegotiationLog::class, 'loggable');
     }
 
     public function phone(): array|string|null

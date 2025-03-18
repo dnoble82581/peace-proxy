@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Observers\DemandObserver;
 use App\Traits\BelongsToTenant;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
+#[ObservedBy(DemandObserver::class)]
 class Demand extends Model
 {
     use BelongsToTenant, HasFactory;
@@ -45,6 +48,11 @@ class Demand extends Model
             'Pending' => 'bg-slate-50 text-slate-700 ring-slate-600/20',
             default => 'bg-gray-50 text-gray-700 ring-gray-600/20',
         };
+    }
+
+    public function logs(): MorphMany
+    {
+        return $this->morphMany(NegotiationLog::class, 'loggable');
     }
 
     protected function casts(): array

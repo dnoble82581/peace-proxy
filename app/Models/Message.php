@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Observers\MessageObserver;
 use App\Traits\BelongsToTenant;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+#[ObservedBy(MessageObserver::class)]
 class Message extends Model
 {
     use BelongsToTenant, HasFactory;
@@ -17,6 +21,11 @@ class Message extends Model
     public function senderable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function logs(): MorphMany
+    {
+        return $this->morphMany(NegotiationLog::class, 'loggable');
     }
 
     public function room(): BelongsTo
