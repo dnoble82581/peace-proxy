@@ -2,45 +2,39 @@
 
 namespace App\Observers;
 
+use App\Jobs\CreateLogEntry;
 use App\Models\Demand;
-use App\Models\NegotiationLog;
 
 class DemandObserver
 {
     public function created(Demand $demand): void
     {
-        NegotiationLog::create([
-            'action' => 'Demand Created',
-            'loggable_type' => Demand::class,
-            'loggable_id' => $demand->id,
-            'data' => [
-                'demand' => $demand->toArray(),
-            ],
-        ]);
+        CreateLogEntry::dispatch(
+            'Demand Created',
+            get_class($demand),
+            $demand->id,
+            $demand->toArray()
+        );
     }
 
     public function updated(Demand $demand): void
     {
-        NegotiationLog::create([
-            'action' => 'Demand Updated',
-            'loggable_type' => Demand::class,
-            'loggable_id' => $demand->id,
-            'data' => [
-                'old' => $demand->getOriginal(),
-                'new' => $demand->getChanges(),
-            ],
-        ]);
+        CreateLogEntry::dispatch(
+            'Demand Updated',
+            get_class($demand),
+            $demand->id,
+            ['old' => $demand->getOriginal(), 'new' => $demand->getChanges()]
+        );
     }
 
     public function deleted(Demand $demand): void
     {
-        NegotiationLog::create([
-            'action' => 'Demand Deleted',
-            'loggable_type' => Demand::class,
-            'loggable_id' => $demand->id,
-            'data' => [
-                'demand' => $demand->toArray(),
-            ],
-        ]);
+        CreateLogEntry::dispatch(
+            'Demand Deleted',
+            get_class($demand),
+            $demand->id,
+            $demand->toArray()
+        );
+
     }
 }

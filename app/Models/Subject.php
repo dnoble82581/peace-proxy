@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Observers\SubjectObserver;
 use App\Traits\BelongsToTenant;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,6 +15,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
+#[ObservedBy(SubjectObserver::class)]
 class Subject extends Model
 {
     use BelongsToTenant, HasFactory, Notifiable;
@@ -91,6 +94,11 @@ class Subject extends Model
     public function getPhoneAttribute($value): ?string
     {
         return $value ? preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '($1) $2-$3', $value) : null;
+    }
+
+    public function logs(): MorphMany
+    {
+        return $this->morphMany(NegotiationLog::class, 'loggable');
     }
 
     public function routeNotificationForVonage(): string

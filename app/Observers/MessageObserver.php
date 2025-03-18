@@ -17,15 +17,15 @@ class MessageObserver
         );
     }
 
-    public function updated(Message $message): void
-    {
-        CreateLogEntry::dispatch(
-            'Message Updated',
-            get_class($message),
-            $message->id,
-            ['old' => $message->getOriginal(), 'new' => $message->getChanges()]
-        );
-    }
+    //    public function updated(Message $message): void
+    //    {
+    //        CreateLogEntry::dispatch(
+    //            'Message Updated',
+    //            get_class($message),
+    //            $message->id,
+    //            ['old' => $message->getOriginal(), 'new' => $message->getChanges()]
+    //        );
+    //    }
 
     public function deleted(Message $message): void
     {

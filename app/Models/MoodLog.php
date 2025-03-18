@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Observers\MoodObserver;
 use App\Traits\BelongsToTenant;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
+#[ObservedBy(MoodObserver::class)]
 class MoodLog extends Model
 {
     use BelongsToTenant, HasFactory;
@@ -26,6 +30,11 @@ class MoodLog extends Model
     public function negotiation(): BelongsTo
     {
         return $this->belongsTo(Negotiation::class);
+    }
+
+    public function logs(): MorphMany
+    {
+        return $this->morphMany(NegotiationLog::class, 'loggable');
     }
 
     protected function casts(): array

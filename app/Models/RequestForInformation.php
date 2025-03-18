@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Observers\RequestForInformationObserver;
 use App\Traits\BelongsToTenant;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
+#[ObservedBy(RequestForInformationObserver::class)]
 class RequestForInformation extends Model
 {
     use BelongsToTenant, HasFactory;
@@ -21,6 +25,11 @@ class RequestForInformation extends Model
     public function room(): BelongsTo
     {
         return $this->belongsTo(Room::class);
+    }
+
+    public function logs(): MorphMany
+    {
+        return $this->morphMany(NegotiationLog::class, 'loggable');
     }
 
     public function subject(): BelongsTo
