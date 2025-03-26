@@ -13,19 +13,13 @@ class MessageObserver
             'Message Created',
             get_class($message),
             $message->id,
-            $message->toArray()
+            $message->toArray(),
+            $message->room->negotiation_id,
+            $message->tenant_id,
+            $message->user_id
+
         );
     }
-
-    //    public function updated(Message $message): void
-    //    {
-    //        CreateLogEntry::dispatch(
-    //            'Message Updated',
-    //            get_class($message),
-    //            $message->id,
-    //            ['old' => $message->getOriginal(), 'new' => $message->getChanges()]
-    //        );
-    //    }
 
     public function deleted(Message $message): void
     {
@@ -33,7 +27,11 @@ class MessageObserver
             'Message Deleted',
             get_class($message),
             $message->id,
-            $message->toArray()
+            $message->toArray(),
+            $message->room->negotiation_id,
+            $message->tenant_id,
+            $message->user_id
+
         );
     }
 }

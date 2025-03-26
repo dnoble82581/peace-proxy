@@ -36,7 +36,7 @@ class RequestForInformationEvent implements ShouldBroadcastNow
     {
         return [
             'action' => $this->action,
-            'warrantId' => $this->rfiId,
+            'rfiId' => $this->rfiId,
         ];
     }
 }

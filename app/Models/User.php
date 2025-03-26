@@ -67,6 +67,11 @@ class User extends Authenticatable
         return $this->hasMany(Warning::class);
     }
 
+    public function warrants(): HasMany
+    {
+        return $this->hasMany(Warrant::class);
+    }
+
     public function application()
     {
         return $this->documents()->where('type', 'application')->first();
@@ -79,7 +84,7 @@ class User extends Authenticatable
 
     public function negotiations(): HasMany
     {
-        return $this->hasMany(Negotiation::class);
+        return $this->hasMany(Negotiation::class, 'user_id');
     }
 
     public function objectives(): HasMany
@@ -97,11 +102,6 @@ class User extends Authenticatable
         return $this->hasMany(Conversation::class);
     }
 
-    public function hasRole(string $role): bool
-    {
-        return $this->role === $role;
-    }
-
     public function resolutions(): HasMany
     {
         return $this->hasMany(Resolution::class);
@@ -112,9 +112,39 @@ class User extends Authenticatable
         return $this->morphMany(Message::class, 'senderable');
     }
 
-    public function requests(): HasMany
+    public function associates(): HasMany
     {
-        return $this->hasMany(SubjectRequest::class);
+        return $this->hasMany(Associate::class);
+    }
+
+    public function triggers(): HasMany
+    {
+        return $this->hasMany(Trigger::class);
+    }
+
+    public function subjects(): HasMany
+    {
+        return $this->hasMany(Subject::class);
+    }
+
+    public function callLogs(): HasMany
+    {
+        return $this->hasMany(CallLog::class);
+    }
+
+    public function negotiationLogs(): HasMany
+    {
+        return $this->hasMany(NegotiationLog::class, 'user_id');
+    }
+
+    public function demands(): HasMany
+    {
+        return $this->hasMany(Demand::class);
+    }
+
+    public function hooks(): HasMany
+    {
+        return $this->hasMany(Hook::class);
     }
 
     public function responses(): HasMany

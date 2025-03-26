@@ -23,7 +23,7 @@ class RoomPolicy
 
     public function view(User $user, Room $room): bool
     {
-        return $user->tenant_id === $room->tenant_id;
+        return true;
     }
 
     public function create(User $user): bool {}

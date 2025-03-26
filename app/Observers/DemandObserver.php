@@ -13,7 +13,11 @@ class DemandObserver
             'Demand Created',
             get_class($demand),
             $demand->id,
-            $demand->toArray()
+            $demand->toArray(),
+            $demand->subject->room->negotiation_id,
+            $demand->tenant_id,
+            $demand->user_id
+
         );
     }
 
@@ -23,7 +27,11 @@ class DemandObserver
             'Demand Updated',
             get_class($demand),
             $demand->id,
-            ['old' => $demand->getOriginal(), 'new' => $demand->getChanges()]
+            ['old' => $demand->getOriginal(), 'new' => $demand->getChanges()],
+            $demand->subject->room->negotiation_id,
+            $demand->tenant_id,
+            $demand->user_id
+
         );
     }
 
@@ -33,7 +41,10 @@ class DemandObserver
             'Demand Deleted',
             get_class($demand),
             $demand->id,
-            $demand->toArray()
+            $demand->toArray(),
+            $demand->subject->room->negotiation_id,
+            $demand->tenant_id,
+            $demand->user_id
         );
 
     }

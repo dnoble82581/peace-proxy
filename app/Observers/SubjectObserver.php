@@ -13,7 +13,10 @@ class SubjectObserver
             'Subject Created',
             get_class($subject),
             $subject->id,
-            $subject->toArray()
+            $subject->toArray(),
+            $subject->room->negotiation_id,
+            $subject->tenant_id,
+            $subject->user_id
         );
     }
 
@@ -23,7 +26,11 @@ class SubjectObserver
             'Subject Updated',
             get_class($subject),
             $subject->id,
-            ['old' => $subject->getOriginal(), 'new' => $subject->getChanges()]
+            ['old' => $subject->getOriginal(), 'new' => $subject->getChanges()],
+            $subject->room->negotiation_id,
+            $subject->tenant_id,
+            $subject->user_id
+
         );
     }
 
@@ -33,7 +40,11 @@ class SubjectObserver
             'Subject Deleted',
             get_class($subject),
             $subject->id,
-            $subject->toArray()
+            $subject->toArray(),
+            $subject->room->negotiation_id,
+            $subject->tenant_id,
+            $subject->user_id
+
         );
     }
 }

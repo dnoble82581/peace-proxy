@@ -10,6 +10,7 @@
 				for="search"
 				class="sr-only">Search</label>
 		<input
+				x-cloak
 				id="search"
 				type="text"
 				placeholder="{{ $placeholder ?? 'Search' }}"

@@ -13,7 +13,10 @@ class TriggerObserver
             'Trigger Created',
             get_class($trigger),
             $trigger->id,
-            $trigger->toArray()
+            $trigger->toArray(),
+            $trigger->subject->room->negotiation_id,
+            $trigger->tenant_id,
+            $trigger->user_id
         );
     }
 
@@ -23,7 +26,11 @@ class TriggerObserver
             'Trigger Updated',
             get_class($trigger),
             $trigger->id,
-            ['old' => $trigger->getOriginal(), 'new' => $trigger->getChanges()]
+            ['old' => $trigger->getOriginal(), 'new' => $trigger->toArray()],
+            $trigger->subject->room->negotiation_id,
+            $trigger->tenant_id,
+            $trigger->user_id
+
         );
     }
 
@@ -33,7 +40,11 @@ class TriggerObserver
             'Trigger Deleted',
             get_class($trigger),
             $trigger->id,
-            $trigger->toArray()
+            $trigger->toArray(),
+            $trigger->subject->room->negotiation_id,
+            $trigger->tenant_id,
+            $trigger->user_id
+
         );
     }
 }

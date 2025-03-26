@@ -10,8 +10,7 @@
 		public Collection $hostages;
 		public int $roomId;
 
-//		ToDO: Get Documents and Warnings done Work on Tactical messages and different message categories. Figure out how tactical, jecc, negotiatiors are going to login in and work. Create sections for each.
-		public function mount($negotiationId, $roomId)
+		public function mount($negotiationId, $roomId):void
 		{
 			$this->negotiation = $this->getNegotiation($negotiationId);
 			$this->hostages = $this->getHostages();

@@ -53,7 +53,9 @@ class WarrantForm extends Form
     public function update($warrant)
     {
         $this->validate();
-        $warrant->update($this->all());
+        $data = $this->all();
+        $data['user_id'] = auth()->user()->id;
+        $warrant->update($data);
     }
 
     public function createWarrant($subject): void
@@ -71,6 +73,7 @@ class WarrantForm extends Form
             'created_at' => now(),
             'updated_at' => now(),
             'tenant_id' => $subject->tenant_id,
+            'user_id' => auth()->user()->id,
         ]);
     }
 }

@@ -1,6 +1,5 @@
 <?php
 
-	use App\Events\HookDeletedEvent;
 	use App\Events\HookEvent;
 	use App\Models\Hook;
 	use App\Models\Room;
@@ -58,8 +57,6 @@
 		{
 			return [
 				"echo-presence:hook.{$this->room->id},HookEvent" => 'refreshHooks',
-//				"echo-presence:hook.{$this->room->id},HookDeletedEvent" => 'refreshHooks',
-//				"echo-presence:hook.{$this->room->id},HookEditedEvent" => 'refreshHooks',
 			];
 		}
 

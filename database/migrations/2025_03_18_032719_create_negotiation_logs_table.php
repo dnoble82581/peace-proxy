@@ -12,7 +12,10 @@ return new class extends Migration
             $table->id();
             $table->string('action');
             $table->morphs('loggable');
+            $table->foreignId('negotiation_id')->constrained()->cascadeOnDelete(); // Scoping to negotiation
+            $table->foreignId('tenant_id')->constrained()->cascadeOnDelete(); // Scoping to tenant
             $table->json('data')->nullable();
+            $table->foreignId('user_id');
             $table->timestamps();
         });
     }

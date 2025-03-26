@@ -26,6 +26,7 @@
 					'time' => now(),
 					'mood' => $mood,
 					'name' => $name,
+					'user_id' => auth()->user()->id,
 					'subject_id' => $this->room->subject->id,
 					'negotiation_id' => $this->room->negotiation->id,
 					'room_id' => $this->room->id,

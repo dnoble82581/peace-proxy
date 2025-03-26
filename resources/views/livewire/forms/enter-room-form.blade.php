@@ -42,7 +42,7 @@
 		{
 			$this->updateUserRole();
 			$this->user = auth()->user();
-			
+
 			$roleRedirections = $this->getRoleRedirectionRoutes();
 
 			// Get the route based on the user's role, or fall back to a default redirection
@@ -64,6 +64,8 @@
 				'Primary Negotiator' => route('negotiation.room', ['room' => $this->room->id]),
 				'Secondary Negotiator' => route('negotiation.room', ['room' => $this->room->id]),
 				'Recorder' => route('negotiation.room', ['room' => $this->room->id]),
+				'Dispatch Lead' => route('dispatch.room', ['room' => $this->room->id]),
+				'Dispatch User' => route('dispatch.room', ['room' => $this->room->id])
 				// Add other roles and their routes as needed
 			];
 		}

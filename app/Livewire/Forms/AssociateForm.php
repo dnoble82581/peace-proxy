@@ -128,6 +128,7 @@ class AssociateForm extends Form
             'room_id' => $room->id,
             'subject_id' => $room->subject_id,
             'tenant_id' => $room->tenant_id,
+            'user_id' => auth()->user()->id,
             'name' => $this->name,
             'phone' => $this->phone,
             'email' => $this->email,

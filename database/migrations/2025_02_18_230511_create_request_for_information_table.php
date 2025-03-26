@@ -14,6 +14,7 @@ return new class extends Migration
             $table->foreignId('tenant_id');
             $table->foreignId('room_id');
             $table->foreignId('subject_id');
+            $table->foreignId('negotiation_id');
             $table->text('request');
             $table->timestamps();
         });

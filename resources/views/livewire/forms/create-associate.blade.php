@@ -29,7 +29,7 @@
 			return redirect(route('negotiation.room', $this->room));
 		}
 
-		public function saveassociate()
+		public function saveassociate():void
 		{
 			$this->form->create($this->room);
 			$this->redirect(route('negotiation.room', $this->room->id));
@@ -255,8 +255,6 @@
 				</div>
 
 			</div>
-
-			{{--ToDo: Create 2 Columns, one for images and tho other for documents--}}
 
 			<div class="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-6">
 				<div class="sm:col-span-3">

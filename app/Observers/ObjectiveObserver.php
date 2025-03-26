@@ -13,7 +13,11 @@ class ObjectiveObserver
             'Objective Created',
             get_class($objective),
             $objective->id,
-            $objective->toArray()
+            $objective->toArray(),
+            $objective->negotiation_id,
+            $objective->tenant_id,
+            $objective->user_id
+
         );
     }
 
@@ -23,7 +27,11 @@ class ObjectiveObserver
             'Objective Updated',
             get_class($objective),
             $objective->id,
-            ['old' => $objective->getOriginal(), 'new' => $objective->getChanges()]
+            ['old' => $objective->getOriginal(), 'new' => $objective->toArray()],
+            $objective->negotiation_id,
+            $objective->tenant_id,
+            $objective->user_id
+
         );
     }
 
@@ -33,7 +41,11 @@ class ObjectiveObserver
             'Objective Deleted',
             get_class($objective),
             $objective->id,
-            $objective->toArray()
+            $objective->toArray(),
+            $objective->negotiation_id,
+            $objective->tenant_id,
+            $objective->user_id
+
         );
     }
 }

@@ -134,7 +134,7 @@
 	<div
 			x-show="show"
 			class="h-48 p-2 overflow-y-auto overflow-x-hidden reusable-transition">
-		{{--		ToDO:Remember to fix dropdown for editing subject--}}
+		
 		<div
 				x-show="card === 'general'"
 				class="rounded-lg dark:bg-gray-800">

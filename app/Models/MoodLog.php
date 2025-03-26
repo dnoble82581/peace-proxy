@@ -37,6 +37,11 @@ class MoodLog extends Model
         return $this->morphMany(NegotiationLog::class, 'loggable');
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     protected function casts(): array
     {
         return [

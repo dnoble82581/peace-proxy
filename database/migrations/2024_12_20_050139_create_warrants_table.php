@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('confirmed')->default('no');
             $table->foreignId('subject_id');
             $table->foreignId('tenant_id');
+            $table->foreignId('user_id');
             $table->timestamps();
         });
     }

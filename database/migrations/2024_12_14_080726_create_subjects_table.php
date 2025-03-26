@@ -33,6 +33,8 @@ return new class extends Migration
             $table->text('weapons_details')->nullable();
             $table->foreignId('room_id')->constrained('rooms')->cascadeOnDelete();
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
+            $table->foreignId('negotiation_id')->nullable()->constrained('negotiations')->cascadeOnDelete();
+            $table->foreignId('user_id');
             $table->timestamps();
         });
     }

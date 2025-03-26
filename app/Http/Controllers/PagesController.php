@@ -35,18 +35,39 @@ class PagesController extends Controller
         return view('pages.subject.edit-subject', compact('roomId'));
     }
 
+    public function negotiation($negotiationId)
+    {
+        $negotiation = Negotiation::query()
+            ->with([
+                'logs', 'logs.user', 'user', 'demands', 'triggers', 'hooks', 'user.messages', 'rfis', 'subject',
+            ])
+            ->findOrFail($negotiationId);
+        $user = auth()->user();
+
+        return view('pages.admin.show-negotiation')->with(compact('negotiation', 'user'));
+    }
+
     /**
      * Show admin page for a specific tenant.
      */
     public function admin(int $tenantId)
     {
         $user = auth()->user();
-        $tenant = Tenant::query()
-            ->with([
-                'users', 'rooms', 'subjects', 'conversations', 'rfis', 'documents', 'resolutions',
-                'resolutions.responses', 'negotiations',
-            ])
-            ->findOrFail($tenantId);
+        $tenant = Tenant::with([
+            'users',
+            'rooms',
+            'subjects',
+            'subjects.demands',
+            'conversations',
+            'rfis',
+            'documents',
+            'resolutions.responses', // Deep eager load: resolutions and their responses
+            'negotiations.logs.user', // Deep eager load: negotiations -> logs -> user
+            'negotiations.hooks',
+            'negotiations.triggers',
+            'negotiations.demands',
+            'negotiations.user',
+        ])->findOrFail($tenantId);
 
         return view('pages.admin.admin', compact('tenant', 'user'));
     }

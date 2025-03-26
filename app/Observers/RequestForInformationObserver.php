@@ -13,7 +13,10 @@ class RequestForInformationObserver
             'Request For Information Created',
             get_class($requestForInformation),
             $requestForInformation->id,
-            $requestForInformation->toArray()
+            $requestForInformation->toArray(),
+            $requestForInformation->negotiation_id,
+            $requestForInformation->tenant_id,
+            $requestForInformation->user_id
         );
     }
 
@@ -23,7 +26,11 @@ class RequestForInformationObserver
             'Request For Information Updated',
             get_class($requestForInformation),
             $requestForInformation->id,
-            ['old' => $requestForInformation->getOriginal(), 'new' => $requestForInformation->getChanges()]
+            ['old' => $requestForInformation->getOriginal(), 'new' => $requestForInformation->toArray()],
+            $requestForInformation->negotiation_id,
+            $requestForInformation->tenant_id,
+            $requestForInformation->user_id
+
         );
     }
 
@@ -33,7 +40,11 @@ class RequestForInformationObserver
             'Request For Information Deleted',
             get_class($requestForInformation),
             $requestForInformation->id,
-            $requestForInformation->toArray()
+            $requestForInformation->toArray(),
+            $requestForInformation->negotiation_id,
+            $requestForInformation->tenant_id,
+            $requestForInformation->user_id
+
         );
     }
 }

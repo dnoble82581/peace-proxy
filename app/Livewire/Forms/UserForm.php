@@ -11,8 +11,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules;
 use Livewire\Form;
 
-// ToDo: fix validation here
-
 /**
  * Class UserForm
  *

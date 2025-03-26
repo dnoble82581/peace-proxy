@@ -44,11 +44,6 @@ class Tenant extends Model
         return $this->hasMany(Trigger::class);
     }
 
-    public function requests(): HasMany
-    {
-        return $this->hasMany(SubjectRequest::class);
-    }
-
     public function logoUrl(): string
     {
         return (new TenantLogoService)->getLogoUrl($this);

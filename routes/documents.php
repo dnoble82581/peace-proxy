@@ -12,3 +12,4 @@ Route::get('/documents/plan/{plan}/{filename}', function ($deliveryPlanId, $file
 
     return app(DocumentController::class)->showDeliveryPlanDocument($deliveryPlan, $filename);
 });
+Route::get('/negotiations/{id}/download-pdf', [DocumentController::class, 'downloadPdf'])->name('download-pdf');

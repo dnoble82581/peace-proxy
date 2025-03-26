@@ -22,6 +22,8 @@ Route::get('/negotiation/room/{room}', [RoomController::class, 'index'])->name('
 Route::get('/negotiation/tactical/{room}',
     [RoomController::class, 'tacticalRoom'])->name('tactical.room');
 
+Route::get('/negotiation/dispatch/{room}', [RoomController::class, 'dispatchRoom'])->name('dispatch.room');
+
 Route::get('/risk-assessment', function () {
     return view('pdfs.on-scene-risk-assessment');
 })->name('risk.assessment');

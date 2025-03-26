@@ -18,7 +18,7 @@ class Negotiation extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function associates(): HasMany
@@ -36,9 +36,39 @@ class Negotiation extends Model
         return $this->hasMany(Room::class);
     }
 
+    public function logs(): HasMany
+    {
+        return $this->hasMany(NegotiationLog::class);
+    }
+
+    public function rfis()
+    {
+        return $this->hasMany(RequestForInformation::class, 'negotiation_id');
+    }
+
     public function resolution(): HasOne
     {
         return $this->hasOne(Resolution::class);
+    }
+
+    public function subject(): HasOne
+    {
+        return $this->hasOne(Subject::class);
+    }
+
+    public function hooks(): HasMany
+    {
+        return $this->hasMany(Hook::class);
+    }
+
+    public function triggers(): HasMany
+    {
+        return $this->hasMany(Trigger::class);
+    }
+
+    public function demands(): HasMany
+    {
+        return $this->hasMany(Demand::class);
     }
 
     public function objectives(): HasMany
@@ -49,8 +79,8 @@ class Negotiation extends Model
     protected function casts(): array
     {
         return [
-            'start_time' => 'timestamp',
-            'end_time' => 'timestamp',
+            'start_time' => 'datetime',
+            'end_time' => 'datetime',
         ];
     }
 }

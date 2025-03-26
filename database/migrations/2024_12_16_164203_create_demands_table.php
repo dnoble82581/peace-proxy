@@ -12,6 +12,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('subject_id');
             $table->foreignId('tenant_id');
+            $table->foreignId('user_id');
+            $table->foreignId('negotiation_id');
             $table->string('type');
             $table->dateTime('deadline');
             $table->string('description')->nullable();

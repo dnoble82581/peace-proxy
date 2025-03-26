@@ -14,6 +14,7 @@ return new class extends Migration
             $table->foreignId('subject_id');
             $table->foreignId('room_id')->constrained('rooms', 'id')->onDelete('cascade');
             $table->foreignId('tenant_id')->constrained('tenants', 'id')->onDelete('cascade');
+            $table->foreignId('user_id');
             $table->string('name');
             $table->string('phone')->nullable();
             $table->string('email')->nullable();

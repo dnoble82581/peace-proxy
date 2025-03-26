@@ -140,6 +140,8 @@ class NegotiationSeeder extends Seeder
 
         // Create rooms, subjects, hooks, triggers, and demands
         $negotiations->each(function ($negotiation) {
+            $existingUserId = User::inRandomOrder()->first()->id;
+
             // Create a room
             $room = Room::factory()->create([
                 'negotiation_id' => $negotiation->id,
@@ -152,13 +154,20 @@ class NegotiationSeeder extends Seeder
                 'name' => fake()->name(),
                 'room_id' => $room->id,
                 'tenant_id' => $room->tenant_id,
+                'user_id' => $existingUserId,
+                'negotiation_id' => $negotiation->id,
             ]);
+
+            $room->update(['subject_id' => $subject->id]);
+            $negotiation->update(['subject_id' => $subject->id]);
 
             MoodLog::factory(30)->create([
                 'subject_id' => $subject->id,
                 'tenant_id' => $room->tenant_id,
                 'room_id' => $room->id,
                 'negotiation_id' => $negotiation->id,
+                'user_id' => $existingUserId,
+
             ]);
 
             CallLog::factory(30)->create([
@@ -166,6 +175,8 @@ class NegotiationSeeder extends Seeder
                 'tenant_id' => $room->tenant_id,
                 'room_id' => $room->id,
                 'negotiation_id' => $negotiation->id,
+                'user_id' => $existingUserId,
+
             ]);
 
             // Link the subject to the room
@@ -175,6 +186,8 @@ class NegotiationSeeder extends Seeder
             Hook::factory(4)->create([
                 'subject_id' => $subject->id,
                 'tenant_id' => $room->tenant_id,
+                'user_id' => $existingUserId,
+                'negotiation_id' => $negotiation->id,
             ]);
 
             Associate::factory(4)->create([
@@ -182,23 +195,33 @@ class NegotiationSeeder extends Seeder
                 'tenant_id' => $room->tenant_id,
                 'room_id' => $room->id,
                 'negotiation_id' => $negotiation->id,
+                'user_id' => $existingUserId,
+
             ]);
 
             // Create triggers
             Trigger::factory(4)->create([
                 'subject_id' => $subject->id,
                 'tenant_id' => $room->tenant_id,
+                'user_id' => $existingUserId,
+                'negotiation_id' => $negotiation->id,
+
             ]);
 
             // Create demands
             Demand::factory(4)->create([
                 'subject_id' => $subject->id,
                 'tenant_id' => $room->tenant_id,
+                'user_id' => $existingUserId,
+                'negotiation_id' => $negotiation->id,
+
             ]);
 
             Warrant::factory(4)->create([
                 'subject_id' => $subject->id,
                 'tenant_id' => $room->tenant_id,
+                'user_id' => $existingUserId,
+
             ]);
 
         });

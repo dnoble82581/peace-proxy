@@ -59,7 +59,8 @@
 				'duration' => $durationInSeconds,
 				'negotiation_id' => $this->room->negotiation->id,
 				'tenant_id' => $this->room->tenant_id,
-				'room_id' => $this->room->id
+				'room_id' => $this->room->id,
+				'user_id' => auth()->user()->id
 			]);
 
 			$newLabel = Carbon::parse($newData->started_at)->setTimezone(config('app.timezone'))->format('D:H:i');

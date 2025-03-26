@@ -32,6 +32,11 @@ class RequestForInformation extends Model
         return $this->morphMany(NegotiationLog::class, 'loggable');
     }
 
+    public function negotiations(): BelongsTo
+    {
+        return $this->belongsTo(Negotiation::class);
+    }
+
     public function subject(): BelongsTo
     {
         return $this->belongsTo(Subject::class);

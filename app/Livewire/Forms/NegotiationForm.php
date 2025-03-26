@@ -150,6 +150,7 @@ class NegotiationForm extends Form
             'gender' => $this->subject_sex,
             'age' => $this->subject_age ?: null,
             'phone' => $this->subject_phone,
+            'user_id' => auth()->user()->id,
         ]);
     }
 
@@ -160,5 +161,11 @@ class NegotiationForm extends Form
     {
         $negotiation->update(['subject_id' => $subject->id]);
         $room->update(['subject_id' => $subject->id]);
+        $negotiation->update([
+            'subject_name' => $subject->name,
+            'subject_sex' => $subject->gender,
+            'subject_age' => $subject->age,
+            'subject_phone' => $subject->phone,
+        ]);
     }
 }

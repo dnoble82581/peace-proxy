@@ -13,7 +13,10 @@ class MoodObserver
             'Mood Log Created',
             get_class($moodLog),
             $moodLog->id,
-            $moodLog->toArray()
+            $moodLog->toArray(),
+            $moodLog->negotiation_id,
+            $moodLog->tenant_id,
+            $moodLog->user_id
         );
     }
 
@@ -23,9 +26,12 @@ class MoodObserver
             'Mood Log Updated',
             get_class($moodLog),
             $moodLog->id,
-            ['old' => $moodLog->getOriginal(), 'new' => $moodLog->getChanges()]
+            ['old' => $moodLog->getOriginal(), 'new' => $moodLog->getChanges()],
+            $moodLog->negotiation_id,
+            $moodLog->tenant_id,
+            $moodLog->user_id
+
         );
-        $moodLog->update(['updated_at' => now()]);
     }
 
     public function deleted(MoodLog $moodLog): void
@@ -34,7 +40,10 @@ class MoodObserver
             'Mood Log Deleted',
             get_class($moodLog),
             $moodLog->id,
-            $moodLog->toArray()
+            $moodLog->toArray(),
+            $moodLog->negotiation_id,
+            $moodLog->tenant_id,
+            $moodLog->user_id
         );
     }
 }

@@ -22,6 +22,7 @@ class MessageService
             'sent_at' => now(),
             'conversation_id' => $conversationId,
             'message' => $messageContent,
+            'user_id' => auth()->user()->id,
         ]);
     }
 

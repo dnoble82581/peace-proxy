@@ -134,7 +134,9 @@ class SubjectForm extends Form
             $this->processDocuments();
         }
 
-        $this->subject->update($this->all());
+        $data = $this->all();
+        $data['user_id'] = auth()->user()->id;
+        $this->subject->update($data);
 
         $this->syncSocialMedia();
     }

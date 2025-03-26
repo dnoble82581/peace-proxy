@@ -13,6 +13,7 @@ return new class extends Migration
             $table->foreignId('subject_id');
             $table->foreignId('room_id');
             $table->foreignId('negotiation_id');
+            $table->foreignId('user_id');
             $table->foreignId('tenant_id');
             $table->dateTime('time');
             $table->integer('mood');

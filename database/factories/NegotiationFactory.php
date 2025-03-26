@@ -16,7 +16,7 @@ class NegotiationFactory extends Factory
         return [
             'type' => $this->faker->randomElement(['Live', 'Practice']),
             'title' => $this->faker->word(),
-            'address' => $this->faker->address(),
+            'address' => $this->faker->streetAddress(),
             'city' => $this->faker->city(),
             'state' => $this->faker->word(),
             'zip' => $this->faker->postcode(),

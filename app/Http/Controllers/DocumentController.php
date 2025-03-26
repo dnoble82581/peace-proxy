@@ -7,7 +7,9 @@ use App\Models\Negotiation;
 use App\Models\Plan;
 use App\Models\Subject;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Log;
 
@@ -77,6 +79,14 @@ class DocumentController extends Controller
 
         return '#';
 
+    }
+
+    public function downloadPdf(Request $request, $id)
+    {
+        $negotiation = Negotiation::with('logs.user')->findOrFail($id);
+        $pdf = Pdf::loadView('pdfs.timeline-pdf', compact('negotiation'));
+
+        return $pdf->download('negotiation.pdf');
     }
 
     public function showNegotiationDocument(Negotiation $negotiation, $filename)

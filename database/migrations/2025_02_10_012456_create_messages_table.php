@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum('message_type', ['chat', 'text'])->default('chat');
             $table->string('message_id')->nullable();
             $table->timestamp('sent_at')->nullable();
+            $table->foreignId('user_id');
             $table->foreignId('conversation_id')->constrained('conversations')->onDelete('cascade');
             $table->longText('message');
             $table->timestamps();

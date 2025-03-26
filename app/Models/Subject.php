@@ -31,6 +31,11 @@ class Subject extends Model
         return $this->hasMany(Hook::class);
     }
 
+    public function negotiation(): BelongsTo
+    {
+        return $this->belongsTo(Negotiation::class);
+    }
+
     public function conversations(): HasMany
     {
         return $this->hasMany(Conversation::class);
@@ -59,6 +64,11 @@ class Subject extends Model
     public function callLogs(): HasMany
     {
         return $this->hasMany(CallLog::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function associates(): HasMany

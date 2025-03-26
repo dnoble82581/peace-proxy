@@ -13,7 +13,10 @@ class AssociateObserver
             'Associate Created',
             get_class($associate),
             $associate->id,
-            $associate->toArray()
+            $associate->toArray(),
+            $associate->negotiation_id,
+            $associate->tenant_id,
+            $associate->user_id
         );
     }
 
@@ -23,7 +26,10 @@ class AssociateObserver
             'Associate Updated',
             get_class($associate),
             $associate->id,
-            ['old' => $associate->getOriginal(), 'new' => $associate->getChanges()]
+            ['old' => $associate->getOriginal(), 'new' => $associate->toArray()],
+            $associate->negotiation_id,
+            $associate->tenant_id,
+            $associate->user_id
         );
 
     }
@@ -34,7 +40,10 @@ class AssociateObserver
             'Associate Deleted',
             get_class($associate),
             $associate->id,
-            $associate->toArray()
+            $associate->toArray(),
+            $associate->negotiation_id,
+            $associate->tenant_id,
+            $associate->user_id
         );
     }
 }

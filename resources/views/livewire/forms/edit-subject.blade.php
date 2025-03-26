@@ -47,19 +47,14 @@
 			return Room::findOrFail($roomId);
 		}
 
-//		ToDo: Fix this to auto update date of birth
-		public function updatedDateOfBirth()
-		{
-			dd('here');
-		}
-
-
 		public function deleteDocument($documentId):void
 		{
 			$documentToDelete = Document::findOrFail($documentId);
 			Storage::disk('s3')->delete('/documents/'.$this->subject->id.'/'.$documentToDelete->filename);
 			$documentToDelete->delete();
 		}
+
+		public function updatedFormDateOfBirth() {}
 
 		public function removeImage($imageId):void
 		{
@@ -153,7 +148,6 @@
 					placeholder="Appointment Date"
 					without-timezone
 					without-time="true"
-					requires-confirmation
 			/>
 			<x-input
 					wire:model="form.age"

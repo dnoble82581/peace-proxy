@@ -58,6 +58,8 @@ class CreateHookForm extends Modal
             'description' => $this->description,
             'tenant_id' => $this->room->tenant_id,
             'subject_id' => $this->room->subject_id,
+            'user_id' => $this->user->id,
+            'negotiation_id' => $this->room->negotiation_id,
         ]);
         event(new HookEvent($this->room->id, $newHook->id, 'created'));
         $this->close();

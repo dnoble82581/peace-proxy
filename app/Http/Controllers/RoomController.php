@@ -59,6 +59,11 @@ class RoomController extends Controller
         ]);
     }
 
+    public function dispatchRoom($roomId)
+    {
+        return view('pages.dispatch');
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([

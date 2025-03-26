@@ -276,9 +276,7 @@
 				</div>
 
 			</div>
-
-			{{--ToDo: Create 2 Columns, one for images and tho other for documents--}}
-
+			
 			<div class="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-6">
 				<div class="sm:col-span-3">
 					<x-form-elements.file-input

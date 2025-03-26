@@ -49,6 +49,11 @@ class Associate extends Model
         return $this->morphMany(NegotiationLog::class, 'loggable');
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function phone(): array|string|null
     {
         return preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '($1) $2-$3', $this->phone);

@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Observers\HookObserver;
 use App\Traits\BelongsToTenant;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,11 +22,14 @@ class Hook extends Model
         return $this->belongsTo(Subject::class);
     }
 
-    public function broadcastOn(string $event): array
+    public function user(): BelongsTo
     {
-        return [
-            new PresenceChannel('hook.'.$this->room_id),
-        ];
+        return $this->belongsTo(User::class);
+    }
+
+    public function negotiation(): BelongsTo
+    {
+        return $this->belongsTo(Negotiation::class);
     }
 
     public function logs(): MorphMany

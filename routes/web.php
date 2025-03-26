@@ -14,7 +14,6 @@ Route::middleware(['auth'])->group(function () {
     require __DIR__.'/profile.php';
     require __DIR__.'/subscriptions.php';
     Route::post('/send-sms', [SmsController::class, 'sendSms'])->name('send.sms');
-
 });
 
 require __DIR__.'/auth.php';

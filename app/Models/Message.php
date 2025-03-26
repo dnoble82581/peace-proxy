@@ -28,6 +28,11 @@ class Message extends Model
         return $this->morphMany(NegotiationLog::class, 'loggable');
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function room(): BelongsTo
     {
         return $this->belongsTo(Room::class);

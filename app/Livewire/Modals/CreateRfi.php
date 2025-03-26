@@ -73,6 +73,7 @@ class CreateRfi extends Modal
             'tenant_id' => $this->room->tenant_id,
             'room_id' => $this->room->id,
             'user_id' => $this->user->id,
+            'negotiation_id' => $this->room->negotiation_id,
         ]);
         event(new RequestForInformationEvent($this->room->id, $newRfi->id, 'edited'));
 
