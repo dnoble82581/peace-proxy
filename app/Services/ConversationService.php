@@ -5,8 +5,8 @@ namespace App\Services;
 use App\Models\Conversation;
 use App\Models\Room;
 use App\Models\User;
-use Auth;
 use DB;
+use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Throwable;
 
@@ -27,6 +27,7 @@ class ConversationService
             ->whereHas('participants', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })
+            ->with(['participants.user']) // Eager-load participants and their user relations
             ->get();
     }
 
@@ -55,52 +56,81 @@ class ConversationService
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
     }
 
     /**
      * @throws Throwable
      */
-    public function createPrivateChat(array $userIds, $roomId, $userId): Conversation
+    public function createPrivateChat($authUserId, $otherUserId, $roomId): Conversation
     {
-        $authUser = User::findOrfail($userId);
-        $room = Room::findOrfail($roomId);
+        // Ensure both user IDs are included and sorted for consistency
+        $userIds = [$authUserId, $otherUserId];
+        sort($userIds);
 
-        // Ensure the initiator is not duplicated in the participants
-        $allParticipants = array_unique(array_merge($userIds, [$authUser->id]));
-        sort($allParticipants);
-
-        // Use a database lock to prevent duplicate conversation creation
-        return DB::transaction(function () use ($allParticipants, $room, $authUser) {
-            // Check if a conversation with these exact participants exists
+        return DB::transaction(function () use ($userIds, $authUserId, $roomId) {
+            // Query for existing conversation with these participants
             $existingConversation = Conversation::query()
-                ->private() // Assuming `private()` is a scope for private conversations
-                ->whereHas('participants', function ($query) use ($allParticipants) {
-                    // Ensure the same set of participants exist
+                ->where('type', 'private')
+                ->where('room_id', $roomId)
+                ->whereHas('participants', function ($query) use ($userIds) {
                     $query->select('conversation_id')
                         ->groupBy('conversation_id')
-                        ->havingRaw('COUNT(user_id) = ?', [count($allParticipants)])
-                        ->whereIn('user_id', $allParticipants);
-                }, '=', 1)
-                ->lockForUpdate() // Prevent race conditions by locking the rows
+                        ->havingRaw('COUNT(user_id) = 2') // Ensure only 2 users
+                        ->whereIn('user_id', $userIds); // Match both users
+                })
+                ->lockForUpdate() // Prevent race condition
                 ->first();
 
+            // If the conversation exists, just return it
             if ($existingConversation) {
-                // Return the already existing conversation
+                $existingConversation->update(['is_active' => true]);
+
                 return $existingConversation;
             }
 
-            // Create a new conversation if none exists
-            return Conversation::create([
-                'name' => 'private'.now()->timestamp,
+            // Create a new conversation if it doesn't exist
+            $conversation = Conversation::create([
+                'name' => 'private-'.now()->timestamp,
                 'type' => 'private',
-                'initiator_id' => $authUser->id,
-                'room_id' => $room->id,
+                'initiator_id' => $authUserId,
+                'room_id' => $roomId,
                 'is_active' => true,
-                'tenant_id' => $room->tenant_id,
+                'tenant_id' => Room::findOrFail($roomId)->tenant_id, // Assuming Room model has a tenant_id
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            // Add both users as participants
+            $this->addParticipantsToConversation($conversation, $userIds);
+
+            return $conversation;
         });
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function addParticipantsToConversation($conversation, $users): void
+    {
+        // Step 1: Fetch current participants' user IDs for the given conversation
+        $currentParticipants = $conversation->participants()->pluck('user_id')->toArray();
+
+        if (is_array($users)) {
+            $userIds = array_diff($users, $currentParticipants);
+        } else {
+            $userIds = $users->pluck('id')->toArray();
+
+        }
+        // Step 2: Filter out users that are already in the conversation
+        $newUsers = array_diff($userIds, $currentParticipants);
+
+        // Step 3: Attach only the new users to the conversation
+        foreach ($newUsers as $userId) {
+            $conversation->participants()->create([
+                'user_id' => $userId,
+            ]);
+        }
     }
 
     /**
@@ -149,46 +179,5 @@ class ConversationService
 
             return $newConversation;
         });
-    }
-
-    public function addParticipantsToConversation($conversation, $users): void
-    {
-        $authUserId = Auth::id();
-        $users = collect($users)->push($authUserId);
-
-        $existingParticipants = DB::table('conversation_participants')
-            ->where('conversation_id', $conversation->id)
-            ->pluck('user_id')
-            ->toArray();
-
-        $filteredUsers = $users->filter(function ($user) use ($existingParticipants) {
-            // Ensure $user is an ID (fetch the "id" property if it's an object)
-            $userId = is_object($user) ? $user->id : $user;
-
-            return ! in_array($userId, $existingParticipants);
-        });
-
-        $bulkInsert = $filteredUsers->map(function ($userId) use ($conversation) {
-            return [
-                'conversation_id' => $conversation->id,
-                'user_id' => $userId,
-                'tenant_id' => $conversation->tenant_id,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        })->toArray();
-
-        DB::table('conversation_participants')->insertOrIgnore($bulkInsert);
-    }
-
-    public function sendInvitations(?Conversation $conversation, array $userIds, int $invitedBy): void
-    {
-        // Delegate the logic to InvitationService
-        $this->invitationService->sendInvitations(
-            $conversation?->id,
-            $userIds,
-            $invitedBy,
-            $conversation ? $conversation->type : 'private'
-        );
     }
 }

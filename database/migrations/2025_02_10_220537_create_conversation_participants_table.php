@@ -13,7 +13,6 @@ return new class extends Migration
             $table->foreignId('conversation_id');
             $table->foreignId('user_id');
             $table->foreignId('tenant_id');
-            $table->unique(['conversation_id', 'user_id']);
             $table->timestamps();
         });
     }

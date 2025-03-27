@@ -6,7 +6,6 @@ use App\Events\InvitationAcceptedEvent;
 use App\Events\InvitationDeclinedEvent;
 use App\Events\InvitationSent;
 use App\Models\Invitation;
-use App\Models\User;
 use Illuminate\Support\Collection;
 use Throwable;
 
@@ -40,8 +39,8 @@ class InvitationService
         string $invitationType = 'private'
     ): Invitation {
         // Check for existing invitation (excluding matching pending status)
-        $existingInvitation = $this->findExistingInvitation($userId, $conversationId);
 
+        $existingInvitation = $this->findExistingInvitation($userId, $invitedBy, $conversationId, 'pending');
         if (! $existingInvitation) {
             // Create a new invitation
             return Invitation::create([
@@ -53,24 +52,26 @@ class InvitationService
             ]);
         }
 
+        $existingInvitation->update(['status' => 'pending']);
+
         // Return the existing invitation if no new one is created
         return $existingInvitation;
     }
 
-    public function findExistingInvitation(int $userId, ?int $conversationId, ?string $status = null): ?Invitation
-    {
-        $query = Invitation::where([
-            'user_id' => $userId,
-            'conversation_id' => $conversationId,
-            'status' => 'pending',
-        ]);
+    public function findExistingInvitation(
+        int $userId,
+        int $invitedBy,
+        ?int $conversationId,
+        ?string $status = null
+    ): ?Invitation {
 
-        // Optionally filter by status if provided
-        if ($status !== null) {
-            $query->where('status', $status);
-        }
-
-        return $query->first();
+        return Invitation::where(function ($query) use ($userId, $invitedBy) {
+            $query->where('user_id', $userId)
+                ->where('invited_by', $invitedBy);
+        })->orWhere(function ($query) use ($userId, $invitedBy) {
+            $query->where('user_id', $invitedBy)
+                ->where('invited_by', $userId);
+        })->first();
     }
 
     /**
@@ -78,28 +79,45 @@ class InvitationService
      */
     public function acceptInvitation(Invitation $invitation, $roomId): void
     {
-
         // Ensure the user is authorized to accept the invitation
         if ($invitation->user_id !== auth()->id()) {
             abort(403, 'Unauthorized');
         }
 
-        if ($invitation->invitation_type === 'private') {
-            $conversationService = new ConversationService;
-            $newConversation = $conversationService->createPrivateChat([$invitation->user_id], $roomId,
-                auth()->user()->id);
-            $invitation->update(['conversation_id' => $newConversation->id]);
+        // Check for an existing invitation between user_id and invited_by
+        $existingInvitation = $this->findExistingInvitation($invitation->user_id, $invitation->invited_by, null,
+            'pending');
 
-            //			 Add the user as a participant in the conversation
-            $sender = User::findOrFail($invitation->invited_by);
-            $target = User::findOrFail($invitation->user_id);
-            $usersToAdd = collect([$sender, $target]);
-            $conversationService->addParticipantsToConversation($newConversation, $usersToAdd);
-            // Mark the invitation as accepted
+        if ($existingInvitation) {
+            // Update the status of the existing invitation
+            $existingInvitation->update(['status' => 'accepted']);
+        } else {
+            // Create a new invitation if none exists
+            $newInvitation = Invitation::create([
+                'user_id' => $invitation->user_id,
+                'conversation_id' => $invitation->conversation_id,
+                'status' => 'accepted',
+                'invited_by' => $invitation->invited_by,
+                'invitation_type' => $invitation->invitation_type,
+            ]);
+
+            $existingInvitation = $newInvitation;
         }
 
-        $invitation->update(['status' => 'accepted']);
-        broadcast(new InvitationAcceptedEvent($invitation));
+        if ($existingInvitation->invitation_type === 'private') {
+            $conversationService = new ConversationService;
+            $newConversation = $conversationService->createPrivateChat(
+                $existingInvitation->user_id,
+                $existingInvitation->invited_by,
+                $roomId
+            );
+
+            $existingInvitation->update([
+                'conversation_id' => $newConversation->id,
+            ]);
+        }
+
+        broadcast(new InvitationAcceptedEvent($existingInvitation));
     }
 
     public function fetchPendingInvitations(): Collection

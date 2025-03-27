@@ -9,13 +9,13 @@ export default defineConfig({
 		}),
 	],
 	server: {
+		host: '127.0.0.1', // Bind to localhost explicitly
+		port: 5173,        // Default Vite port
 		cors: {
-			origin: ['http://peaceproxy.test'], // Array of allowed origins
-			methods: ['GET', 'POST', 'PUT'], // Specify allowed methods
-			allowedHeaders: ['Content-Type', 'Authorization'], // Allowed request headers
+			origin: '*', // Allow all origins (use specific origins for more control)
 		},
-		host: true,
 	},
+
 })
 // export default defineConfig({
 // 	server: {

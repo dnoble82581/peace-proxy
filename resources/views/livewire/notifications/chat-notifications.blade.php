@@ -49,8 +49,11 @@
 		public function acceptInvitation($invitationId):void
 		{
 			$invitation = Invitation::findOrFail($invitationId);
-			$invitationService = new InvitationService();
-			$invitationService->acceptInvitation($invitation, $this->room->id);
+			if ($invitation->invitation_type === 'private') {
+				$invitationService = new InvitationService();
+				$invitationService->acceptInvitation($invitation, $this->room->id);
+			}
+
 		}
 
 		public function declineInvitation($invitationId):void

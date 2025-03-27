@@ -21,7 +21,7 @@ return new class extends Migration
                 ->constrained('users')
                 ->onDelete('cascade');
             $table->string('invitation_type');
-            $table->enum('status', ['pending', 'accepted', 'declined'])
+            $table->enum('status', ['pending', 'accepted', 'declined', 'closed'])
                 ->default('pending');
 
             $table->timestamps();

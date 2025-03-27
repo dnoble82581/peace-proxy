@@ -50,7 +50,6 @@
 			$conversationService = new ConversationService;
 			$this->conversations = $conversationService->fetchConversations($this->room->id, $this->room->tenant_id,
 				$this->user->id)->load('participants.user');
-			$this->resetToPublicConversation();
 		}
 
 		public function sendMessage($currentConversationId):void
@@ -103,27 +102,6 @@
 			$this->fetchConversations();
 		}
 
-		public function showResponses($messageId):void
-		{
-			$this->dispatch('modal.open', component: 'modals.message-responses',
-				arguments: ['messageId' => $messageId]);
-		}
-
-		#[On('chat-closed')]
-		public function resetToPublicConversation():void
-		{
-			// Find the "public" conversation in the $conversations collection
-			$publicConversation = $this->conversations->firstWhere('name', 'public');
-
-			if ($publicConversation) {
-				// Set the explicitly found public conversation as default
-				$this->defaultConversation = $publicConversation;
-			} else {
-				// Fallback to the first conversation in the collection if none is marked public
-				$this->defaultConversation = $this->conversations->first();
-			}
-		}
-
 		public function createGroupChats():void
 		{
 			$conversationService = new ConversationService;
@@ -153,28 +131,15 @@
 		{
 			$conversation = Conversation::findOrFail($conversationId);
 			$conversation->update(['is_active' => false]);
+			Invitation::where('conversation_id', $conversation->id)->update(['status' => 'closed']);
 			$this->fetchConversations();
-		}
-
-		public function sendUsersInvite(array $userIds):void
-		{
-			$invitationService = new InvitationService();
-			foreach ($userIds as $userId) {
-				$existingInvite = $invitationService->findExistingInvitation(auth()->id(), $userId);
-				if ($existingInvite) {
-					continue;
-				}
-				$conversationService = new ConversationService();
-				$conversationService->sendInvitations(null, [$userId], $this->user->id);
-
-				session()->flash('user_message_'.$userId, "Invitation sent to User ID: $userId");
-			}
 		}
 	}
 ?>
 
 <div
-		x-data="{ conversation: '{{ $defaultConversation->name ?? '' }}' }"
+		x-data="{ conversation: 'public' }"
+		@setConversation.window="conversation = $event.detail"
 		class="bg-white dark:bg-gray-800 dark-light-text shadow-lg rounded-b-lg rounded-t-lg">
 
 	{{--	Conversation Tabs as Buttons--}}

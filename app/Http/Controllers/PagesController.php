@@ -5,18 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Negotiation;
 use App\Models\Tenant;
 use App\Models\User;
-use App\Services\StripeService;
 
 class PagesController extends Controller
 {
-    private StripeService $stripeService;
-
-    // Use dependency injection to initialize StripeService
-    public function __construct(StripeService $stripeService)
-    {
-        $this->stripeService = $stripeService;
-    }
-
     /**
      * Edit a specific user by ID.
      */
@@ -55,18 +46,12 @@ class PagesController extends Controller
         $user = auth()->user();
         $tenant = Tenant::with([
             'users',
-            'rooms',
             'subjects',
             'subjects.demands',
-            'conversations',
-            'rfis',
-            'documents',
-            'resolutions.responses', // Deep eager load: resolutions and their responses
-            'negotiations.logs.user', // Deep eager load: negotiations -> logs -> user
+            'subjects.associates',
             'negotiations.hooks',
             'negotiations.triggers',
             'negotiations.demands',
-            'negotiations.user',
         ])->findOrFail($tenantId);
 
         return view('pages.admin.admin', compact('tenant', 'user'));

@@ -7,6 +7,7 @@ use App\Models\Room;
 use App\Models\User;
 use App\Services\ConversationService;
 use App\Services\InvitationService;
+use Exception;
 use Livewire\Component;
 use Throwable;
 
@@ -53,23 +54,7 @@ class SubMenu extends Component
 
         // Iterate through each user ID and send an invitation
         foreach ($selectedUsers as $userId) {
-            // Skip if there's an existing invitation for this user
-            $existingInvite = $invitationService->findExistingInvitation($userId, null);
-            if ($existingInvite) {
-                continue;
-            }
-
-            // Send the invitation (type can be 'private' or 'group')
             $invitationService->sendInvitations(null, [$userId], $this->user->id, $type);
-
-            if ($type === 'group') {
-                $newGroupConversation = $this->createGroupChat();
-                $this->addUsersToConversation($newGroupConversation, $selectedUsers);
-            } else {
-                $newPrivateConversation = $this->createPrivateChat($selectedUsers, $this->room->id,
-                    $this->user->id);
-                $this->addUsersToConversation($newPrivateConversation, $selectedUsers);
-            }
 
             // Flash a session message for feedback
             session()->flash('user_message_'.$userId, "Invitation sent to User ID: $userId");
@@ -81,34 +66,14 @@ class SubMenu extends Component
         }
     }
 
-    private function createGroupChat(): Conversation
-    {
-        $conversationService = new ConversationService;
-
-        return $conversationService->createGroupChat([
-            'type' => 'group',
-            'name' => 'group',
-            'initiator_id' => $this->user->id,
-            'room_id' => $this->room->id,
-            'is_active' => true,
-            'tenant_id' => $this->room->tenant_id,
-        ]);
-    }
-
+    /**
+     * @throws Exception
+     */
+    //
     public function addUsersToConversation($conversation, $users): void
     {
         $conversationService = new ConversationService;
         $conversationService->addParticipantsToConversation($conversation, $users);
-    }
-
-    /**
-     * @throws Throwable
-     */
-    private function createPrivateChat($userIds, $roomId, $initiatorId): Conversation
-    {
-        $conversationService = new ConversationService;
-
-        return $conversationService->createPrivateChat($userIds, $roomId, $initiatorId);
     }
 
     public function handleUserHere($users): void
@@ -151,5 +116,29 @@ class SubMenu extends Component
     public function render()
     {
         return view('livewire.dropdowns.sub-menu');
+    }
+
+    private function createGroupChat(): Conversation
+    {
+        $conversationService = new ConversationService;
+
+        return $conversationService->createGroupChat([
+            'type' => 'group',
+            'name' => 'group',
+            'initiator_id' => $this->user->id,
+            'room_id' => $this->room->id,
+            'is_active' => true,
+            'tenant_id' => $this->room->tenant_id,
+        ]);
+    }
+
+    /**
+     * @throws Throwable
+     */
+    private function createPrivateChat($userIds, $roomId, $initiatorId): Conversation
+    {
+        $conversationService = new ConversationService;
+
+        return $conversationService->createPrivateChat($userIds, $roomId, $initiatorId);
     }
 }
