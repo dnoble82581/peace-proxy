@@ -27,17 +27,21 @@ class ConversationService
             ->whereHas('participants', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })
-            ->with(['participants.user']) // Eager-load participants and their user relations
+            ->with(['participants', 'participants.user']) // Eager-load participants and their user relations
             ->get();
     }
 
-    public function createGroupChat(array $data): Conversation
+    /**
+     * @throws Exception
+     */
+    public function createGroupChat(array $data, array $users = []): Conversation
     {
         $existingConversation = Conversation::where([
             'type' => $data['type'],
             'name' => $data['name'],
             'room_id' => $data['room_id'],
             'tenant_id' => $data['tenant_id'],
+            'initiator_id' => $data['initiator_id'],
         ])->first();
         // If an existing conversation is found, return it
         if ($existingConversation) {
@@ -47,7 +51,7 @@ class ConversationService
         }
 
         // Otherwise, create a new conversation
-        return Conversation::create([
+        $conversation = Conversation::create([
             'type' => $data['type'],
             'name' => $data['name'],
             'room_id' => $data['room_id'],
@@ -57,6 +61,38 @@ class ConversationService
             'updated_at' => now(),
         ]);
 
+        // Add participants to the conversation
+        if (! empty($users)) {
+            $this->addParticipantsToConversation($conversation, $users);
+        }
+
+        return $conversation;
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function addParticipantsToConversation($conversation, $users): void
+    {
+        // Step 1: Fetch current participants' user IDs for the given conversation
+        $currentParticipants = $conversation->participants()->pluck('user_id')->toArray();
+
+        if (is_array($users)) {
+            $userIds = array_diff($users, $currentParticipants);
+        } else {
+            $userIds = $users->pluck('id')->toArray();
+
+        }
+        // Step 2: Filter out users that are already in the conversation
+        $newUsers = array_diff($userIds, $currentParticipants);
+
+        // Step 3: Attach only the new users to the conversation
+        foreach ($newUsers as $userId) {
+            $conversation->participants()->create([
+                'user_id' => $userId,
+            ]);
+        }
     }
 
     /**
@@ -106,31 +142,6 @@ class ConversationService
 
             return $conversation;
         });
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function addParticipantsToConversation($conversation, $users): void
-    {
-        // Step 1: Fetch current participants' user IDs for the given conversation
-        $currentParticipants = $conversation->participants()->pluck('user_id')->toArray();
-
-        if (is_array($users)) {
-            $userIds = array_diff($users, $currentParticipants);
-        } else {
-            $userIds = $users->pluck('id')->toArray();
-
-        }
-        // Step 2: Filter out users that are already in the conversation
-        $newUsers = array_diff($userIds, $currentParticipants);
-
-        // Step 3: Attach only the new users to the conversation
-        foreach ($newUsers as $userId) {
-            $conversation->participants()->create([
-                'user_id' => $userId,
-            ]);
-        }
     }
 
     /**

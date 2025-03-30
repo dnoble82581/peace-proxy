@@ -15,7 +15,7 @@ class InvitationService
         ?int $conversationId,
         array $userIds,
         int $invitedBy,
-        string $invitationType = 'private'
+        string $invitationType
     ): void {
         foreach ($userIds as $userId) {
             $invitation = $this->createOrUpdateInvitation(
@@ -36,11 +36,12 @@ class InvitationService
         ?int $conversationId,
         string $status,
         int $invitedBy,
-        string $invitationType = 'private'
+        string $invitationType
     ): Invitation {
         // Check for existing invitation (excluding matching pending status)
+        $existingInvitation = $this->findExistingInvitation($userId, $invitedBy, $conversationId, 'pending',
+            $invitationType);
 
-        $existingInvitation = $this->findExistingInvitation($userId, $invitedBy, $conversationId, 'pending');
         if (! $existingInvitation) {
             // Create a new invitation
             return Invitation::create([
@@ -62,15 +63,31 @@ class InvitationService
         int $userId,
         int $invitedBy,
         ?int $conversationId,
-        ?string $status = null
+        ?string $status = null,
+        ?string $invitationType = null
     ): ?Invitation {
 
-        return Invitation::where(function ($query) use ($userId, $invitedBy) {
+        return Invitation::where(function ($query) use (
+            $userId,
+            $invitedBy,
+            $conversationId,
+            $status,
+            $invitationType
+        ) {
+            if ($status) {
+                $query->where('status', $status);
+            }
+            if ($invitationType) {
+                $query->where('invitation_type', $invitationType);
+            }
             $query->where('user_id', $userId)
                 ->where('invited_by', $invitedBy);
-        })->orWhere(function ($query) use ($userId, $invitedBy) {
-            $query->where('user_id', $invitedBy)
-                ->where('invited_by', $userId);
+            if ($conversationId) {
+                $query->where('conversation_id', $conversationId);
+            }
+            if ($invitationType) {
+                $query->where('invitation_type', $invitationType);
+            }
         })->first();
     }
 
@@ -84,10 +101,11 @@ class InvitationService
             abort(403, 'Unauthorized');
         }
 
+        $conversationService = new ConversationService;
+
         // Check for an existing invitation between user_id and invited_by
         $existingInvitation = $this->findExistingInvitation($invitation->user_id, $invitation->invited_by, null,
-            'pending');
-
+            'pending', $invitation->invitation_type);
         if ($existingInvitation) {
             // Update the status of the existing invitation
             $existingInvitation->update(['status' => 'accepted']);
@@ -105,16 +123,26 @@ class InvitationService
         }
 
         if ($existingInvitation->invitation_type === 'private') {
-            $conversationService = new ConversationService;
             $newConversation = $conversationService->createPrivateChat(
                 $existingInvitation->user_id,
                 $existingInvitation->invited_by,
                 $roomId
             );
-
             $existingInvitation->update([
                 'conversation_id' => $newConversation->id,
             ]);
+        } else {
+            $newConversation = $conversationService->createGroupChat([
+                'type' => $existingInvitation->invitation_type,
+                'name' => 'group-'.now()->timestamp,
+                'room_id' => $roomId,
+                'tenant_id' => $existingInvitation->user->tenant_id,
+                'initiator_id' => $existingInvitation->user_id,
+            ]);
+
+            // Add the invited user to the conversation
+            $conversationService->addParticipantsToConversation($newConversation, [$existingInvitation->user_id]);
+
         }
 
         broadcast(new InvitationAcceptedEvent($existingInvitation));

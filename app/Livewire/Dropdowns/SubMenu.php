@@ -70,12 +70,6 @@ class SubMenu extends Component
      * @throws Exception
      */
     //
-    public function addUsersToConversation($conversation, $users): void
-    {
-        $conversationService = new ConversationService;
-        $conversationService->addParticipantsToConversation($conversation, $users);
-    }
-
     public function handleUserHere($users): void
     {
         $this->activeUsers = collect($users)->filter(function ($user) {
@@ -118,6 +112,18 @@ class SubMenu extends Component
         return view('livewire.dropdowns.sub-menu');
     }
 
+    /**
+     * @throws Exception
+     */
+    public function addUsersToConversation($conversation, $users): void
+    {
+        $conversationService = new ConversationService;
+        $conversationService->addParticipantsToConversation($conversation, $users);
+    }
+
+    /**
+     * @throws Exception
+     */
     private function createGroupChat(): Conversation
     {
         $conversationService = new ConversationService;
@@ -129,7 +135,7 @@ class SubMenu extends Component
             'room_id' => $this->room->id,
             'is_active' => true,
             'tenant_id' => $this->room->tenant_id,
-        ]);
+        ], $this->selectedUsers);
     }
 
     /**

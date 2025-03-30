@@ -10,10 +10,18 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 
 Broadcast::channel('chat.{roomId}', function (User $user, int $roomId) {
     $room = Room::find($roomId);
-    if ($user->can('view', $room)) {
-        return ['id' => $user->id, 'name' => $user->name, 'avatar' => $user->avatarUrl(), 'role' => $user->role];
+
+    if ($room && $user->can('view', $room)) {
+        // Return user details to identify the participant on the frontend
+        return [
+            'id' => $user->id,
+            'name' => $user->name,
+            'avatar' => $user->avatarUrl(), // Presuming the user model has this method
+            'role' => $user->role, // Role can be used for UI logic in real-time
+        ];
     }
-    abort(403);
+
+    return false;
 });
 
 Broadcast::channel('hook.{roomId}', function (User $user, int $roomId) {

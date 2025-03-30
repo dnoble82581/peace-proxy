@@ -70,6 +70,7 @@
 
 ?>
 <div class="mt-5">
+	<x-errors />
 	<x-form-layouts.form-layout
 			class="bg-white"
 			submit="update">
@@ -145,7 +146,7 @@
 			<x-datetime-picker
 					wire:model="form.date_of_birth"
 					label="Date of Birth"
-					placeholder="Appointment Date"
+					placeholder="Date of Birth"
 					without-timezone
 					without-time="true"
 			/>

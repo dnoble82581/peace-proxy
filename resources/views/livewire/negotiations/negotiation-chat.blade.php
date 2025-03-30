@@ -27,6 +27,7 @@
 		public Collection $conversations;
 		public Conversation $defaultConversation;
 		public array $activeUsers = [];
+		public array $unreadMessages = [];
 
 		#[Validate('string|required|min:3|max:255')]
 		public string $newMessage = '';
@@ -59,7 +60,25 @@
 			$message = $this->createMessage($currentConversationId);
 			$messageService->broadcastMessage($message);
 			$this->newMessage = '';
+		}
 
+		public function markAsRead(int $conversationId, ?int $recipientId = null):void
+		{
+			if ($recipientId) {
+				Message::where('conversation_id', $conversationId)
+					->where('user_id', $recipientId) // Only update messages for this recipient
+					->where('is_read', false) // Only unread messages
+					->update(['is_read' => true]);
+			} else {
+				Message::where('conversation_id', $conversationId)
+					->where('user_id', $this->user->id) // Only update messages for this recipient
+					->where('is_read', false) // Only unread messages
+					->update(['is_read' => true]);
+
+			}
+			if (isset($this->unreadMessages[$conversationId])) {
+				$this->unreadMessages[$conversationId] = 0;
+			}
 		}
 
 		public function sendSMSMessage($conversationId):void
@@ -76,14 +95,38 @@
 		private function createMessage($currentConversationId):Message
 		{
 			$messageService = new MessageService;
-			return $messageService->createMessage($this->room, $this->user, $this->newMessage,
-				$currentConversationId);
+			$conversation = Conversation::findOrFail($currentConversationId);
+
+			if ($conversation->type == 'public') {
+				return $messageService->createMessage($this->room, $this->user, $this->newMessage,
+					$currentConversationId, null);
+			} else {
+				$recipient = $conversation->participants()
+					->where('user_id', '!=', auth()->user()->id)
+					->pluck('user_id')
+					->toArray();
+				return $messageService->createMessage($this->room, $this->user, $this->newMessage,
+					$currentConversationId, $recipient[0]);
+			}
+
 		}
 
-		public function refreshChat():void
+		public function refreshChat($data):void
 		{
-			$this->room->load('messages');
-			$this->dispatch('new-message');
+
+			$conversationId = $data['message']['conversation_id'];
+			$userId = $data['message']['user_id'];
+
+			// Check if the user receiving the message is not the current user
+			if ($userId !== auth()->user()->id) {
+				// Check if the message belongs to a private conversation or public conversation
+				$conversation = Conversation::find($conversationId);
+				if (isset($this->unreadMessages[$conversationId])) {
+					$this->unreadMessages[$conversationId]++;
+				} else {
+					$this->unreadMessages[$conversationId] = 1;
+				}
+			}
 		}
 
 		public function getListeners():array
@@ -104,7 +147,18 @@
 
 		public function createGroupChats():void
 		{
-			$conversationService = new ConversationService;
+			// Check if a public conversation already exists for this room
+			$existingPublicConversation = Conversation::where('type', 'public')
+				->where('room_id', $this->room->id)
+				->first();
+
+			if ($existingPublicConversation) {
+				// If it exists, set it as the default public conversation and return
+				$this->defaultConversation = $existingPublicConversation;
+				return;
+			}
+
+			// If no public conversation exists, create one
 			$defaultPublicConversation = [
 				'type' => 'public',
 				'name' => 'public',
@@ -112,7 +166,11 @@
 				'tenant_id' => $this->room->tenant_id,
 				'initiator_id' => $this->user->id,
 			];
+
+			$conversationService = new ConversationService;
 			$this->defaultConversation = $conversationService->createGroupChat($defaultPublicConversation);
+
+			// Add participants to the newly created public conversation
 			$conversationService->addParticipantsToConversation($this->defaultConversation, User::all());
 		}
 
@@ -132,6 +190,10 @@
 			$conversation = Conversation::findOrFail($conversationId);
 			$conversation->update(['is_active' => false]);
 			Invitation::where('conversation_id', $conversation->id)->update(['status' => 'closed']);
+			ConversationParticipant::where('conversation_id', $conversationId)
+				->where('user_id', $this->user->id)
+				->delete();
+
 			$this->fetchConversations();
 		}
 	}
@@ -145,20 +207,40 @@
 	{{--	Conversation Tabs as Buttons--}}
 	<div class="flex items-center justify-between space-x-4 p-4 border-b dark:border-gray-700">
 		<div>
+			{{--			@dd($conversations)--}}
 			@foreach ($conversations as $conversation)
 				@if($conversation->type === 'public')
 					<button
 							@click="conversation = '{{ $conversation->name }}'"
-							class="rounded-md px-3 py-2 text-sm font-medium text-indigo-700"
+							wire:click="markAsRead({{ $conversation->id }})"
+							class="rounded-md px-3 py-2 text-sm font-medium text-indigo-700 relative"
 							:class="{ 'bg-indigo-100': conversation === '{{ $conversation->name }}' }">
 						{{ ucfirst($conversation->name) }}
+						@if ($unreadMessages[$conversation->id] ?? 0)
+							<span class="absolute -top-1.5 -right-1 flex h-4 w-4">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                <span class="relative inline-flex items-center justify-center rounded-full h-4 w-4 text-white text-xs bg-rose-500">
+                                    {{ $unreadMessages[$conversation->id] }}
+                                </span>
+                            </span>
+						@endif
 					</button>
+
 				@elseif($conversation->type === 'private')
 					<button
 							@click="conversation = '{{ $conversation->name }}'"
-							class="rounded-md px-3 py-2 text-sm font-medium text-indigo-700"
+							wire:click="markAsRead({{ $conversation->id }})"
+							class="rounded-md px-3 py-2 text-sm font-medium text-indigo-700 relative"
 							:class="{ 'bg-indigo-100': conversation === '{{ $conversation->name }}' }">
 						{{ ucfirst($conversation->getOtherParticipantName()) }}
+						@if ($unreadMessages[$conversation->id] ?? 0)
+							<span class="absolute -top-1.5 -right-1 flex h-4 w-4">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                <span class="relative inline-flex items-center justify-center rounded-full h-4 w-4 text-white text-xs bg-rose-500">
+                                    {{ $unreadMessages[$conversation->id] }}
+                                </span>
+                            </span>
+						@endif
 					</button>
 				@elseif($conversation->type === 'sms')
 					<button
@@ -174,8 +256,8 @@
 							:class="{ 'bg-indigo-100': conversation === '{{ $conversation->name }}' }">
 						{{ ucfirst($conversation->getOtherParticipantName()) }}
 						<span class="text-gray-500 text-xs">
-                        (+ {{ $conversation->getOtherParticipantCount() }})
-                    </span>
+							(+ {{ $conversation->getOtherParticipantCount() }})
+						</span>
 					</button>
 				@endif
 			@endforeach
@@ -192,6 +274,7 @@
 			<!-- Main Dropdown Content -->
 
 			<div
+					x-cloak
 					x-show="open"
 					@click.away="open = false"
 					class="absolute z-50 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-700 ltr:origin-top-right rtl:origin-top-left end-0 ring-1 ring-black ring-opacity-5">

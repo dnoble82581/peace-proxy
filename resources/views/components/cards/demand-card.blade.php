@@ -9,8 +9,8 @@
 				<p class="text-sm/6 font-semibold dark-light-text capitalize">{{ $demand->title }}</p>
 			</div>
 			<div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500 dark:text-slate-300">
-				<p class="whitespace-nowrap text-red-700 dark:text-slate-300">Due on
-					<time datetime="2023-03-17T00:00Z">{{ $demand->deadline->diffForHumans() }}</time>
+				<p class="whitespace-nowrap text-red-700 dark:text-slate-300">Due
+					<time datetime="{{ $demand }}">{{ $demand->deadline->diffForHumans() }}</time>
 				</p>
 			</div>
 		</div>

@@ -13,7 +13,7 @@ class SubjectForm extends Form
 {
     public ?Subject $subject;
 
-    #[Validate(['file', 'max:10000', 'mimes:pdf', 'nullable'])]
+    #[Validate(['nullable', 'array'])]
     public $documentsToUpload = [];
 
     #[Validate(['images.*' => 'image|max:1024'])]
@@ -127,6 +127,7 @@ class SubjectForm extends Form
      */
     public function update(): void
     {
+        $this->validate();
         if ($this->images) {
             $this->processImages();
         }

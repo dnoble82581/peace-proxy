@@ -17,7 +17,7 @@
 						label="Status"
 						value="{{ old('status') }}"
 						wire:model="status"
-						placeholder="Deadline"
+						placeholder="Status"
 						:options="['Closed', 'Pending', 'Approved', 'Rejected']" />
 				<x-select
 						label="Type"

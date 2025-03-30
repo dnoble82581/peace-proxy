@@ -49,11 +49,8 @@
 		public function acceptInvitation($invitationId):void
 		{
 			$invitation = Invitation::findOrFail($invitationId);
-			if ($invitation->invitation_type === 'private') {
-				$invitationService = new InvitationService();
-				$invitationService->acceptInvitation($invitation, $this->room->id);
-			}
-
+			$invitationService = new InvitationService();
+			$invitationService->acceptInvitation($invitation, $this->room->id);
 		}
 
 		public function declineInvitation($invitationId):void
@@ -103,7 +100,6 @@
 			@endif
 		</x-slot:content>
 	</x-dropdown.dropdown>
-
 </div>
 
 

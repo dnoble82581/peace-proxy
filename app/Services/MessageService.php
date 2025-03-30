@@ -9,16 +9,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class MessageService
 {
-    public function createMessage(Room $room, Model $model, string $messageContent, int $conversationId): Message
-    {
+    public function createMessage(
+        Room $room,
+        Model $model,
+        string $messageContent,
+        int $conversationId,
+        ?int $recipientId
+    ): Message {
         // Creates the message in the database
         return $model->messages()->create([
             'tenant_id' => $model->tenant_id,
             'room_id' => $room->id,
-            'recipient' => null,
+            'recipient' => $recipientId ?? null,
             'message_status' => 'sent',
             'message_type' => 'chat',
-            'message_id' => null,
             'sent_at' => now(),
             'conversation_id' => $conversationId,
             'message' => $messageContent,

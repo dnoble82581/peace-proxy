@@ -20,10 +20,10 @@ class WarrantForm extends Form
     public $originating_agency = '';
 
     #[Validate(['nullable'])]
-    public $originating_county = '';
+    public $originating_county = 'Johnson';
 
     #[Validate(['nullable'])]
-    public $originating_state = '';
+    public $originating_state = 'Iowa';
 
     #[Validate(['nullable'])]
     public $extraditable = '';

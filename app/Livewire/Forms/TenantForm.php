@@ -73,7 +73,7 @@ class TenantForm extends Form
             'tenant_email' => 'required|email',
             'primary_phone' => 'required|nullable',
             'secondary_phone' => 'nullable',
-            'logo' => 'required|image|max:1024',
+            'logo' => 'image|max:1024',
             'tenant_logo' => 'nullable|string',
             'address_line1' => 'required',
             'address_line2' => 'nullable',

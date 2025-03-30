@@ -15,7 +15,8 @@ return new class extends Migration
             $table->unsignedBigInteger('senderable_id');
             $table->string('senderable_type');
             $table->string('recipient')->nullable();
-            $table->enum('message_status', ['sent', 'delivered', 'failed'])->default('sent');
+            $table->enum('message_status', ['sent', 'failed'])->default('sent');
+            $table->boolean('is_read')->default(false);
             $table->enum('message_type', ['chat', 'text'])->default('chat');
             $table->string('message_id')->nullable();
             $table->timestamp('sent_at')->nullable();
