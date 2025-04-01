@@ -25,9 +25,16 @@ class Conversation extends Model
         return $this->hasMany(TextMessage::class, 'conversation_id');
     }
 
-    public function participants(): HasMany
+    public function participants()
     {
-        return $this->hasMany(ConversationParticipant::class);
+        return $this->belongsToMany(User::class, 'conversation_participants')
+            ->withPivot('joined_at', 'status')
+            ->withTimestamps();
+    }
+
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(Invitation::class);
     }
 
     public function initiator(): BelongsTo
@@ -45,21 +52,21 @@ class Conversation extends Model
         return $query->where('type', 'public');
     }
 
-    public function getOtherParticipantName(): string
-    {
-        $authUserId = auth()->id();
-
-        // Ensure participants are loaded and eager-load associated User models
-        $this->loadMissing('participants.user');
-
-        // Safely retrieve the first participant who is not the auth user
-        $otherParticipant = $this->participants
-            ->firstWhere('user_id', '!=', $authUserId);
-
-        return $otherParticipant && $otherParticipant->user
-            ? $otherParticipant->user->name
-            : 'Unknown';
-    }
+    //    public function getOtherParticipantName(): string
+    //    {
+    //        $authUserId = auth()->id();
+    //
+    //        // Ensure participants are loaded and eager-load associated User models
+    //        $this->loadMissing('participants.user');
+    //
+    //        // Safely retrieve the first participant who is not the auth user
+    //        $otherParticipant = $this->participants
+    //            ->firstWhere('user_id', '!=', $authUserId);
+    //
+    //        return $otherParticipant && $otherParticipant->user
+    //            ? $otherParticipant->user->name
+    //            : 'Unknown';
+    //    }
 
     public function getOtherParticipantCount(): int
     {
@@ -69,10 +76,5 @@ class Conversation extends Model
         return $this->participants
             ->where('user_id', '!=', $authUserId) // Exclude the authenticated user at the query level
             ->count(); // Count the remaining participants
-    }
-
-    public function invitations(): HasMany
-    {
-        return $this->hasMany(Invitation::class);
     }
 }

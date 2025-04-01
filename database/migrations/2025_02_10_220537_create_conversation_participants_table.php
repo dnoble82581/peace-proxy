@@ -10,10 +10,19 @@ return new class extends Migration
     {
         Schema::create('conversation_participants', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('conversation_id');
-            $table->foreignId('user_id');
+            $table->foreignId('conversation_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('tenant_id');
+            $table->timestamp('joined_at')->nullable();
+            $table->enum('status', ['pending', 'accepted', 'left'])->default('pending');
+
+            $table->unique(['conversation_id', 'user_id'], 'conv_user_unique');
             $table->timestamps();
         });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('conversation_participants');
     }
 };

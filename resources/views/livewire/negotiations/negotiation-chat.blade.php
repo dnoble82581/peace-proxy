@@ -13,6 +13,7 @@
 	use App\Models\User;
 	use App\Services\ConversationService;
 	use App\Services\VonageSmsService;
+	use Carbon\Carbon;
 	use Illuminate\Support\Collection;
 	use Livewire\Attributes\Validate;
 	use Livewire\Volt\Component;
@@ -25,429 +26,292 @@
 	new class extends Component {
 
 		public Collection $conversations;
-		public Conversation $defaultConversation;
-		public array $activeUsers = [];
-		public array $unreadMessages = [];
 
 		#[Validate('string|required|min:3|max:255')]
 		public string $newMessage = '';
 
 		public Room $room;
-		public string $sortBy = '';
-		public User $user;
 		public Collection $smsMessages;
-
-		public function mount(Room $room):void
-		{
-			$this->room = $room;
-			$this->user = auth()->user();
-			$this->createGroupChats();
-			$this->fetchConversations();
-		}
-
-		#[On('smsConversationCreated')]
-		public function fetchConversations():void
-		{
-			$conversationService = new ConversationService;
-			$this->conversations = $conversationService->fetchConversations($this->room->id, $this->room->tenant_id,
-				$this->user->id)->load('participants.user');
-		}
-
-		public function sendMessage($currentConversationId):void
-		{
-			$this->validate();
-			$messageService = new MessageService;
-			$message = $this->createMessage($currentConversationId);
-			$messageService->broadcastMessage($message);
-			$this->newMessage = '';
-		}
-
-		public function markAsRead(int $conversationId, ?int $recipientId = null):void
-		{
-			if ($recipientId) {
-				Message::where('conversation_id', $conversationId)
-					->where('user_id', $recipientId) // Only update messages for this recipient
-					->where('is_read', false) // Only unread messages
-					->update(['is_read' => true]);
-			} else {
-				Message::where('conversation_id', $conversationId)
-					->where('user_id', $this->user->id) // Only update messages for this recipient
-					->where('is_read', false) // Only unread messages
-					->update(['is_read' => true]);
-
-			}
-			if (isset($this->unreadMessages[$conversationId])) {
-				$this->unreadMessages[$conversationId] = 0;
-			}
-		}
-
-		public function sendSMSMessage($conversationId):void
-		{
-			$messageService = new MessageService();
-			$message = $this->createMessage($conversationId);
-
-			$smsService = new VonageSmsService();
-			$smsService->sendMessage($message, $this->room->subject);
-			event(new NewMessageEvent($message));
-			$this->newMessage = '';
-		}
-
-		private function createMessage($currentConversationId):Message
-		{
-			$messageService = new MessageService;
-			$conversation = Conversation::findOrFail($currentConversationId);
-
-			if ($conversation->type == 'public') {
-				return $messageService->createMessage($this->room, $this->user, $this->newMessage,
-					$currentConversationId, null);
-			} else {
-				$recipient = $conversation->participants()
-					->where('user_id', '!=', auth()->user()->id)
-					->pluck('user_id')
-					->toArray();
-				return $messageService->createMessage($this->room, $this->user, $this->newMessage,
-					$currentConversationId, $recipient[0]);
-			}
-
-		}
-
-		public function refreshChat($data):void
-		{
-
-			$conversationId = $data['message']['conversation_id'];
-			$userId = $data['message']['user_id'];
-
-			// Check if the user receiving the message is not the current user
-			if ($userId !== auth()->user()->id) {
-				// Check if the message belongs to a private conversation or public conversation
-				$conversation = Conversation::find($conversationId);
-				if (isset($this->unreadMessages[$conversationId])) {
-					$this->unreadMessages[$conversationId]++;
-				} else {
-					$this->unreadMessages[$conversationId] = 1;
-				}
-			}
-		}
+		public array $activeUsers = [];
+		public array $participants = [];
+		public User $user;
+		public Conversation $defaultConversation;
 
 		public function getListeners():array
 		{
 			return [
-				"echo-presence:chat.{$this->room->id},NewMessageEvent" => 'refreshChat',
-				"echo-private:chat-sms.'.{$this->room->id},NewTextEvent" => 'refresh',
-				"echo-presence:chat.{$this->room->id},leaving" => 'handleUserLeaving',
-				"echo-presence:chat.{$this->room->id},ParticipantLeavesChatEvent" => 'handleParticipantLeft',
-				'echo-private:user.'.auth()->id().',InvitationAcceptedEvent' => 'fetchConversations',
+				'invitationAccepted' => 'invitationAccepted',
+				"echo-presence:chat.{$this->room->id},NewMessageEvent" => 'refreshMessages',
 			];
 		}
 
-		public function handleParticipantLeft($data):void
+		public function mount(Room $room):void
+		{
+			$this->conversations = $this->fetchConversations();
+			$this->room = $room;
+			$this->user = auth()->user();
+			$this->defaultConversation = $this->fetchDefaultConversation();
+		}
+
+		public function refreshMessages()
 		{
 			$this->fetchConversations();
 		}
 
-		public function createGroupChats():void
+		private function fetchDefaultConversation()
 		{
-			// Check if a public conversation already exists for this room
-			$existingPublicConversation = Conversation::where('type', 'public')
-				->where('room_id', $this->room->id)
-				->first();
-
-			if ($existingPublicConversation) {
-				// If it exists, set it as the default public conversation and return
-				$this->defaultConversation = $existingPublicConversation;
-				return;
-			}
-
-			// If no public conversation exists, create one
-			$defaultPublicConversation = [
+			$data = [
 				'type' => 'public',
-				'name' => 'public',
-				'room_id' => $this->room->id,
-				'tenant_id' => $this->room->tenant_id,
-				'initiator_id' => $this->user->id,
+				'name' => 'Public',
+				'tenant_id' => $this->user->tenant_id
 			];
 
-			$conversationService = new ConversationService;
-			$this->defaultConversation = $conversationService->createGroupChat($defaultPublicConversation);
+			$conversationService = new ConversationService();
+			return $conversationService->createGroupChat($data, User::all()->pluck('id')->toArray());
 
-			// Add participants to the newly created public conversation
-			$conversationService->addParticipantsToConversation($this->defaultConversation, User::all());
 		}
 
-		public function trackIdleUsers():void
+		public function sendMessge($conversation)
 		{
-			$idleThreshold = now()->subMinutes(5);
-			$this->activeUsers = collect($this->activeUsers)->map(function ($user) use ($idleThreshold) {
-				return [
-					...$user,
-					'is_idle' => $user['last_active'] < $idleThreshold,
-				];
-			})->toArray();
+			$this->validate([
+				'newMessage' => 'required|min:1|max:255',
+			]);
+			$data = $this->fetchMessageData($conversation);
+			$messageService = new MessageService();
+			$newMessage = $messageService->createMessage($data);
+			$this->newMessage = '';
+			event(new NewMessageEvent($newMessage));
 		}
 
-		public function leaveConversation(int $conversationId):void
+		private function fetchMessageData($conversation):array
 		{
-			$conversation = Conversation::findOrFail($conversationId);
-			$conversation->update(['is_active' => false]);
-			Invitation::where('conversation_id', $conversation->id)->update(['status' => 'closed']);
-			ConversationParticipant::where('conversation_id', $conversationId)
-				->where('user_id', $this->user->id)
-				->delete();
-
-			$this->fetchConversations();
+			return [
+				'tenant_id' => $this->room->tenant_id,
+				'negotiation_id' => $this->room->negotiation_id,
+				'room_id' => $this->room->id,
+				'conversation_id' => $conversation,
+				'message_status' => 'sent',
+				'message_type' => 'chat',
+				'senderable_type' => 'App/Models/User',
+				'senderable_id' => $this->user->id,
+				'message' => $this->newMessage,
+				'sent_at' => now(),
+				'created_at' => now(),
+				'updated_at' => now()
+			];
 		}
+
+		public function fetchOtherParticipantName(Conversation $conversation)
+		{
+			$otherParticipants = $conversation->participants()
+				->where('name', '!=', $this->user->name)
+				->get();
+
+			return $otherParticipants[0]->name;
+		}
+
+		private function fetchConversations()
+		{
+			return auth()->user()->conversations()
+				->where('conversations.tenant_id', auth()->user()->tenant_id)
+				->wherePivot('status', 'accepted')
+				->with([
+					'invitations',
+					'messages' => function ($query) {
+						$query->orderBy('created_at', 'asc'); // Order messages by creation time
+					}
+				])->get();
+		}
+
+		public function getUserAvatar($id)
+		{
+			return User::findOrFail($id)->avatarUrl();
+		}
+
+		public function invitationAccepted($data):void
+		{
+			$invitee = User::findOrFail($data['invitee_id'])->name;
+			if ($data['inviter_id'] == auth()->user()->id) {
+				session()->flash('Accepted', 'Invitation accepted by '.$invitee);
+			}
+		}
+
 	}
 ?>
-
+		<!-- component -->
 <div
-		x-data="{ conversation: 'public' }"
-		@setConversation.window="conversation = $event.detail"
-		class="bg-white dark:bg-gray-800 dark-light-text shadow-lg rounded-b-lg rounded-t-lg">
-
-	{{--	Conversation Tabs as Buttons--}}
-	<div class="flex items-center justify-between space-x-4 p-4 border-b dark:border-gray-700">
+		class="flex-1 p:2 sm:p-2 justify-between flex flex-col bg-white shadow-lg rounded-lg">
+	<div class="flex sm:items-center justify-between py-2">
 		<div>
-			{{--			@dd($conversations)--}}
-			@foreach ($conversations as $conversation)
-				@if($conversation->type === 'public')
-					<button
-							@click="conversation = '{{ $conversation->name }}'"
-							wire:click="markAsRead({{ $conversation->id }})"
-							class="rounded-md px-3 py-2 text-sm font-medium text-indigo-700 relative"
-							:class="{ 'bg-indigo-100': conversation === '{{ $conversation->name }}' }">
-						{{ ucfirst($conversation->name) }}
-						@if ($unreadMessages[$conversation->id] ?? 0)
-							<span class="absolute -top-1.5 -right-1 flex h-4 w-4">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                                <span class="relative inline-flex items-center justify-center rounded-full h-4 w-4 text-white text-xs bg-rose-500">
-                                    {{ $unreadMessages[$conversation->id] }}
-                                </span>
-                            </span>
-						@endif
-					</button>
+			<img
+					src="{{ auth()->user()->avatarUrl() }}"
+					class="w-10 h-10 rounded-full object-cover"
+					alt="User Avatar">
+		</div>
+		<div>
+			@if(session()->has('Accepted'))
+				<span
+						x-data="{ show: true }"
+						x-show="show"
+						x-init="setTimeout(() => show = false, 3000)"
+						class="text-xs rounded-md text-gray-500 reusable-transition">{{ session('Accepted') }}</span>
+			@endif
+		</div>
+		<div class="flex items-center space-x-2">
+			<button
+					type="button"
+					class="inline-flex items-center justify-center rounded-lg transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none">
+				<x-heroicons::micro.solid.magnifying-glass class="h-5 w-5 mb-1" />
+			</button>
+			<div class="relative">
+				<livewire:notifications.chat-notifications />
+			</div>
 
-				@elseif($conversation->type === 'private')
-					<button
-							@click="conversation = '{{ $conversation->name }}'"
-							wire:click="markAsRead({{ $conversation->id }})"
-							class="rounded-md px-3 py-2 text-sm font-medium text-indigo-700 relative"
-							:class="{ 'bg-indigo-100': conversation === '{{ $conversation->name }}' }">
-						{{ ucfirst($conversation->getOtherParticipantName()) }}
-						@if ($unreadMessages[$conversation->id] ?? 0)
-							<span class="absolute -top-1.5 -right-1 flex h-4 w-4">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                                <span class="relative inline-flex items-center justify-center rounded-full h-4 w-4 text-white text-xs bg-rose-500">
-                                    {{ $unreadMessages[$conversation->id] }}
-                                </span>
-                            </span>
+			<div
+					class="relative"
+					x-data="{open: false, submenu: false}">
+				<button
+						type="button"
+						@click="open = !open"
+						class="inline-flex items-center justify-center rounded-lg transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none">
+					<x-heroicons::outline.plus class="h-5 w-5" />
+				</button>
+				<div
+						x-show="open"
+						@click.away="open = false"
+						class="absolute z-50 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-700 ltr:origin-top-right rtl:origin-top-left end-0">
+
+					<livewire:dropdowns.sub-menu
+							:room="$room"
+							button-label="New Private Chat" />
+
+					<livewire:dropdowns.sub-menu
+							:room="$room"
+							button-label="New Group Chat" />
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="flex sm:items-center justify-between py-2 border-b-2 border-gray-200">
+		<div class="grid grid-cols-1 sm:hidden">
+			<!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
+			<select
+					aria-label="Select a tab"
+					class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-2 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600">
+				<option>My Account</option>
+				<option>Company</option>
+				<option selected>Team Members</option>
+				<option>Billing</option>
+			</select>
+			<svg
+					class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end fill-gray-500"
+					viewBox="0 0 16 16"
+					fill="currentColor"
+					aria-hidden="true"
+					data-slot="icon">
+				<path
+						fill-rule="evenodd"
+						d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z"
+						clip-rule="evenodd" />
+			</svg>
+		</div>
+	</div>
+	<div x-data="{ conversation: {{ $defaultConversation->id }}}">
+		<!-- Tabs Section -->
+		<div class="hidden sm:block">
+			<div class="border-b border-gray-200">
+				<nav
+						class="-mb-px flex space-x-1"
+						aria-label="Tabs">
+					@foreach($this->conversations as $conversation)
+						@if($conversation->type === 'public')
+							<!-- Public Tab -->
+							<button
+									type="button"
+									@click="conversation = {{ $conversation->id}}"
+									class="group inline-flex items-center border-b-2 border-transparent px-4 py-4 text-xs font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+									:class="{ 'border-b-indigo-600 text-indigo-500 hover:border-indigo-500 hover:text-indigo-600 bg-indigo-50': conversation === {{ $conversation->id}} }">
+								<x-heroicons::outline.chat-bubble-bottom-center-text class="w-4 h-4 mr-2" />
+								<span>{{ $conversation->name }}</span>
+							</button>
+						@elseif($conversation->type === 'private')
+							<!-- Private Tab -->
+							<button
+									type="button"
+									@click="conversation = {{ $conversation->id}}"
+									class="group inline-flex items-center border-b-2 border-transparent px-4 py-4 text-xs font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+									:class="{ 'border-b-indigo-600 text-indigo-500 hover:border-indigo-500 hover:text-indigo-600 bg-indigo-50': conversation === {{ $conversation->id }} }">
+								<x-heroicons::outline.chat-bubble-bottom-center-text class="w-4 h-4 mr-2" />
+								<span>{{ $this->fetchOtherParticipantName($conversation) }}</span>
+							</button>
 						@endif
-					</button>
-				@elseif($conversation->type === 'sms')
-					<button
-							@click="conversation = '{{ $conversation->name }}'"
-							class="rounded-md px-3 py-2 text-sm font-medium text-indigo-700"
-							:class="{ 'bg-indigo-100': conversation === '{{ $conversation->name }}' }">
-						{{ $conversation->name }}
-					</button>
-				@else
-					<button
-							@click="conversation = '{{ $conversation->name }}'"
-							class="rounded-md px-3 py-2 text-sm font-medium text-indigo-700"
-							:class="{ 'bg-indigo-100': conversation === '{{ $conversation->name }}' }">
-						{{ ucfirst($conversation->getOtherParticipantName()) }}
-						<span class="text-gray-500 text-xs">
-							(+ {{ $conversation->getOtherParticipantCount() }})
-						</span>
-					</button>
+					@endforeach
+				</nav>
+			</div>
+		</div>
+		<div
+				id="messages"
+				class="space-y-4 bg-gray-100 p-3 min-h-[45rem] overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch soft-scrollbar">
+			@foreach($this->conversations as $conversation)
+				@if($conversation->type === 'public')
+					<!-- Public Messages -->
+					<div
+							x-show="conversation === {{ $conversation->id}}"
+							wire:key="conversation-{{ $conversation->id }}">
+						@foreach($conversation->messages as $message)
+							<div class="chat-message mt-1">
+								@if($message->senderable_type === 'App/Models/User' && $message->senderable_id === $this->user->id)
+									<x-chat-elements.sent-message
+											:message="$message->message"
+											:user-avatar-url="$this->user->avatarUrl()" />
+								@else
+									<x-chat-elements.recieved-message
+											:message="$message->message"
+											:user-avatar-url="$this->getUserAvatar($message->senderable_id)" />
+								@endif
+							</div>
+						@endforeach
+					</div>
+				@elseif($conversation->type === 'private')
+					<!-- Private Messages -->
+					<div
+							x-show="conversation === {{ $conversation->id}}"
+							wire:key="conversation-{{ $conversation->id }}">
+						@foreach($conversation->messages as $message)
+							<div class="chat-message mt-1">
+								@if($message->senderable_type === 'App/Models/User' && $message->senderable_id === $this->user->id)
+									<x-chat-elements.sent-message
+											:message="$message->message"
+											:user-avatar-url="$this->user->avatarUrl()" />
+								@else
+									<x-chat-elements.recieved-message
+											:message="$message->message"
+											:user-avatar-url="$this->getUserAvatar($message->senderable_id)" />
+								@endif
+							</div>
+						@endforeach
+					</div>
 				@endif
 			@endforeach
 		</div>
-		<div
-				x-data="{ open: false, submenu: false }"
-				class="relative space-x-2">
-			<!-- Main Dropdown Trigger -->
-			<livewire:notifications.chat-notifications :roomId="$this->room->id" />
-			<button
-					@click="open = !open">
-				<x-heroicons::micro.solid.plus class="w-5 h-5 text-gray-400 dark:text-gray-300" />
-			</button>
-			<!-- Main Dropdown Content -->
+		<div class="border-t-2 border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
+			<div class="flex w-full gap-2">
+				<x-textarea
+						wire:model="newMessage"
+						placeholder="Write your message"
+						rows="1" />
 
-			<div
-					x-cloak
-					x-show="open"
-					@click.away="open = false"
-					class="absolute z-50 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-700 ltr:origin-top-right rtl:origin-top-left end-0 ring-1 ring-black ring-opacity-5">
-				<livewire:dropdowns.sub-menu
-						:active-users="$activeUsers"
-						:room="$room"
-						button-label="New Conversation" />
-
-				<livewire:dropdowns.sub-menu
-						:active-users="$activeUsers"
-						:room="$room"
-						button-label="New Group Chat" />
+				<button
+						@click="$wire.sendMessge(conversation)"
+						type="button"
+						class="rounded-lg px-4 py-2 transition duration-500 ease-in-out text-indigo-500 hover:text-indigo-600m bg-gray-100 focus:outline-none">
+					<x-heroicons::outline.paper-airplane class="h-6 w-6" />
+				</button>
 			</div>
 		</div>
-
-	</div>
-
-	{{--	Conversation Content Section--}}
-	<div class="p-4">
-		@foreach ($conversations as $conversation)
-			<div
-					x-show="conversation === '{{ $conversation->name }}'"
-					wire:key="conversation-{{ $conversation->id }}">
-
-				{{-- Message List --}}
-				@if($conversation->type === 'public')
-					<h3 class="font-bold text-lg mb-3">
-						Conversation: {{ ucfirst($conversation->name) }}</h3>
-				@elseif($conversation->type === 'group')
-					<div class="flex items-center justify-between space-x-4">
-						<div>
-							<h3 class="font-bold text-lg mb-3">
-								Conversation: {{ ucfirst($conversation->name) }}</h3>
-						</div>
-						<div class="mb-3">
-							<button
-									wire:click="leaveConversation({{ $conversation->id }})"
-									type="button"
-									class="text-xs text-gray-500 hover:text-gray-600 flex items-center gap-1 font-semibold">
-								<span>Leave</span>
-								<x-heroicons::micro.solid.arrow-right class="w-3 h-3" />
-							</button>
-						</div>
-					</div>
-				@elseif($conversation->type === 'sms')
-					<div class="flex items-center justify-between space-x-4">
-						<div>
-							<h3 class="font-bold text-lg mb-3">
-								Conversation: {{ $this->room->subject->name }}</h3>
-						</div>
-						<div class="mb-3">
-							<button
-									wire:click="leaveConversation({{ $conversation->id }})"
-									type="button"
-									class="text-xs text-gray-500 hover:text-gray-600 flex items-center gap-1 font-semibold">
-								<span>Leave</span>
-								<x-heroicons::micro.solid.arrow-right class="w-3 h-3" />
-							</button>
-						</div>
-					</div>
-				@else
-					<div class="flex items-center justify-between space-x-4">
-						<div>
-							<h3 class="font-bold text-lg mb-3">
-								Conversation To: {{ ucfirst($conversation->getOtherParticipantName()) }}</h3>
-						</div>
-						<div class="mb-3">
-							<button
-									wire:click="leaveConversation({{ $conversation->id }})"
-									type="button"
-									class="text-xs text-gray-500 hover:text-gray-600 flex items-center gap-1 font-semibold">
-								<span>Leave</span>
-								<x-heroicons::micro.solid.arrow-right class="w-3 h-3" />
-							</button>
-						</div>
-					</div>
-				@endif
-				<div
-						id="messages-container"
-						class="flex flex-col overflow-y-auto {{ auth()->user()->cannot('createMessage', $conversation) ? 'h-[46rem]' : 'h-[35rem]' }} bg-gray-100 dark:bg-gray-600 rounded-lg p-4">
-					<div class="space-y-4">
-						@can('view', $conversation)
-							@foreach ($conversation->messages as $message)
-								@php
-									$isOwnMessage = auth()->id() === $message->user_id;
-								@endphp
-								<div class="flex items-start {{ $isOwnMessage ? '' : 'ml-8' }} gap-2.5">
-									@if($message->senderable_type === 'App\Models\User')
-										<img
-												class="w-8 h-8 rounded-full"
-												src="{{ $message->senderable->avatarUrl() }}"
-												alt="User Avatar">
-									@else
-										@php
-											$image = $message->senderable->images()->first()->image;
-										@endphp
-										<img
-												src="{{ $message->senderable->imageUrl($image) ?? $message->senderable->temporaryImageUrl() }}"
-												class="w-24 h-24 rounded"
-												alt="Subject Image">
-									@endif
-
-									<div class="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 {{ $isOwnMessage ? 'bg-slate-200' : 'bg-white' }} rounded-e-xl rounded-es-xl dark:bg-gray-700">
-										<div class="flex items-center space-x-2 rtl:space-x-reverse">
-											<span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $message->senderable->name }}</span>
-											<span class="text-sm font-normal text-gray-500 dark:text-gray-400">{{ $message->created_at->diffForHumans() }}</span>
-										</div>
-										<p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{ $message->message }}</p>
-										<span class="text-xs font-normal text-gray-500 dark:text-gray-400">Delivered</span>
-									</div>
-									<div>
-										<x-dropdown.dropdown>
-											<x-slot:trigger>
-												<button
-														type="button"
-														class="bg-white rounded p-0.5">
-													<x-heroicons::solid.ellipsis-vertical class="w-5 h-5 text-gray-400 dark:text-gray-300" />
-												</button>
-											</x-slot:trigger>
-											<x-slot:content>
-												<x-dropdown.dropdown-button value="Reply" />
-												<x-dropdown.dropdown-button value="Like" />
-											</x-slot:content>
-										</x-dropdown.dropdown>
-									</div>
-								</div>
-							@endforeach
-						@endcan
-					</div>
-				</div>
-
-				{{-- Message Input (if allowed to send messages) --}}
-				@can('createMessage', $conversation)
-					<div class="bg-gray-100 dark:bg-gray-600 rounded-lg p-4 mt-4">
-						@if($conversation->type === 'sms')
-							<form wire:submit.prevent="sendSMSMessage({{ $conversation->id }})">
-                            <textarea
-		                            wire:model.defer="newMessage"
-		                            class="w-full p-2 rounded-lg border-gray-300"
-		                            rows="3"
-		                            placeholder="Type your message here..."></textarea>
-								<button
-										type="submit"
-										class="px-4 py-2 mt-2 text-white bg-blue-500 rounded-lg">
-									Send Message
-								</button>
-							</form>
-						@else
-							<form wire:submit.prevent="sendMessage({{ $conversation->id }})">
-                            <textarea
-		                            wire:model.defer="newMessage"
-		                            class="w-full p-2 rounded-lg border-gray-300"
-		                            rows="3"
-		                            placeholder="Type your message here..."></textarea>
-								<button
-										type="submit"
-										class="px-4 py-2 mt-2 text-white bg-blue-500 rounded-lg">
-									Send Message
-								</button>
-							</form>
-						@endif
-					</div>
-				@endcan
-			</div>
-		@endforeach
 	</div>
 </div>
-
-@script
 <script>
-	$wire.on('new-message', () => {
-		let chatWindow = document.getElementById('messages-container')
-		chatWindow.scrollTop = chatWindow.scrollHeight - 5
-	})
+	const el = document.getElementById('messages')
+	el.scrollTop = el.scrollHeight
 </script>
-@endscript

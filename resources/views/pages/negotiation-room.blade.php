@@ -13,11 +13,11 @@
 			</div>
 		</div>
 
-		<div class="py-3">
-			<x-buttons.speed-dial />
-		</div>
+		{{--		<div class="py-3">--}}
+		{{--			<x-buttons.speed-dial />--}}
+		{{--		</div>--}}
 		<!-- CHAT SECTION -->
-		<div class="grid grid-cols-12 gap-4">
+		<div class="grid grid-cols-12 gap-4 mt-4">
 			<div class="col-span-4">
 				<livewire:negotiations.negotiation-chat
 						:room="$room" />

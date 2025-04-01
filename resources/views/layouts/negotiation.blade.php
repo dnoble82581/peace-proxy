@@ -13,6 +13,7 @@
 
 	<!-- Scripts -->
 	<wireui:scripts />
+	@livewireScripts
 	@livewireStyles
 	@vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -28,7 +29,6 @@
 	</main>
 </div>
 @livewire('modal-pro')
-@livewireScripts
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </body>
 </html>

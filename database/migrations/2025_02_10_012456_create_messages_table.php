@@ -11,18 +11,15 @@ return new class extends Migration
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tenant_id');
+            $table->foreignId('negotiation_id');
             $table->foreignId('room_id');
-            $table->unsignedBigInteger('senderable_id');
-            $table->string('senderable_type');
-            $table->string('recipient')->nullable();
+            $table->morphs('senderable');
+            $table->foreignId('conversation_id')->constrained('conversations')->onDelete('cascade');
             $table->enum('message_status', ['sent', 'failed'])->default('sent');
             $table->boolean('is_read')->default(false);
             $table->enum('message_type', ['chat', 'text'])->default('chat');
-            $table->string('message_id')->nullable();
             $table->timestamp('sent_at')->nullable();
-            $table->foreignId('user_id');
-            $table->foreignId('conversation_id')->constrained('conversations')->onDelete('cascade');
-            $table->longText('message');
+            $table->text('message');
             $table->timestamps();
         });
     }

@@ -15,7 +15,7 @@
 	</x-dropdown.dropdown-button>
 
 	<!-- Submenu Dropdown -->
-	@if($buttonLabel === 'New Conversation')
+	@if($buttonLabel === 'New Private Chat')
 		<div
 				x-show="submenu"
 				class="absolute left-full ml-3 top-0 w-80 bg-white rounded shadow-lg ring-1 ring-black ring-opacity-5"
@@ -25,7 +25,7 @@
 					@if ($user['id'] !== auth()->id())
 						<!-- Exclude the current user -->
 						<x-dropdown.dropdown-button
-								wire:click="sendInvitation({{ $user['id'] }}, 'private')"
+								wire:click="sendInvitation({{ $user['id'] }})"
 								class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
 							<div class="flex items-center justify-between">
 								<div class="flex items-center space-x-2">
@@ -41,7 +41,6 @@
 								@if (session('user_message_' . $user['id']))
 									<div class="text-emerald-400 text-xs font-semibold">
 										{{ session('user_message_' . $user['id']) }}
-										<div class="text-xs font-normal text-gray-500">Waiting for reply</div>
 									</div>
 								@endif
 							</div>

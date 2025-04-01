@@ -33,22 +33,25 @@ class InvitationAcceptedEvent implements ShouldBroadcastNow
     {
         return [
             // Notify the inviter (sender) via their private user channel
-            new PrivateChannel('user.'.$this->invitation->invited_by),
+            new PrivateChannel('user.'.$this->invitation->inviter_id),
 
             // Notify the invitee (receiver) via their private user channel
-            new PrivateChannel('user.'.$this->invitation->user_id),
+            new PrivateChannel('user.'.$this->invitation->invitee_id),
         ];
     }
 
     /**
      * Data to broadcast with the event.
      */
-    public function broadcastWith()
+    public function broadcastWith(): array
     {
         return [
             'invitationId' => $this->invitation->id,
             'status' => $this->invitation->status,
-            'conversationId' => $this->invitation->conversation_id,
+            'inviter_id' => $this->invitation->inviter_id,
+            'invitee_id' => $this->invitation->invitee_id,
+            'tenant_id' => $this->invitation->tenant_id,
+            'token' => $this->invitation->token,
         ];
     }
 }

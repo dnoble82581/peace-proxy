@@ -103,7 +103,7 @@
 						</div>
 					@elseif($log->action === 'Message Created')
 						@php
-							$to = $log->data['recipient'] ? User::findOrFail($log->data['recipient']) : 'Public';
+							$to = $log->data['recipient'] ?? 'Public';
 						@endphp
 						{{-- Dynamic handling for new entities --}}
 						<div class="mb-4 text-sm font-normal text-gray-500 dark:text-gray-400">

@@ -16,8 +16,7 @@ class MessageObserver
             $message->toArray(),
             $message->room->negotiation_id,
             $message->tenant_id,
-            $message->user_id
-
+            $message->senderable_id
         );
     }
 
@@ -30,7 +29,7 @@ class MessageObserver
             $message->toArray(),
             $message->room->negotiation_id,
             $message->tenant_id,
-            $message->user_id
+            $message->senderable_id
 
         );
     }

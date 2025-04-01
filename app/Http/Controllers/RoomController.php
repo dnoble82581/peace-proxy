@@ -12,7 +12,7 @@ class RoomController extends Controller
     public function index($roomId): View
     {
         $room = Room::with([
-            'messages:id,message,room_id,tenant_id,created_at,updated_at,sent_at',
+            'messages:id,message,tenant_id,created_at,updated_at,sent_at',
             'subject:id,name,address,city,state,zip,phone,tenant_id,room_id,weapons,weapons_details',
             'subject.demands:id,subject_id,tenant_id,type,deadline,description,title,status,notes',
             'subject.moodLogs:id,subject_id,tenant_id,mood,name,created_at',
@@ -36,7 +36,7 @@ class RoomController extends Controller
     public function tacticalRoom($roomId)
     {
         $room = Room::with([
-            'messages:id,message,room_id,senderable_id,senderable_type,created_at,updated_at',
+            'messages:id,message,senderable_id,senderable_type,room_id, created_at,updated_at',
             // Fetch necessary columns
             'messages.user:id,name', // Fetch user data for each message
             'subject:id,name,address,city,state,zip,phone,tenant_id,room_id,weapons,weapons_details',

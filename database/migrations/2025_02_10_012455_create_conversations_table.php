@@ -10,13 +10,9 @@ return new class extends Migration
     {
         Schema::create('conversations', function (Blueprint $table) {
             $table->id();
-            $table->string('type')->default('public'); // 'individual', 'group'
+            $table->enum('type', ['private', 'public', 'group'])->default('private'); // 'individual', 'group'
             $table->string('name')->nullable();
-            $table->foreignId('initiator_id'); // The user who initiated this conversation
-            $table->foreignId('room_id'); // The room this conversation belongs to.
-            $table->boolean('is_active')->default(true);
             $table->foreignId('tenant_id'); // The room this conversation belongs to.
-            $table->foreignId('subject_id')->nullable();
             $table->timestamps();
         });
     }

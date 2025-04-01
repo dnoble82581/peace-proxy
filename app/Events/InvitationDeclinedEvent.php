@@ -32,6 +32,6 @@ class InvitationDeclinedEvent implements ShouldBroadcastNow
      */
     public function broadcastOn(): Channel
     {
-        return new PrivateChannel('user.'.$this->invitation->user_id);
+        return new PrivateChannel('user.'.$this->invitation->invitee_id);
     }
 }

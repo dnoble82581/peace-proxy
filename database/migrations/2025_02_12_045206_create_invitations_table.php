@@ -10,20 +10,15 @@ return new class extends Migration
     {
         Schema::create('invitations', function (Blueprint $table) {
             $table->id();
-            $table->unique(['user_id', 'conversation_id', 'status'], 'unique_user_invitation');
             $table->foreignId('conversation_id')->nullable()
                 ->constrained()
                 ->onDelete('cascade'); // If the conversation is deleted, delete the invitation
-            $table->foreignId('user_id') // Invitee's ID
-                ->constrained('users')
-                ->onDelete('cascade');
-            $table->foreignId('invited_by') // User who sent the invitation
-                ->constrained('users')
-                ->onDelete('cascade');
-            $table->string('invitation_type');
-            $table->enum('status', ['pending', 'accepted', 'declined', 'closed'])
-                ->default('pending');
-
+            $table->foreignId('tenant_id');
+            $table->foreignId('inviter_id')->constrained()->references('id')->on('users')->onDelete('cascade');
+            $table->foreignId('invitee_id')->constrained()->references('id')->on('users')->onDelete('cascade');
+            $table->enum('status', ['pending', 'accepted', 'declined'])->default('pending');
+            $table->string('token')->unique(); // Unique token for invitation links
+            $table->unique(['inviter_id', 'invitee_id'], 'inviter_invitee_unique');
             $table->timestamps();
         });
     }

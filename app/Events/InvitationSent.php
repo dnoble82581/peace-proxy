@@ -32,6 +32,18 @@ class InvitationSent implements ShouldBroadcastNow
      */
     public function broadcastOn(): Channel
     {
-        return new PrivateChannel('user.'.$this->invitation->user_id);
+        return new PrivateChannel('user.'.$this->invitation->invitee_id);
+    }
+
+    public function broadcastWith(): array
+    {
+        return [
+            'invitationId' => $this->invitation->id,
+            'status' => $this->invitation->status,
+            'token' => $this->invitation->token,
+            'inviter_id' => $this->invitation->inviter_id,
+            'invitee_id' => $this->invitation->invitee_id,
+            'tenant_id' => $this->invitation->tenant_id,
+        ];
     }
 }

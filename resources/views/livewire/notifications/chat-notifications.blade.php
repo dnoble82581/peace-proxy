@@ -1,5 +1,6 @@
 <?php
 
+	use App\Events\InvitationAcceptedEvent;
 	use App\Events\InvitationDeclinedEvent;
 	use App\Events\InvitationSent;
 	use App\Models\Invitation;
@@ -8,15 +9,16 @@
 	use App\Services\ConversationService;
 	use App\Services\InvitationService;
 	use Illuminate\Database\Eloquent\Collection;
+	use LaravelIdea\Helper\App\Models\_IH_User_C;
 	use Livewire\Volt\Component;
 
 	new class extends Component {
 		public Collection $pendingInvitations;
-		public Room $room;
+		public User $user;
 
-		public function mount($roomId):void
+		public function mount():void
 		{
-			$this->room = $this->getRoom($roomId);
+			$this->user = auth()->user();
 			$this->pendingInvitations = $this->fetchPendingInvitations();
 		}
 
@@ -30,7 +32,7 @@
 			return [
 				'echo-private:user.'.auth()->id().',InvitationSent' => 'refreshInvitations',
 				'echo-private:user.'.auth()->id().',InvitationDeclinedEvent' => 'refreshInvitations',
-				'echo-private:user.'.auth()->id().',InvitationAcceptedEvent' => 'refreshInvitations',
+				'echo-private:user.'.auth()->id().',InvitationAcceptedEvent' => 'handleInvitationAccepted',
 			];
 		}
 
@@ -40,17 +42,30 @@
 			$this->pendingInvitations = $this->fetchPendingInvitations();
 		}
 
+		public function handleInvitationAccepted($data):void
+		{
+			$this->dispatch('invitationAccepted', $data);
+			$this->refreshInvitations();
+		}
+
+		private function createConversation(Invitation $invitation):void
+		{
+			$conversationService = new ConversationService();
+			$conversationService->createConversation($invitation, 'private');
+		}
+
 		public function fetchPendingInvitations():Collection
 		{
 			$invitationService = new InvitationService();
-			return $invitationService->fetchPendingInvitations();
+			return $invitationService->fetchPendingInvitations($this->user);
 		}
 
 		public function acceptInvitation($invitationId):void
 		{
 			$invitation = Invitation::findOrFail($invitationId);
 			$invitationService = new InvitationService();
-			$invitationService->acceptInvitation($invitation, $this->room->id);
+			$invitationService->acceptInvitation($invitation->token);
+			event(new InvitationAcceptedEvent($invitation));
 		}
 
 		public function declineInvitation($invitationId):void
@@ -62,25 +77,18 @@
 
 	}
 ?>
-<div class="inline-flex relative">
-	@if ($pendingInvitations->count())
-		<div class="bg-rose-400 bg-opacity-80 rounded-full font-semibold text-[10px] h-[10px] w-[10px] absolute flex items-center justify-center -top-2 -left-4 p-2 text-white">
-			{{ $pendingInvitations->count() }}
-		</div>
-	@endif
-	<x-dropdown.dropdown width="52">
+<div>
+	<x-dropdown.dropdown>
 		<x-slot:trigger>
-			<button>
-				<x-heroicons::outline.chat-bubble-left-right class="w-5 h-5 text-gray-500" />
+			<button
+					type="button"
+					class="inline-flex items-center justify-center rounded-lg transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none">
+				<x-heroicons::outline.chat-bubble-left class="h-5 w-5" />
 			</button>
 		</x-slot:trigger>
 		<x-slot:content>
-			@if(!$pendingInvitations->count())
-				<div class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition duration-150 ease-in-out">
-					No Pending Invitations
-				</div>
-			@else
-				@foreach ($pendingInvitations as $invitation)
+			@if($this->pendingInvitations->count())
+				@foreach($this->pendingInvitations as $invitation)
 					<div class="p-2">
 						<span class="text-sm block">Invitation to: {{ $invitation->invitation_type ?: 'private' }} by </span>
 						<span class="block text-xs">{{ $invitation->inviter->name }}</span>
@@ -97,9 +105,17 @@
 						</div>
 					</div>
 				@endforeach
+			@else
+				<span class="px-2 text-sm text-gray-500">No Pending Invitations</span>
 			@endif
 		</x-slot:content>
 	</x-dropdown.dropdown>
+
+	@if ($pendingInvitations->count())
+		<div class="bg-rose-400 bg-opacity-80 rounded-full font-semibold text-[10px] h-[10px] w-[10px] absolute flex items-center justify-center -top-2 -left-1 p-2 text-white">
+			{{ $pendingInvitations->count() }}
+		</div>
+	@endif
 </div>
 
 

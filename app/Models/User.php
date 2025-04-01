@@ -97,9 +97,21 @@ class User extends Authenticatable
         return $this->hasMany(TextMessage::class, 'sender_id');
     }
 
-    public function conversations(): HasMany
+    public function conversations()
     {
-        return $this->hasMany(Conversation::class);
+        return $this->belongsToMany(Conversation::class, 'conversation_participants')
+            ->withPivot('joined_at', 'status')
+            ->withTimestamps();
+    }
+
+    public function sentInvitations(): HasMany
+    {
+        return $this->hasMany(Invitation::class, 'inviter_id');
+    }
+
+    public function receivedInvitations(): HasMany
+    {
+        return $this->hasMany(Invitation::class, 'invitee_id');
     }
 
     public function resolutions(): HasMany
