@@ -25,6 +25,11 @@ class Room extends Model
         return $this->hasMany(Associate::class);
     }
 
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(Invitation::class);
+    }
+
     public function subject(): HasOne
     {
         return $this->hasOne(Subject::class);
@@ -43,5 +48,10 @@ class Room extends Model
     public function rfis(): HasMany
     {
         return $this->hasMany(RequestForInformation::class);
+    }
+
+    public function conversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class);
     }
 }

@@ -6,7 +6,11 @@
 	use App\Models\Invitation;
 	use App\Models\Room;
 	use App\Models\User;
+	use App\Services\Conversations\ConversationBroadcastingService;
+	use App\Services\Conversations\ConversationCreationService;
 	use App\Services\ConversationService;
+	use App\Services\Invitations\InvitationAcceptanceService;
+	use App\Services\Invitations\InvitationFetchingService;
 	use App\Services\InvitationService;
 	use Illuminate\Database\Eloquent\Collection;
 	use LaravelIdea\Helper\App\Models\_IH_User_C;
@@ -15,11 +19,13 @@
 	new class extends Component {
 		public Collection $pendingInvitations;
 		public User $user;
+		public int $roomId;
 
-		public function mount():void
+		public function mount($roomId):void
 		{
 			$this->user = auth()->user();
 			$this->pendingInvitations = $this->fetchPendingInvitations();
+			$this->roomId = $roomId;
 		}
 
 		private function getRoom($roomId):Room
@@ -48,24 +54,28 @@
 			$this->refreshInvitations();
 		}
 
-		private function createConversation(Invitation $invitation):void
+		private function createPrivateConversation(Invitation $invitation, string $type):void
 		{
-			$conversationService = new ConversationService();
-			$conversationService->createConversation($invitation, 'private');
+			$conversationCreationService = app(ConversationCreationService::class);
+			$newConversation = $conversationCreationService->createPrivateChat($invitation);
 		}
 
 		public function fetchPendingInvitations():Collection
 		{
-			$invitationService = new InvitationService();
+			$invitationService = new InvitationFetchingService();
 			return $invitationService->fetchPendingInvitations($this->user);
 		}
 
-		public function acceptInvitation($invitationId):void
+		public function acceptInvitation($token):void
 		{
-			$invitation = Invitation::findOrFail($invitationId);
-			$invitationService = new InvitationService();
-			$invitationService->acceptInvitation($invitation->token);
-			event(new InvitationAcceptedEvent($invitation));
+			$invitationAcceptanceService = new InvitationAcceptanceService();
+			$newGroupConversation = $invitationAcceptanceService->acceptInvitation($token);
+
+			if ($newGroupConversation) {
+				$participants = $newGroupConversation->participants->pluck('id')->toArray();
+				$conversationBroadcastingService = new ConversationBroadcastingService;
+				$conversationBroadcastingService->broadcastNewConversation($newGroupConversation->id, $participants);
+			}
 		}
 
 		public function declineInvitation($invitationId):void
@@ -90,13 +100,13 @@
 			@if($this->pendingInvitations->count())
 				@foreach($this->pendingInvitations as $invitation)
 					<div class="p-2">
-						<span class="text-sm block">Invitation to: {{ $invitation->invitation_type ?: 'private' }} by </span>
+						<span class="text-sm block">Invitation to: {{ $invitation->type ?: 'private' }} by </span>
 						<span class="block text-xs">{{ $invitation->inviter->name }}</span>
 						<hr class="my-2">
 						<div class="flex justify-between text-sm mt-3">
 							<x-buttons.small-primary
 									class="bg-indigo-400 hover:bg-indigo-500"
-									wire:click="acceptInvitation({{ $invitation->id }})">Accept
+									wire:click="acceptInvitation('{{ $invitation->token }}')">Accept
 							</x-buttons.small-primary>
 							<x-buttons.small-primary
 									wire:click="declineInvitation({{ $invitation->id }})"

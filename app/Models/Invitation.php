@@ -17,6 +17,11 @@ class Invitation extends Model
         return $this->belongsTo(Conversation::class);
     }
 
+    public function room(): BelongsTo
+    {
+        return $this->belongsTo(Room::class);
+    }
+
     public function inviter(): BelongsTo
     {
         return $this->belongsTo(User::class, 'inviter_id');

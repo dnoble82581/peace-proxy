@@ -25,7 +25,7 @@
 					@if ($user['id'] !== auth()->id())
 						<!-- Exclude the current user -->
 						<x-dropdown.dropdown-button
-								wire:click="sendInvitation({{ $user['id'] }})"
+								wire:click="sendPrivateInvitation({{ $user['id'] }})"
 								class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
 							<div class="flex items-center justify-between">
 								<div class="flex items-center space-x-2">
@@ -83,8 +83,9 @@
 				@endforeach
 
 				<div class="mt-4 px-4">
+
 					<x-buttons.small-primary
-							wire:click="sendInvitation('{{ implode(',', $selectedUsers) }}', 'group')"
+							wire:click="sendGroupInvitation({{ json_encode($selectedUsers) }})"
 							class="bg-indigo-500 hover:bg-indigo-600">
 						Invite Selected ({{ count($selectedUsers) }})
 					</x-buttons.small-primary>

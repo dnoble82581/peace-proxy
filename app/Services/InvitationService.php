@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Events\InvitationDeclinedEvent;
 use App\Events\InvitationSent;
+use App\Models\Conversation;
 use App\Models\Invitation;
 use App\Models\User;
 use Illuminate\Database\QueryException;
@@ -14,17 +15,18 @@ use Throwable;
 
 class InvitationService
 {
-    public function sendInvitation($data): RedirectResponse
+    public function sendPrivateInvitation($data): RedirectResponse
     {
         try {
             $invitation = Invitation::create([
                 'inviter_id' => $data['inviter_id'],
                 'invitee_id' => $data['invitee_id'],
                 'tenant_id' => $data['tenant_id'],
+                'room_id' => $data['room_id'],
+                'type' => 'private',
                 'status' => 'pending',
                 'token' => Str::random(40),
             ]);
-
             event(new InvitationSent($invitation));
 
             return redirect()->back()->with('success', 'Invitation sent successfully!');
@@ -36,6 +38,8 @@ class InvitationService
         }
     }
 
+    public function sendGroupInvitations(array $data, string $type) {}
+
     public function fetchPendingInvitations(User $user): Collection
     {
         return $user->receivedInvitations()->where('status', 'pending')->get();
@@ -46,25 +50,28 @@ class InvitationService
     /**
      * @throws Throwable
      */
-    public function acceptInvitation($token): void
+    public function acceptPrivateInvitation($token): Conversation
     {
+        // Fetch the pending invitation
         $invitation = $this->findExistingInvitation($token);
+        // Mark the invitation as accepted
         $invitation->update(['status' => 'accepted']);
-        if ($invitation->conversation_id) {
-            // Group conversation: Add to existing conversation
-            $invitation->conversation->participants()->attach($invitation->invitee_id, [
-                'joined_at' => now(),
-                'status' => 'accepted',
-                'tenant_id' => $invitation->tenant_id,
-            ]);
-        } else {
-            // Private conversation: Create new
-            $conversationService = new ConversationService;
-            $newConversation = $conversationService->createConversation($invitation, 'private');
-            $conversationService->addParticipantsToConversation($newConversation,
-                [$invitation->inviter_id, $invitation->invitee_id]);
-            $invitation->update(['conversation_id' => $newConversation->id]);
-        }
+
+        $conversationService = new ConversationService;
+
+        $conversation = $conversationService->createPrivateChat($invitation);
+
+        $data = [
+            'sender_id' => $invitation->inviter_id,
+            'receiver_id' => $invitation->invitee_id,
+        ];
+        $conversationService->addParticipantsToConversation($conversation, $data);
+
+        $conversationService->broadcastNewConversation($conversation->id, $data);
+
+        $invitation->update(['conversation_id' => $conversation->id]);
+
+        return $conversation;
 
     }
 

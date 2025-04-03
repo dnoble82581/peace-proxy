@@ -1,6 +1,5 @@
 <?php
 
-	use App\Events\ConversationInvitation;
 	use App\Events\InvitationSent;
 	use App\Events\NewMessageEvent;
 	use App\Events\ParticipantLeavesChatEvent;
@@ -11,6 +10,10 @@
 	use App\Models\Room;
 	use App\Models\TextMessage;
 	use App\Models\User;
+	use App\Notifications\InvitationAcceptedNotification;
+	use App\Services\Conversations\ConversationCreationService;
+	use App\Services\Conversations\ConversationFetchingService;
+	use App\Services\Conversations\ParticipantService;
 	use App\Services\ConversationService;
 	use App\Services\VonageSmsService;
 	use Carbon\Carbon;
@@ -42,36 +45,24 @@
 			return [
 				'invitationAccepted' => 'invitationAccepted',
 				"echo-presence:chat.{$this->room->id},NewMessageEvent" => 'refreshMessages',
+				"echo-private:user.{$this->user->id},ConversationEvent" => 'refreshConversations',
 			];
 		}
 
 		public function mount(Room $room):void
 		{
-			$this->conversations = $this->fetchConversations();
-			$this->room = $room;
 			$this->user = auth()->user();
-			$this->defaultConversation = $this->fetchDefaultConversation();
+			$this->room = $room;
+			$this->defaultConversation = $this->createDefaultConversation();
+			$this->conversations = $this->fetchUserRoomConversations();
 		}
 
-		public function refreshMessages()
+		public function refreshMessages():void
 		{
-			$this->fetchConversations();
+			$this->fetchUserRoomConversations();
 		}
 
-		private function fetchDefaultConversation()
-		{
-			$data = [
-				'type' => 'public',
-				'name' => 'Public',
-				'tenant_id' => $this->user->tenant_id
-			];
-
-			$conversationService = new ConversationService();
-			return $conversationService->createGroupChat($data, User::all()->pluck('id')->toArray());
-
-		}
-
-		public function sendMessge($conversation)
+		public function sendMessage($conversation):void
 		{
 			$this->validate([
 				'newMessage' => 'required|min:1|max:255',
@@ -81,6 +72,45 @@
 			$newMessage = $messageService->createMessage($data);
 			$this->newMessage = '';
 			event(new NewMessageEvent($newMessage));
+		}
+
+		public function refreshConversations():void
+		{
+			$this->conversations = $this->fetchUserRoomConversations();
+		}
+
+		public function fetchOtherParticipantName(Conversation $conversation)
+		{
+			$participantService = new ParticipantService();
+			return $participantService->fetchOtherParticipantName($conversation, $this->user);
+		}
+
+		public function getUserAvatar($id):string
+		{
+			return User::findOrFail($id)->avatarUrl();
+		}
+
+		public function invitationAccepted($data):void {}
+
+		private function fetchDefaultConversation():Conversation
+		{
+			$conversationFetchingService = new ConversationFetchingService();
+			return $conversationFetchingService->fetchDefaultConversation($this->room);
+		}
+
+		private function createDefaultConversation():Conversation
+		{
+			$data = [
+				'type' => 'public',
+				'name' => 'Public',
+				'room_id' => $this->room->id,
+				'tenant_id' => $this->user->tenant_id
+			];
+
+			$conversationCreationService = app(ConversationCreationService::class);
+			return $conversationCreationService->createPublicChat(
+				$data,
+				User::all()->pluck('id')->toArray());
 		}
 
 		private function fetchMessageData($conversation):array
@@ -101,39 +131,11 @@
 			];
 		}
 
-		public function fetchOtherParticipantName(Conversation $conversation)
+		private function fetchUserRoomConversations()
 		{
-			$otherParticipants = $conversation->participants()
-				->where('name', '!=', $this->user->name)
-				->get();
-
-			return $otherParticipants[0]->name;
-		}
-
-		private function fetchConversations()
-		{
-			return auth()->user()->conversations()
-				->where('conversations.tenant_id', auth()->user()->tenant_id)
-				->wherePivot('status', 'accepted')
-				->with([
-					'invitations',
-					'messages' => function ($query) {
-						$query->orderBy('created_at', 'asc'); // Order messages by creation time
-					}
-				])->get();
-		}
-
-		public function getUserAvatar($id)
-		{
-			return User::findOrFail($id)->avatarUrl();
-		}
-
-		public function invitationAccepted($data):void
-		{
-			$invitee = User::findOrFail($data['invitee_id'])->name;
-			if ($data['inviter_id'] == auth()->user()->id) {
-				session()->flash('Accepted', 'Invitation accepted by '.$invitee);
-			}
+			$fetchingService = new ConversationFetchingService();
+			return
+				$fetchingService->fetchUserRoomConversations($this->user, $this->room);
 		}
 
 	}
@@ -148,15 +150,7 @@
 					class="w-10 h-10 rounded-full object-cover"
 					alt="User Avatar">
 		</div>
-		<div>
-			@if(session()->has('Accepted'))
-				<span
-						x-data="{ show: true }"
-						x-show="show"
-						x-init="setTimeout(() => show = false, 3000)"
-						class="text-xs rounded-md text-gray-500 reusable-transition">{{ session('Accepted') }}</span>
-			@endif
-		</div>
+
 		<div class="flex items-center space-x-2">
 			<button
 					type="button"
@@ -164,7 +158,7 @@
 				<x-heroicons::micro.solid.magnifying-glass class="h-5 w-5 mb-1" />
 			</button>
 			<div class="relative">
-				<livewire:notifications.chat-notifications />
+				<livewire:notifications.chat-notifications :roomId="$room->id" />
 			</div>
 
 			<div
@@ -244,6 +238,16 @@
 								<x-heroicons::outline.chat-bubble-bottom-center-text class="w-4 h-4 mr-2" />
 								<span>{{ $this->fetchOtherParticipantName($conversation) }}</span>
 							</button>
+						@elseif($conversation->type === 'group')
+							<!-- Private Tab -->
+							<button
+									type="button"
+									@click="conversation = {{ $conversation->id}}"
+									class="group inline-flex items-center border-b-2 border-transparent px-4 py-4 text-xs font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+									:class="{ 'border-b-indigo-600 text-indigo-500 hover:border-indigo-500 hover:text-indigo-600 bg-indigo-50': conversation === {{ $conversation->id }} }">
+								<x-heroicons::outline.chat-bubble-bottom-center-text class="w-4 h-4 mr-2" />
+								<span>Group</span>
+							</button>
 						@endif
 					@endforeach
 				</nav>
@@ -291,6 +295,25 @@
 							</div>
 						@endforeach
 					</div>
+				@elseif($conversation->type === 'group')
+					<!-- Private Messages -->
+					<div
+							x-show="conversation === {{ $conversation->id}}"
+							wire:key="conversation-{{ $conversation->id }}">
+						@foreach($conversation->messages as $message)
+							<div class="chat-message mt-1">
+								@if($message->senderable_type === 'App/Models/User' && $message->senderable_id === $this->user->id)
+									<x-chat-elements.sent-message
+											:message="$message->message"
+											:user-avatar-url="$this->user->avatarUrl()" />
+								@else
+									<x-chat-elements.recieved-message
+											:message="$message->message"
+											:user-avatar-url="$this->getUserAvatar($message->senderable_id)" />
+								@endif
+							</div>
+						@endforeach
+					</div>
 				@endif
 			@endforeach
 		</div>
@@ -302,7 +325,7 @@
 						rows="1" />
 
 				<button
-						@click="$wire.sendMessge(conversation)"
+						@click="$wire.sendMessage(conversation)"
 						type="button"
 						class="rounded-lg px-4 py-2 transition duration-500 ease-in-out text-indigo-500 hover:text-indigo-600m bg-gray-100 focus:outline-none">
 					<x-heroicons::outline.paper-airplane class="h-6 w-6" />

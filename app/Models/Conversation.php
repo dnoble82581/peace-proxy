@@ -19,6 +19,11 @@ class Conversation extends Model
         return $this->hasMany(Message::class);
     }
 
+    public function room(): BelongsTo
+    {
+        return $this->belongsTo(Room::class);
+    }
+
     // Relationship to SMS Messages
     public function textMessages(): HasMany
     {
@@ -35,11 +40,6 @@ class Conversation extends Model
     public function invitations(): HasMany
     {
         return $this->hasMany(Invitation::class);
-    }
-
-    public function initiator(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'initiator_id');
     }
 
     public function scopePrivate($query)

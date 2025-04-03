@@ -4,10 +4,13 @@ namespace App\Livewire\Dropdowns;
 
 use App\Models\Room;
 use App\Models\User;
-use App\Services\ConversationService;
+use App\Services\Conversations\ParticipantService;
+use App\Services\Invitations\InvitationCreationService;
 use App\Services\InvitationService;
 use Exception;
+use Illuminate\View\View;
 use Livewire\Component;
+use Throwable;
 
 class SubMenu extends Component
 {
@@ -41,17 +44,29 @@ class SubMenu extends Component
         }
     }
 
-    public function sendInvitation($inviteeId)
+    public function sendPrivateInvitation($inviteeId): void
     {
         $data = [
             'inviter_id' => $this->user->id,
             'invitee_id' => $inviteeId,
             'tenant_id' => $this->room->tenant_id,
+            'room_id' => $this->room->id,
         ];
 
         session()->flash('user_message_'.$inviteeId, 'Waiting for reply');
         $invitationService = new InvitationService;
-        $invitationService->sendInvitation($data);
+        $invitationService->sendPrivateInvitation($data);
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function sendGroupInvitation()
+    {
+        $invitationCreationService = new InvitationCreationService;
+        $groupToken = $invitationCreationService->createGroupInvitation($this->user, $this->selectedUsers,
+            $this->room);
+
     }
 
     /**
@@ -89,13 +104,13 @@ class SubMenu extends Component
         }
     }
 
-    public function mount(Room $room)
+    public function mount(Room $room): void
     {
         $this->room = $room;
         $this->user = auth()->user();
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.dropdowns.sub-menu');
     }
@@ -105,7 +120,7 @@ class SubMenu extends Component
      */
     public function addUsersToConversation($conversation, $users): void
     {
-        $conversationService = new ConversationService;
+        $conversationService = new ParticipantService;
         $conversationService->addParticipantsToConversation($conversation, $users);
     }
 }

@@ -36,7 +36,7 @@ class DemandEvent implements ShouldBroadcastNow
     {
         return [
             'action' => $this->action,
-            'associateId' => $this->demandId,
+            'demandId' => $this->demandId,
         ];
     }
 }

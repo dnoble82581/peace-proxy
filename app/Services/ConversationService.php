@@ -35,54 +35,45 @@ class ConversationService
     /**
      * @throws Exception
      */
-    public function createGroupChat(array $data, array $users = []): Conversation
-    {
-        $existingConversation = Conversation::where([
-            'type' => $data['type'],
-            'name' => $data['name'],
-            'tenant_id' => $data['tenant_id'],
-        ])->first();
-        // If an existing conversation is found, return it
-        if ($existingConversation) {
-            return $existingConversation;
-        }
-        // Otherwise, create a new conversation
-        $conversation = Conversation::create([
-            'type' => $data['type'],
-            'name' => $data['name'],
-            'tenant_id' => $data['tenant_id'],
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        // Add participants to the conversation
-
-        $this->addParticipantsToConversation($conversation, $users);
-
-        return $conversation;
-
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function addParticipantsToConversation(Conversation $conversation, array $users): void
-    {
-        foreach ($users as $user) {
-            $conversation->participants()->attach($user, [
-                'joined_at' => now(), 'status' => 'accepted', 'tenant_id' => $conversation->tenant_id,
-            ]);
-        }
-
-    }
+    //    public function createGroupChat(array $data, array $users = []): Conversation
+    //    {
+    //        $existingConversation = Conversation::where([
+    //            'type' => $data['type'],
+    //            'name' => $data['name'],
+    //            'room_id' => $data['room_id'],
+    //            'tenant_id' => $data['tenant_id'],
+    //        ])->first();
+    //        // If an existing conversation is found, return it
+    //        if ($existingConversation) {
+    //            return $existingConversation;
+    //        }
+    //        // Otherwise, create a new conversation
+    //        $conversation = Conversation::create([
+    //            'type' => $data['type'],
+    //            'name' => $data['name'],
+    //            'tenant_id' => $data['tenant_id'],
+    //            'room_id' => $data['room_id'],
+    //            'created_at' => now(),
+    //            'updated_at' => now(),
+    //        ]);
+    //        // Add participants to the conversation
+    //
+    //        $this->addParticipantsToConversation($conversation, $users);
+    //
+    //        return $conversation;
+    //    }
 
     /**
      * @throws Throwable
      */
-    public function createConversation(Invitation $invitation, $type): Conversation
+    public function createPrivateChat(Invitation $invitation): Conversation
     {
         return Conversation::create([
-            'type' => $type,
+            'type' => 'private',
+            'name' => 'Private',
+            'room_id' => $invitation->room_id,
             'tenant_id' => $invitation->tenant_id,
+            'status' => 'accepted',
         ]);
     }
 
@@ -132,5 +123,17 @@ class ConversationService
 
             return $newConversation;
         });
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function addParticipantsToConversation(Conversation $conversation, array $users): void
+    {
+        foreach ($users as $user) {
+            $conversation->participants()->attach($user, [
+                'joined_at' => now(), 'status' => 'accepted', 'tenant_id' => $conversation->tenant_id,
+            ]);
+        }
     }
 }

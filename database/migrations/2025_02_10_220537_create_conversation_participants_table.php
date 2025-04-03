@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamp('joined_at')->nullable();
             $table->enum('status', ['pending', 'accepted', 'left'])->default('pending');
 
-            $table->unique(['conversation_id', 'user_id'], 'conv_user_unique');
+            $table->unique(['conversation_id', 'user_id', 'status'], 'conv_user_unique');
             $table->timestamps();
         });
     }
