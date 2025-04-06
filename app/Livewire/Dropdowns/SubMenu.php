@@ -6,7 +6,6 @@ use App\Models\Room;
 use App\Models\User;
 use App\Services\Conversations\ParticipantService;
 use App\Services\Invitations\InvitationCreationService;
-use App\Services\InvitationService;
 use Exception;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -53,20 +52,18 @@ class SubMenu extends Component
             'room_id' => $this->room->id,
         ];
 
-        session()->flash('user_message_'.$inviteeId, 'Waiting for reply');
-        $invitationService = new InvitationService;
-        $invitationService->sendPrivateInvitation($data);
+        $invitationCreationService = new InvitationCreationService;
+        $invitationCreationService->sendPrivateInvitation($data);
     }
 
     /**
      * @throws Throwable
      */
-    public function sendGroupInvitation()
+    public function sendGroupInvitation(): void
     {
         $invitationCreationService = new InvitationCreationService;
         $groupToken = $invitationCreationService->createGroupInvitation($this->user, $this->selectedUsers,
             $this->room);
-
     }
 
     /**

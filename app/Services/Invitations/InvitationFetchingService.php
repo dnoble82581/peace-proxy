@@ -15,7 +15,7 @@ class InvitationFetchingService
         return $user->receivedInvitations()->where('status', 'pending')->get();
     }
 
-    public function fetchInvitation($token)
+    public function fetchInvitation($token): Invitation
     {
         return Invitation::where('token', $token)->first();
     }

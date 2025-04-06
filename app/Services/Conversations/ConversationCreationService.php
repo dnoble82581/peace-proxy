@@ -4,6 +4,9 @@ namespace App\Services\Conversations;
 
 use App\Models\Conversation;
 use App\Models\Invitation;
+use App\Models\Room;
+use App\Models\User;
+use App\Services\PhoneNumberService;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -81,5 +84,51 @@ class ConversationCreationService
             'tenant_id' => $invitation->tenant_id,
             'status' => 'accepted',
         ]);
+    }
+
+    public function createSmsConversation(string $phoneNumber, int $roomId, int $userId): Conversation
+    {
+        $authUser = User::findOrFail($userId); // Authenticated user
+        $room = Room::findOrFail($roomId);     // Room context for the conversation
+        $phoneNumberService = new PhoneNumberService;
+
+        $phoneNumber = $phoneNumberService->formatToE164($phoneNumber);
+
+        // Use a database transaction to ensure atomicity
+        return DB::transaction(function () use ($phoneNumber, $room, $authUser) {
+            // Check if an SMS conversation with the specific phone number already exists
+            $existingConversation = Conversation::query()
+                ->where('type', 'sms')               // Sms-specific type
+                ->where('room_id', $room->id)       // Belongs to the same room
+                ->where('tenant_id', $room->tenant_id) // Same tenant
+                ->where('name', $phoneNumber)       // Identify by phone number
+                ->first();
+
+            if ($existingConversation) {
+                return $existingConversation; // Return the existing SMS conversation
+            }
+
+            // Create a new SMS conversation
+            $newConversation = Conversation::create([
+                'type' => 'sms',
+                'name' => $phoneNumber, // Use the phone number as the conversation name
+                'room_id' => $room->id,
+                'tenant_id' => $room->tenant_id,
+                'subject_id' => $room->subject->id,
+                'initiator_id' => $authUser->id,
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // Add authenticated user and phone number as participants
+
+            $this->participantService->addParticipantsToConversation($newConversation, [
+                $authUser->id,
+                $phoneNumber, // Represent the phone number as a virtual participant
+            ]);
+
+            return $newConversation;
+        });
     }
 }

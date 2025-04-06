@@ -10,11 +10,10 @@
 	use App\Models\Room;
 	use App\Models\TextMessage;
 	use App\Models\User;
-	use App\Notifications\InvitationAcceptedNotification;
+	use App\Notifications\FlashMessageNotification;
 	use App\Services\Conversations\ConversationCreationService;
 	use App\Services\Conversations\ConversationFetchingService;
 	use App\Services\Conversations\ParticipantService;
-	use App\Services\ConversationService;
 	use App\Services\VonageSmsService;
 	use Carbon\Carbon;
 	use Illuminate\Support\Collection;
@@ -22,7 +21,6 @@
 	use Livewire\Volt\Component;
 	use App\Services\MessageService;
 	use Livewire\Attributes\On;
-	use App\Services\InvitationService;
 	use Symfony\Component\Mailer\Event\MessageEvent;
 
 
@@ -39,11 +37,11 @@
 		public array $participants = [];
 		public User $user;
 		public Conversation $defaultConversation;
+		public bool $flashMessage = false;
 
 		public function getListeners():array
 		{
 			return [
-				'invitationAccepted' => 'invitationAccepted',
 				"echo-presence:chat.{$this->room->id},NewMessageEvent" => 'refreshMessages',
 				"echo-private:user.{$this->user->id},ConversationEvent" => 'refreshConversations',
 			];
@@ -57,6 +55,8 @@
 			$this->conversations = $this->fetchUserRoomConversations();
 		}
 
+		public function handleFlashMessage($event) {}
+
 		public function refreshMessages():void
 		{
 			$this->fetchUserRoomConversations();
@@ -65,7 +65,7 @@
 		public function sendMessage($conversation):void
 		{
 			$this->validate([
-				'newMessage' => 'required|min:1|max:255',
+				'newMessage' => 'required | min:1 | max:255',
 			]);
 			$data = $this->fetchMessageData($conversation);
 			$messageService = new MessageService();
@@ -90,7 +90,6 @@
 			return User::findOrFail($id)->avatarUrl();
 		}
 
-		public function invitationAccepted($data):void {}
 
 		private function fetchDefaultConversation():Conversation
 		{
@@ -122,7 +121,7 @@
 				'conversation_id' => $conversation,
 				'message_status' => 'sent',
 				'message_type' => 'chat',
-				'senderable_type' => 'App/Models/User',
+				'senderable_type' => 'App / Models / User',
 				'senderable_id' => $this->user->id,
 				'message' => $this->newMessage,
 				'sent_at' => now(),
@@ -140,7 +139,6 @@
 
 	}
 ?>
-		<!-- component -->
 <div
 		class="flex-1 p:2 sm:p-2 justify-between flex flex-col bg-white shadow-lg rounded-lg">
 	<div class="flex sm:items-center justify-between py-2">
@@ -151,6 +149,8 @@
 					alt="User Avatar">
 		</div>
 
+		<livewire:notifications.flash-notification :user="$user" />
+		{{--		Put Notification here--}}
 		<div class="flex items-center space-x-2">
 			<button
 					type="button"
@@ -225,7 +225,7 @@
 									@click="conversation = {{ $conversation->id}}"
 									class="group inline-flex items-center border-b-2 border-transparent px-4 py-4 text-xs font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
 									:class="{ 'border-b-indigo-600 text-indigo-500 hover:border-indigo-500 hover:text-indigo-600 bg-indigo-50': conversation === {{ $conversation->id}} }">
-								<x-heroicons::outline.chat-bubble-bottom-center-text class="w-4 h-4 mr-2" />
+								<x-heroicons::outline.chat-bubble-left-right class="w-4 h-4 mr-2" />
 								<span>{{ $conversation->name }}</span>
 							</button>
 						@elseif($conversation->type === 'private')
@@ -245,7 +245,7 @@
 									@click="conversation = {{ $conversation->id}}"
 									class="group inline-flex items-center border-b-2 border-transparent px-4 py-4 text-xs font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
 									:class="{ 'border-b-indigo-600 text-indigo-500 hover:border-indigo-500 hover:text-indigo-600 bg-indigo-50': conversation === {{ $conversation->id }} }">
-								<x-heroicons::outline.chat-bubble-bottom-center-text class="w-4 h-4 mr-2" />
+								<x-heroicons::outline.chat-bubble-left-right class="w-4 h-4 mr-2" />
 								<span>Group</span>
 							</button>
 						@endif
@@ -264,7 +264,7 @@
 							wire:key="conversation-{{ $conversation->id }}">
 						@foreach($conversation->messages as $message)
 							<div class="chat-message mt-1">
-								@if($message->senderable_type === 'App/Models/User' && $message->senderable_id === $this->user->id)
+								@if($message->senderable_type === 'App / Models / User' && $message->senderable_id === $this->user->id)
 									<x-chat-elements.sent-message
 											:message="$message->message"
 											:user-avatar-url="$this->user->avatarUrl()" />
@@ -283,7 +283,7 @@
 							wire:key="conversation-{{ $conversation->id }}">
 						@foreach($conversation->messages as $message)
 							<div class="chat-message mt-1">
-								@if($message->senderable_type === 'App/Models/User' && $message->senderable_id === $this->user->id)
+								@if($message->senderable_type === 'App / Models / User' && $message->senderable_id === $this->user->id)
 									<x-chat-elements.sent-message
 											:message="$message->message"
 											:user-avatar-url="$this->user->avatarUrl()" />
@@ -302,7 +302,7 @@
 							wire:key="conversation-{{ $conversation->id }}">
 						@foreach($conversation->messages as $message)
 							<div class="chat-message mt-1">
-								@if($message->senderable_type === 'App/Models/User' && $message->senderable_id === $this->user->id)
+								@if($message->senderable_type === 'App / Models / User' && $message->senderable_id === $this->user->id)
 									<x-chat-elements.sent-message
 											:message="$message->message"
 											:user-avatar-url="$this->user->avatarUrl()" />

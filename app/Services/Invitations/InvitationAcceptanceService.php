@@ -4,6 +4,7 @@ namespace App\Services\Invitations;
 
 use App\Models\Conversation;
 use App\Models\Invitation;
+use App\Notifications\FlashMessageNotification;
 use App\Services\Conversations\ConversationBroadcastingService;
 use App\Services\Conversations\ConversationCreationService;
 use App\Services\Conversations\ParticipantService;
@@ -53,6 +54,10 @@ class InvitationAcceptanceService
 
         $invitation->update(['conversation_id' => $conversation->id]);
 
+        $invitation->inviter->notify(new FlashMessageNotification(
+            'Test Message', 'success', $invitation->inviter_id
+        ));
+
         return $conversation;
     }
 
@@ -84,5 +89,14 @@ class InvitationAcceptanceService
         }
 
         return null;
+    }
+
+    public function declineInvitation(Invitation $invitation): void
+    {
+        $invitation->update(['status' => 'declined']);
+
+        $invitationBroadcastingService = new InvitationBroadcastingService;
+        $invitationBroadcastingService->broadcastInvitationDeclined($invitation);
+
     }
 }

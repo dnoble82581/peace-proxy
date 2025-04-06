@@ -121,9 +121,7 @@ Broadcast::channel('document.{roomId}', function (User $user, int $roomId) {
 });
 
 Broadcast::channel('user.{userId}', function ($user, $userId) {
-    // Check if the authenticated user is authorized to listen to this channel
-    //    return (int) $user->id === (int) $userId;
-    return true;
+    return (int) $user->id === (int) $userId;
 });
 
 Broadcast::channel('rfi.{roomId}', function (User $user, int $roomId) {

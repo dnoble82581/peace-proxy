@@ -8,10 +8,10 @@
 	use App\Models\User;
 	use App\Services\Conversations\ConversationBroadcastingService;
 	use App\Services\Conversations\ConversationCreationService;
-	use App\Services\ConversationService;
 	use App\Services\Invitations\InvitationAcceptanceService;
+	use App\Services\Invitations\InvitationBroadcastingService;
 	use App\Services\Invitations\InvitationFetchingService;
-	use App\Services\InvitationService;
+	use Carbon\Carbon;
 	use Illuminate\Database\Eloquent\Collection;
 	use LaravelIdea\Helper\App\Models\_IH_User_C;
 	use Livewire\Volt\Component;
@@ -81,10 +81,16 @@
 		public function declineInvitation($invitationId):void
 		{
 			$invitation = Invitation::findOrFail($invitationId);
-			$invitationService = new InvitationService();
-			$invitationService->declineInvitation($invitation);
+
+			$invitationAcceptanceService = new InvitationAcceptanceService();
+			$invitationAcceptanceService->declineInvitation($invitation);
+
 		}
 
+		public function toggleDropdown():void
+		{
+			$this->showDropdown = !$this->showDropdown;
+		}
 	}
 ?>
 <div>
@@ -97,7 +103,7 @@
 			</button>
 		</x-slot:trigger>
 		<x-slot:content>
-			@if($this->pendingInvitations->count())
+			@if($pendingInvitations->count())
 				@foreach($this->pendingInvitations as $invitation)
 					<div class="p-2">
 						<span class="text-sm block">Invitation to: {{ $invitation->type ?: 'private' }} by </span>
@@ -127,5 +133,6 @@
 		</div>
 	@endif
 </div>
+
 
 
