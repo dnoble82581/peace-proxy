@@ -14,11 +14,14 @@ class HookPolicy
 
     public function view(User $user, Hook $hook): bool
     {
+        return true;
+
         //        return $user->tenant_id === $hook->tenant_id;
     }
 
     public function create(User $user): bool
     {
+        return true;
         //        return $user->role === 'Recorder';
     }
 
@@ -26,6 +29,7 @@ class HookPolicy
 
     public function delete(User $user, Hook $hook): bool
     {
+        return true;
         //        if ($user->tenant_id === $hook->tenant_id && $user->title === 'Recorder') {
         //            return true;
         //        }
