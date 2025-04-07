@@ -14,23 +14,23 @@ class HookPolicy
 
     public function view(User $user, Hook $hook): bool
     {
-        return $user->tenant_id === $hook->tenant_id;
+        //        return $user->tenant_id === $hook->tenant_id;
     }
 
     public function create(User $user): bool
     {
-        return $user->role === 'Recorder';
+        //        return $user->role === 'Recorder';
     }
 
     public function update(User $user, Hook $hook): bool {}
 
     public function delete(User $user, Hook $hook): bool
     {
-        if ($user->tenant_id === $hook->tenant_id && $user->title === 'Recorder') {
-            return true;
-        }
-
-        return false;
+        //        if ($user->tenant_id === $hook->tenant_id && $user->title === 'Recorder') {
+        //            return true;
+        //        }
+        //
+        //        return false;
     }
 
     public function restore(User $user, Hook $hook): bool {}
