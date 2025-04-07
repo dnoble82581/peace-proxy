@@ -127,10 +127,10 @@
 					name="privileges"
 					wire:model="form.privileges"
 					class="col-span-6 sm:col-span-2">
-				@foreach($this->userPrivileges as $privilege)
+				@foreach(App\Enums\UserPrivileges::cases() as $privilege)
 					<x-select.option
 							label="{{ $privilege->name }}"
-							value="{{ $privilege->name }}"
+							value="{{ $privilege->value }}"
 							description="{{ $privilege->metaData()['description']}}" />
 				@endforeach
 			</x-select>

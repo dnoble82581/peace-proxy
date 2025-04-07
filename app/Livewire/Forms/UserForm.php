@@ -66,7 +66,7 @@ class UserForm extends Form
             'avatar' => ['nullable', 'image', 'max:1024'],
             'role' => ['nullable', 'string', 'max:255'],
             'privileges' => ['required', 'string', 'max:255'],
-            'status' => ['nullable', 'boolean'],
+            'status' => ['required', 'boolean'],
             'application' => ['nullable', 'file', 'max:10000', 'mimes:pdf'],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
 
