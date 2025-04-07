@@ -93,8 +93,7 @@
 		private function fetchDefaultConversation():Conversation
 		{
 			$conversationFetchingService = new ConversationFetchingService();
-			$defaultConversation = $conversationFetchingService->fetchDefaultConversation($this->room);
-
+			return $conversationFetchingService->fetchDefaultConversation($this->room);
 
 		}
 
