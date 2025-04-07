@@ -92,8 +92,11 @@
 
 		private function fetchDefaultConversation():Conversation
 		{
-			$conversationFetchingService = new ConversationFetchingService();
-			return $conversationFetchingService->fetchDefaultConversation($this->room);
+//			$conversationFetchingService = new ConversationFetchingService();
+//			$defaultConversation = $conversationFetchingService->fetchDefaultConversation($this->room);
+
+			$this->checkForPublicConversation();
+
 		}
 
 		private function checkForPublicConversation():void

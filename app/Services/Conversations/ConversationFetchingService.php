@@ -55,6 +55,7 @@ class ConversationFetchingService
     {
         return $room->conversations()
             ->where('conversations.room_id', $room->id)
+            ->where('conversations.tenant_id', $room->tenant_id)
             ->where('type', 'public')
             ->first();
     }
