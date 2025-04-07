@@ -175,7 +175,7 @@
 	}
 ?>
 <div
-		class="flex-1 p:2 sm:p-2 justify-between flex flex-col bg-white shadow-lg rounded-lg">
+		class="flex-1 p:2 sm:p-2 justify-between flex flex-col bg-white dark:bg-gray-800 shadow-lg rounded-lg">
 	<div class="flex sm:items-center justify-between py-2">
 		<div>
 			<img
@@ -258,8 +258,8 @@
 							<button
 									type="button"
 									@click="conversation = {{ $conversation->id}}"
-									class="group inline-flex items-center border-b-2 border-transparent px-4 py-4 text-xs font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-									:class="{ 'border-b-indigo-600 text-indigo-500 hover:border-indigo-500 hover:text-indigo-600 bg-indigo-50': conversation === {{ $conversation->id}} }">
+									class="group inline-flex items-center border-b-2 border-transparent px-4 py-4 text-xs font-medium dark-light-text hover:border-gray-300 hover:text-gray-700"
+									:class="{ 'border-b-indigo-600 dark:broder-b-gray-700 text-indigo-500 hover:border-indigo-500 hover:text-indigo-600 bg-indigo-50 dark:bg-gray-700': conversation === {{ $conversation->id}} }">
 								<x-heroicons::outline.chat-bubble-left-right class="w-4 h-4 mr-2" />
 								<span>{{ $conversation->name }}</span>
 							</button>
@@ -268,8 +268,8 @@
 							<button
 									type="button"
 									@click="conversation = {{ $conversation->id}}"
-									class="group inline-flex items-center border-b-2 border-transparent px-4 py-4 text-xs font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-									:class="{ 'border-b-indigo-600 text-indigo-500 hover:border-indigo-500 hover:text-indigo-600 bg-indigo-50': conversation === {{ $conversation->id }} }">
+									class="group inline-flex items-center border-b-2 border-transparent px-4 py-4 text-xs font-medium dark-light-text hover:border-gray-300 hover:text-gray-700"
+									:class="{ 'border-b-indigo-600 dark:broder-gray-700 text-indigo-500 hover:border-indigo-500 hover:text-indigo-600 bg-indigo-50 dark:bg-gray-700': conversation === {{ $conversation->id }} }">
 								<x-heroicons::outline.chat-bubble-bottom-center-text class="w-4 h-4 mr-2" />
 								<span>{{ $this->fetchOtherParticipantName($conversation) }}</span>
 							</button>
@@ -278,8 +278,8 @@
 							<button
 									type="button"
 									@click="conversation = {{ $conversation->id}}"
-									class="group inline-flex items-center border-b-2 border-transparent px-4 py-4 text-xs font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-									:class="{ 'border-b-indigo-600 text-indigo-500 hover:border-indigo-500 hover:text-indigo-600 bg-indigo-50': conversation === {{ $conversation->id }} }">
+									class="group inline-flex items-center border-b-2 border-transparent px-4 py-4 text-xs font-medium dark-light-text hover:border-gray-300 hover:text-gray-700"
+									:class="{ 'border-b-indigo-600 dark:broder-b-gray-700 text-indigo-500 hover:border-indigo-500 hover:text-indigo-600 bg-indigo-50 dark:bg-gray-700': conversation === {{ $conversation->id }} }">
 								<x-heroicons::outline.chat-bubble-left-right class="w-4 h-4 mr-2" />
 								<span>Group</span>
 							</button>
@@ -290,7 +290,7 @@
 		</div>
 		<div
 				id="messages"
-				class="space-y-4 bg-gray-100 p-3 min-h-[45rem] overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch soft-scrollbar">
+				class="space-y-4 bg-gray-100 dark:bg-gray-700 p-3 min-h-[45rem] overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch soft-scrollbar">
 			@foreach($this->conversations as $conversation)
 				@if($conversation->type === 'public')
 					<!-- Public Messages -->
@@ -352,7 +352,7 @@
 				@endif
 			@endforeach
 		</div>
-		<div class="border-t-2 border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
+		<div class="border-t-2 border-gray-200 dark:bg-gray-600 px-4 pt-4 mb-2 sm:mb-0">
 			<div class="flex w-full gap-2">
 				<x-textarea
 						wire:model="newMessage"
