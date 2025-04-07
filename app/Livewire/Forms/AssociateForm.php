@@ -42,7 +42,7 @@ class AssociateForm extends Form
     public $zipcode = '';
 
     #[Validate(['nullable'])]
-    public $dob = '';
+    public $dob = null;
 
     #[Validate(['nullable', 'integer'])]
     public $age = 0;
@@ -138,7 +138,7 @@ class AssociateForm extends Form
             'city' => $this->city,
             'state' => $this->state,
             'zipcode' => $this->zipcode,
-            'dob' => $this->dob,
+            'dob' => $this->dob ? $this->dob : null,
             'age' => $this->age,
             'children' => $this->children,
             'veteran' => $this->veteran,

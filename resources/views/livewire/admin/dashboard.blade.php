@@ -1,8 +1,28 @@
 <?php
 
+	use App\Models\User;
+	use Carbon\Carbon;
 	use Livewire\Volt\Component;
 
-	new class extends Component {}
+	new class extends Component {
+		public array $userData;
+
+		public function mount()
+		{
+			$this->userData = $this->getUserData();
+		}
+
+		private function getUserData():array
+		{
+			$data = [];
+			for ($i = 1; $i <= 30; $i++) { // Start from 1, go up to and including 30
+				$date = Carbon::now()->subDays($i - 1)->toDateString(); // Subtract $i - 1
+				$count = User::whereDate('created_at', $date)->count();
+				$data[$i] = $count; // Use $i as the key
+			}
+			return $data;
+		}
+	}
 
 ?>
 
@@ -38,13 +58,15 @@
 	<div class="grid grid-cols-12 gap-4 mt-4">
 		<div
 				class="col-span-4 bg-[#1a1a1b] rounded-md p-4 relative">
-			<livewire:charts.admin.users-chart />
+			<livewire:charts.admin.users-chart
+					id="usersChartCanvas"
+					:data="$userData" />
 			<span class="absolute top-3 right-3">
 				<x-toggle id="toggleChartTypeButton" />
 			</span>
 		</div>
 		<div class="col-span-4 bg-[#1a1a1b] rounded-md p-4 relative">
-			<livewire:charts.admin.negotiations-chart />
+			<livewire:charts.admin.negotiations-chart id="negotiationsChartCanvas" />
 			<span class="absolute top-3 right-3">
 				<x-toggle
 						id="negotiationToggle"
@@ -53,7 +75,7 @@
 			</span>
 		</div>
 		<div class="col-span-4 bg-[#1a1a1b] rounded-md p-4 relative">
-			<livewire:charts.admin.resolution-chart />
+			<livewire:charts.admin.resolution-chart id="resolutionChartCanvas" />
 			<span class="absolute top-3 right-3">
 				<x-toggle
 						id="resolutionToggle"
@@ -77,4 +99,5 @@
 			<livewire:cards.admin.relationship-card />
 		</div>
 	</div>
+	
 </div>

@@ -7,21 +7,9 @@
 	new class extends Component {
 		public array $userData;
 
-		public function mount()
+		public function mount($data)
 		{
-			$this->userData = $this->getUserData();
-		}
-
-
-		private function getUserData():array
-		{
-			$data = [];
-			for ($i = 1; $i <= 30; $i++) { // Start from 1, go up to and including 30
-				$date = Carbon::now()->subDays($i - 1)->toDateString(); // Subtract $i - 1
-				$count = User::whereDate('created_at', $date)->count();
-				$data[$i] = $count; // Use $i as the key
-			}
-			return $data;
+			$this->userData = $data;
 		}
 
 	}
@@ -119,8 +107,14 @@
 						}
 					}
 				})
+				// Initialize the chart when the page loads
+				createChart()
+
+				// Reinitialize the chart whenever Livewire updates the DOM
+				Livewire.hook('message.processed', (message, component) => {
+					createChart()
+				})
 			})
 		})
 	</script>
-
 </div>
