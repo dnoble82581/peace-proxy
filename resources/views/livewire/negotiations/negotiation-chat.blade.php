@@ -51,11 +51,9 @@
 		{
 			$this->user = auth()->user();
 			$this->room = $room;
-			$this->defaultConversation = $this->createDefaultConversation();
+			$this->checkForPublicConversation();
 			$this->conversations = $this->fetchUserRoomConversations();
 		}
-
-		public function handleFlashMessage($event) {}
 
 		public function refreshMessages():void
 		{
@@ -97,8 +95,44 @@
 			return $conversationFetchingService->fetchDefaultConversation($this->room);
 		}
 
+		private function checkForPublicConversation():void
+		{
+			$publicConversation = Conversation::where('type', 'public')
+				->where('tenant_id', auth()->user()->tenant_id)
+				->exists();
+
+			if (!$publicConversation)
+				$this->defaultConversation = $this->createDefaultConversation();
+
+			$this->defaultConversation = $this->fetchDefaultConversation();
+		}
+
+		private function ensureUserInPublicConversation(User $user):void
+		{
+			// Step 1: Fetch the public conversation
+			$publicConversation = $this->fetchDefaultConversation();
+
+			// Step 2: Check if the user is already a participant
+			$isParticipant = ConversationParticipant::where('conversation_id', $publicConversation->id)
+				->where('user_id', $user->id)
+				->exists();
+
+			// Step 3: Add the user if not found in the participants
+			if (!$isParticipant) {
+				ConversationParticipant::create([
+					'conversation_id' => $publicConversation->id,
+					'user_id' => $user->id,
+					'tenant_id' => $user->tenant_id,
+					'joined_at' => now(),
+					'status' => 'accepted'
+				]);
+			}
+		}
+
+
 		private function createDefaultConversation():Conversation
 		{
+
 			$data = [
 				'type' => 'public',
 				'name' => 'Public',
