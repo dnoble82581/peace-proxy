@@ -92,10 +92,9 @@
 
 		private function fetchDefaultConversation():Conversation
 		{
-//			$conversationFetchingService = new ConversationFetchingService();
-//			$defaultConversation = $conversationFetchingService->fetchDefaultConversation($this->room);
+			$conversationFetchingService = new ConversationFetchingService();
+			$defaultConversation = $conversationFetchingService->fetchDefaultConversation($this->room);
 
-			$this->checkForPublicConversation();
 
 		}
 
@@ -103,6 +102,7 @@
 		{
 			$publicConversation = Conversation::where('type', 'public')
 				->where('tenant_id', $this->user->tenant_id)
+				->where('room_id', $this->room->id)
 				->exists();
 
 			if (!$publicConversation)
