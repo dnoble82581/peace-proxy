@@ -54,6 +54,7 @@ class ConversationCreationService
             'type' => $data['type'],
             'name' => $data['name'],
             'room_id' => $data['room_id'],
+            'token' => $data['token'],
             'tenant_id' => $data['tenant_id'],
         ])->first();
         // If an existing conversation is found, return it
@@ -66,6 +67,7 @@ class ConversationCreationService
             'name' => $data['name'],
             'tenant_id' => $data['tenant_id'],
             'room_id' => $data['room_id'],
+            'token' => $data['token'],
             'created_at' => now(),
             'updated_at' => now(),
         ]);

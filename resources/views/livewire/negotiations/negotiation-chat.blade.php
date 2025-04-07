@@ -137,6 +137,7 @@
 			$data = [
 				'type' => 'public',
 				'name' => 'Public',
+				'token' => (string) Str::uuid(),
 				'room_id' => $this->room->id,
 				'tenant_id' => $this->user->tenant_id
 			];
