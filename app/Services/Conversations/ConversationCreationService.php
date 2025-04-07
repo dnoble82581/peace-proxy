@@ -50,16 +50,16 @@ class ConversationCreationService
 
     public function createPublicChat(array $data, array $users = []): Conversation
     {
-        $existingConversation = Conversation::where([
-            'type' => $data['type'],
-            'name' => $data['name'],
-            'room_id' => $data['room_id'],
-            'tenant_id' => $data['tenant_id'],
-        ])->first();
-        // If an existing conversation is found, return it
-        if ($existingConversation) {
-            return $existingConversation;
-        }
+        //        $existingConversation = Conversation::where([
+        //            'type' => $data['type'],
+        //            'name' => $data['name'],
+        //            'room_id' => $data['room_id'],
+        //            'tenant_id' => $data['tenant_id'],
+        //        ])->first();
+        //        // If an existing conversation is found, return it
+        //        if ($existingConversation) {
+        //            return $existingConversation;
+        //        }
         // Otherwise, create a new conversation
         $conversation = Conversation::create([
             'type' => $data['type'],
