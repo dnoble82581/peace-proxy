@@ -52,6 +52,7 @@
 			$this->user = auth()->user();
 			$this->room = $room;
 			$this->checkForPublicConversation();
+			$this->ensureUserInPublicConversation($this->user);
 			$this->conversations = $this->fetchUserRoomConversations();
 		}
 
@@ -98,7 +99,7 @@
 		private function checkForPublicConversation():void
 		{
 			$publicConversation = Conversation::where('type', 'public')
-				->where('tenant_id', auth()->user()->tenant_id)
+				->where('tenant_id', $this->user->tenant_id)
 				->exists();
 
 			if (!$publicConversation)
