@@ -15,8 +15,25 @@ class InvitationFetchingService
         return $user->receivedInvitations()->where('status', 'pending')->get();
     }
 
-    public function fetchInvitation($token): Invitation
+    public function fetchInvitationByToken($token): Invitation
     {
         return Invitation::where('token', $token)->first();
+    }
+
+    public function fetchInvitation(array $data): ?Invitation
+    {
+        $existingInvitation = Invitation::where([
+            'tenant_id' => $data['tenant_id'],
+            'room_id' => $data['room_id'],
+            'invitee_id' => $data['invitee_id'],
+            'inviter_id' => $data['inviter_id'],
+            'type' => $data['type'],
+            'status' => $data['status'],
+        ])->first();
+        if ($existingInvitation) {
+            return $existingInvitation;
+        }
+
+        return null;
     }
 }

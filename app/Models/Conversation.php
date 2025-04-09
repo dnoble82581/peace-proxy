@@ -14,6 +14,13 @@ class Conversation extends Model
 
     protected $guarded = ['id'];
 
+    public function unreadMessagesCount(): int
+    {
+        return $this->messages()->where('is_read', false)
+            ->where('senderable_id', '!=', Auth::id())
+            ->count();
+    }
+
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class);
@@ -51,22 +58,6 @@ class Conversation extends Model
     {
         return $query->where('type', 'public');
     }
-
-    //    public function getOtherParticipantName(): string
-    //    {
-    //        $authUserId = auth()->id();
-    //
-    //        // Ensure participants are loaded and eager-load associated User models
-    //        $this->loadMissing('participants.user');
-    //
-    //        // Safely retrieve the first participant who is not the auth user
-    //        $otherParticipant = $this->participants
-    //            ->firstWhere('user_id', '!=', $authUserId);
-    //
-    //        return $otherParticipant && $otherParticipant->user
-    //            ? $otherParticipant->user->name
-    //            : 'Unknown';
-    //    }
 
     public function getOtherParticipantCount(): int
     {

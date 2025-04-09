@@ -50,6 +50,8 @@ class SubMenu extends Component
             'invitee_id' => $inviteeId,
             'tenant_id' => $this->room->tenant_id,
             'room_id' => $this->room->id,
+            'status' => 'pending',
+            'type' => 'private',
         ];
 
         $invitationCreationService = new InvitationCreationService;

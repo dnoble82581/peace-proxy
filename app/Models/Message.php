@@ -16,6 +16,11 @@ class Message extends Model
 {
     use BelongsToTenant, HasFactory;
 
+    protected $casts = [
+        'is_read' => 'boolean',
+        'sent_at' => 'datetime',
+    ];
+
     protected $guarded = ['id'];
 
     public function senderable(): MorphTo

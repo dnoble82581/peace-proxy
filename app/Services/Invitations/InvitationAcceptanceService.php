@@ -2,9 +2,10 @@
 
 namespace App\Services\Invitations;
 
+use App\Events\InvitationDeclinedToInviteeEvent;
+use App\Events\InvitationDeclinedToInviterEvent;
 use App\Models\Conversation;
 use App\Models\Invitation;
-use App\Notifications\FlashMessageNotification;
 use App\Services\Conversations\ConversationBroadcastingService;
 use App\Services\Conversations\ConversationCreationService;
 use App\Services\Conversations\ParticipantService;
@@ -21,7 +22,7 @@ class InvitationAcceptanceService
     {
 
         $invitationFetchingService = new InvitationFetchingService;
-        $invitation = $invitationFetchingService->fetchInvitation($token);
+        $invitation = $invitationFetchingService->fetchInvitationByToken($token);
 
         if ($invitation->type === 'private') {
             return $this->acceptPrivateInvitation($invitation);
@@ -53,10 +54,6 @@ class InvitationAcceptanceService
         $invitationBroadcastingService->broadCastInvitationAccepted($invitation);
 
         $invitation->update(['conversation_id' => $conversation->id]);
-
-        $invitation->inviter->notify(new FlashMessageNotification(
-            'Test Message', 'success', $invitation->inviter_id
-        ));
 
         return $conversation;
     }
@@ -95,8 +92,10 @@ class InvitationAcceptanceService
     {
         $invitation->update(['status' => 'declined']);
 
-        $invitationBroadcastingService = new InvitationBroadcastingService;
-        $invitationBroadcastingService->broadcastInvitationDeclined($invitation);
+        event(new InvitationDeclinedToInviterEvent($invitation));
+
+        // Fire event for the invitee
+        event(new InvitationDeclinedToInviteeEvent($invitation));
 
     }
 }

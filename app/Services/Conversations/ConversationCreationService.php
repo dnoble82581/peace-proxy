@@ -85,6 +85,7 @@ class ConversationCreationService
             'room_id' => $invitation->room_id,
             'tenant_id' => $invitation->tenant_id,
             'status' => 'accepted',
+            'token' => $invitation->token,
         ]);
     }
 

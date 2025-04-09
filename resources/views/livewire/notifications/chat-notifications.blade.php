@@ -1,11 +1,11 @@
 <?php
 
 	use App\Events\InvitationAcceptedEvent;
-	use App\Events\InvitationDeclinedEvent;
-	use App\Events\InvitationSent;
+	use App\Events\InvitationSentToInviteeEvent;
 	use App\Models\Invitation;
 	use App\Models\Room;
 	use App\Models\User;
+	use App\Notifications\FlashMessageNotification;
 	use App\Services\Conversations\ConversationBroadcastingService;
 	use App\Services\Conversations\ConversationCreationService;
 	use App\Services\Invitations\InvitationAcceptanceService;
@@ -36,8 +36,9 @@
 		public function getListeners():array
 		{
 			return [
-				'echo-private:user.'.auth()->id().',InvitationSent' => 'refreshInvitations',
-				'echo-private:user.'.auth()->id().',InvitationDeclinedEvent' => 'refreshInvitations',
+				'echo-private:user.'.auth()->id().',InvitationSentToInviteeEvent' => 'refreshInvitations',
+				"echo-private:user.{$this->user->id},InvitationDeclinedToInviterEvent" => 'refreshInvitations',
+				"echo-private:user.{$this->user->id},InvitationDeclinedToInviteeEvent" => 'refreshInvitations',
 				'echo-private:user.'.auth()->id().',InvitationAcceptedEvent' => 'handleInvitationAccepted',
 			];
 		}
@@ -76,12 +77,12 @@
 				$conversationBroadcastingService = new ConversationBroadcastingService;
 				$conversationBroadcastingService->broadcastNewConversation($newGroupConversation->id, $participants);
 			}
+
 		}
 
 		public function declineInvitation($invitationId):void
 		{
 			$invitation = Invitation::findOrFail($invitationId);
-
 			$invitationAcceptanceService = new InvitationAcceptanceService();
 			$invitationAcceptanceService->declineInvitation($invitation);
 

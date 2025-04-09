@@ -3,7 +3,6 @@
 namespace App\Services\Invitations;
 
 use App\Events\InvitationAcceptedEvent;
-use App\Events\InvitationDeclinedEvent;
 use App\Models\Invitation;
 
 class InvitationBroadcastingService
@@ -15,8 +14,11 @@ class InvitationBroadcastingService
         event(new InvitationAcceptedEvent($invitation));
     }
 
-    public function broadcastInvitationDeclined(Invitation $invitation): void
-    {
-        event(new InvitationDeclinedEvent($invitation));
-    }
+    //    public function broadcastInvitationDeclined(Invitation $invitation): void
+    //    {
+    //        event(new InvitationDeclinedEvent(
+    //            invitation: $invitation,
+    //            message: 'You declined the invitation.',
+    //            status: 'declined'));
+    //    }
 }

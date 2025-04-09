@@ -21,7 +21,6 @@ return new class extends Migration
             $table->enum('type', ['public', 'private', 'group'])->default('public');
             $table->string('token')->unique(); // Unique token for invitation links
             $table->string('groupToken')->nullable();
-            //            $table->unique(['inviter_id', 'invitee_id', 'type'], 'inviter_invitee_unique');
             $table->timestamps();
         });
     }

@@ -2,6 +2,7 @@
 
 namespace App\Services\Conversations;
 
+use App\Models\Conversation;
 use App\Models\Room;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
@@ -58,5 +59,10 @@ class ConversationFetchingService
             ->where('conversations.tenant_id', $room->tenant_id)
             ->where('type', 'public')
             ->first();
+    }
+
+    public function fetchConversationById($conversationId): array|_IH_Conversation_C|Conversation
+    {
+        return Conversation::findOrFail($conversationId);
     }
 }

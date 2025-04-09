@@ -7,7 +7,9 @@
 	new class extends Component {
 		public User $user;
 		public bool $flashMessage = false;
+		public string $type = '';
 		public string $message = '';
+		public string $heading = '';
 
 		public function mount($user):void
 		{
@@ -18,22 +20,86 @@
 		{
 			return [
 				"echo-private:user.{$this->user->id},InvitationAcceptedEvent" => 'handleFlashMessage',
+				"echo-private:user.{$this->user->id},InvitationDeclinedToInviterEvent" => 'handleFlashMessage',
+				"echo-private:user.{$this->user->id},InvitationDeclinedToInviteeEvent" => 'handleFlashMessage',
+				"echo-private:user.{$this->user->id},InvitationSentToInviteeEvent" => 'handleFlashMessage',
+				"echo-private:user.{$this->user->id},InvitationSentToInviterEvent" => 'handleFlashMessage',
+				"echo-private:user.{$this->user->id},UserLeavesPrivateChatEvent" => 'handleFlashMessage',
 			];
 		}
 
 		public function handleFlashMessage($event):void
 		{
+			if ($event['status'] === 'accepted') {
+				$this->acceptedInvitation($event);
+			} elseif ($event['status'] === 'declined') {
+				$this->declinedInvitation($event);
+			} elseif ($event['type'] === 'Invitation Sent') {
+				$this->invitationSentToInviter($event);
+			} elseif ($event['type'] === 'Invitation Received') {
+				$this->invitationSentToInvitee($event);
+			} elseif ($event['type'] === 'User Left Chat') {
+				$this->userLeftChat($event);
+			}
+		}
+
+		public function declinedInvitation($event):void
+		{
+			$this->message = $event['message'];
+			$this->flashMessage = true;
+			$this->type = 'info';
+			$this->heading = 'Invitation Declined';
+
+			$this->dispatch('clearFlashMessageAfterDelay');
+		}
+
+		public function acceptedInvitation($event):void
+		{
 			$invitee = User::findOrFail($event['invitee_id']);
 
 			if ($event['inviter_id'] === $this->user->id) {
-				$this->message = $invitee->name.'Accepted your invitation!';
+				$this->message = $invitee->name.' Accepted your invitation!';
 				$this->flashMessage = true;
+				$this->type = 'success';
+				$this->heading = 'Invitation Accepted';
 
 				$this->dispatch('clearFlashMessageAfterDelay');
 			}
 		}
 
-		public function clearFlashMessageAfterDelay():void
+		public function invitationSentToInvitee($event):void
+		{
+			$inviter = User::find($event['invitee_id']);
+
+			$this->message = $event['message'];
+			$this->flashMessage = true;
+			$this->type = 'info';
+			$this->heading = 'Invitation Received';
+
+			$this->dispatch('clearFlashMessageAfterDelay');
+		}
+
+		public function invitationSentToInviter($event):void
+		{
+			$invitee = User::findOrFail($event['inviter_id']);
+
+			$this->message = $event['message'];
+			$this->flashMessage = true;
+			$this->type = 'info';
+			$this->heading = 'Invitation Sent';
+
+			$this->dispatch('clearFlashMessageAfterDelay');
+		}
+
+		public function userLeftChat($event)
+		{
+			$this->message = $event['message'];
+			$this->flashMessage = true;
+			$this->type = 'info';
+			$this->heading = 'User Left Chat';
+		}
+
+		function clearFlashMessageAfterDelay():void
 		{
 			// Wait for 5 seconds before hiding the flash message
 			usleep(5000000); // 5 seconds in microseconds
@@ -63,25 +129,16 @@
 			x-transition:leave="transition ease-in duration-500"
 			x-transition:leave-start="opacity-100"
 			x-transition:leave-end="opacity-0"
-			class="rounded-md bg-green-50 p-2">
-		<div class="flex">
-			<div class="shrink-0">
-				<svg
-						class="size-5 text-green-400"
-						viewBox="0 0 20 20"
-						fill="currentColor"
-						aria-hidden="true"
-						data-slot="icon">
-					<path
-							fill-rule="evenodd"
-							d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
-							clip-rule="evenodd" />
-				</svg>
-			</div>
-			<div class="ml-3">
-				<p class="text-sm font-medium text-green-800">{{ $message }}</p>
-			</div>
-		</div>
+			class="rounded-md">
+		@if ($type === 'info')
+			<x-alerts.information-alert
+					:message="$message"
+					:heading="$heading" />
+		@elseif($type === 'success')
+			<x-alerts.success-alert
+					:message="$message"
+					:heading="$heading" />
+		@endif
 	</div>
 
 
