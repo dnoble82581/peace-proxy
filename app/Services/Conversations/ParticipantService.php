@@ -65,7 +65,7 @@ class ParticipantService
             $user = User::find($userId);
             $otherUser = $this->fetchOtherParticipant($conversation, $user);
             $conversation->participants()->detach($otherUser->id);
-            event(new UserLeavesPrivateChatEvent($otherUser->id, $conversationId));
+            event(new UserLeavesPrivateChatEvent($userid, $conversationId));
         }
 
     }
