@@ -19,6 +19,7 @@ class UserLeavesPrivateChatEvent implements ShouldBroadcastNow
 
     public function __construct($userId)
     {
+        //		ToDo: The wrong user is being passed to the channel. get the other userId
         $this->userId = $userId;
         $this->user = User::find($userId);
     }
