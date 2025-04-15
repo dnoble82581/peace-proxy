@@ -1,0 +1,93 @@
+@import 'tailwindcss';
+@import '../../vendor/livewire/flux/dist/flux.css';
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../vendor/livewire/flux-pro/stubs/**/*.blade.php';
+@source '../../vendor/livewire/flux/stubs/**/*.blade.php';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --color-zinc-50: #fafafa;
+    --color-zinc-100: #f5f5f5;
+    --color-zinc-200: #e5e5e5;
+    --color-zinc-300: #d4d4d4;
+    --color-zinc-400: #a3a3a3;
+    --color-zinc-500: #737373;
+    --color-zinc-600: #525252;
+    --color-zinc-700: #404040;
+    --color-zinc-800: #262626;
+    --color-zinc-900: #171717;
+    --color-zinc-950: #0a0a0a;
+
+    --color-primary-50: #f2f2f2;
+    --color-primary-100: #d9d9d9;
+    --color-primary-200: #bfbfbf;
+    --color-primary-300: #a6a6a6;
+    --color-primary-400: #8c8c8c;
+    --color-primary-500: #262626;
+    --color-primary-600: #1f1f1f;
+    --color-primary-700: #191919;
+    --color-primary-800: #121212;
+    --color-primary-900: #0c0c0c;
+    --color-primary-950: #050505;
+
+    --color-accent-50: #e2f6fd;
+    --color-accent-100: #bfe9fb;
+    --color-accent-200: #9ddcf9;
+    --color-accent-300: #7bcff7;
+    --color-accent-400: #59c2f5;
+    --color-accent-500: #1bb5f2;
+    --color-accent-600: #179dce;
+    --color-accent-700: #1385aa;
+    --color-accent-800: #0f6d86;
+    --color-accent-900: #0b5562;
+    --color-accent-950: #083e47;
+
+    --color-accent: var(--color-neutral-800);
+    --color-accent-content: var(--color-neutral-800);
+    --color-accent-foreground: var(--color-white);
+
+    --color-white: #ffffff;
+    --color-black: #000000;
+}
+
+@layer theme {
+    .dark {
+        --color-accent: var(--color-white);
+        --color-accent-content: var(--color-white);
+        --color-accent-foreground: var(--color-neutral-800);
+    }
+}
+
+@layer base {
+
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentColor);
+    }
+}
+
+[data-flux-field]:not(ui-radio, ui-checkbox) {
+    @apply grid gap-2;
+}
+
+[data-flux-label] {
+    @apply  !mb-0 !leading-tight;
+}
+
+input:focus[data-flux-control],
+textarea:focus[data-flux-control],
+select:focus[data-flux-control] {
+    @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
+}
+
+/* \[:where(&)\]:size-4 {
+    @apply size-4;
+} */
